@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+
+	<servlet>
+		<servlet-name>Groovy</servlet-name>
+		<servlet-class>groovy.servlet.GroovyServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>Groovy</servlet-name>
+		<url-pattern>*.groovy</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>UploadServlet</servlet-name>
+		<servlet-class>fileUpload.UpFile</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UploadServlet</servlet-name>
+		<url-pattern>/uploadservice</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>TextToJsonServlet</servlet-name>
+		<servlet-class>processText.TextToJSON</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TextToJsonServlet</servlet-name>
+		<url-pattern>/texttojsonservice</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>TwitterServlet</servlet-name>
+		<servlet-class>twitter.TwitterToJSON</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TwitterServlet</servlet-name>
+		<url-pattern>/twittertojsonservice</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>UrlServlet</servlet-name>
+		<servlet-class>url.UrlToJSON</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UrlServlet</servlet-name>
+		<url-pattern>/urlservice</url-pattern>
+	</servlet-mapping>
+ 
+</web-app>
