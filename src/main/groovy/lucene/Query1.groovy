@@ -10,6 +10,7 @@ import org.apache.lucene.index.Terms
 import org.apache.lucene.index.TermsEnum
 import org.apache.lucene.queryparser.classic.QueryParser
 import org.apache.lucene.search.IndexSearcher
+import org.apache.lucene.search.MatchAllDocsQuery
 import org.apache.lucene.search.Query
 import org.apache.lucene.search.ScoreDoc
 import org.apache.lucene.search.TopScoreDocCollector
@@ -20,70 +21,82 @@ import org.apache.lucene.util.BytesRef
 import java.nio.file.Path
 import java.nio.file.Paths
 
-println "h** ***************************************************************************"
+class Query1 {
 
-StandardAnalyzer analyzer = new StandardAnalyzer();
-String querystr = "*:*";
-Query q = new QueryParser("contents", analyzer).parse(querystr);
+    static main (args){
+       def q1 =  new Query1()
+        q1.q()
+    }
 
-int hitsPerPage = 10;
+    void q () {
+        println "h** ***************************************************************************"
 
-Path indexPath = Paths.get('C:\\Users\\Laurie\\IdeaProjects\\txt2vz\\Indexes\\QueensLandFloods')
-Directory directory = FSDirectory.open(indexPath)
+        StandardAnalyzer analyzer = new StandardAnalyzer();
+       // String querystr = "*:*";
+        Query q =  new MatchAllDocsQuery()
+                //new QueryParser("contents", analyzer).parse(querystr);
 
+        int hitsPerPage = 10;
 
-IndexReader reader = DirectoryReader.open(directory);
-IndexSearcher searcher = new IndexSearcher(reader);
-TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage);
-searcher.search(q, collector);
-ScoreDoc[] hits = collector.topDocs().scoreDocs;
+        Path indexPath = Paths.get('indexes/QueensLandFloods')
+        Directory directory = FSDirectory.open(indexPath)
 
-println "Found " + hits.length + " hits."
+        IndexReader reader = DirectoryReader.open(directory);
+        IndexSearcher searcher = new IndexSearcher(reader);
+        TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage);
+        searcher.search(q, collector);
+        ScoreDoc[] hits = collector.topDocs().scoreDocs;
 
-Bits liveDocs = MultiFields.getLiveDocs(reader);
+        println "Found " + hits.length + " hits."
+
+        Bits liveDocs = MultiFields.getLiveDocs(reader);
 //for (int i=0; i<reader.maxDoc(); i++) {
 //def st = ["contents"] as Set
 
-hits.each {
+        hits.each {
 
-    int docNumber = it.doc;
-    Document d = searcher.doc(docNumber);
-    println "d " + d.get("contents")
-
+            int docNumber = it.doc;
+            Document d = searcher.doc(docNumber);
+            println ""
+            println ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+            println "document contents docNumber $docNumber " + d.get("contents")
 //}
 
 //reader.maxDoc().times{docNumber ->
 
-    if (liveDocs == null || liveDocs.get(docNumber)) {
+            if (liveDocs == null || liveDocs.get(docNumber)) {
 
-        println "docNumer $docNumber  **********************************"
-        doc = reader.document(docNumber);
+                println "docNumer $docNumber  **********************************"
+                def doc = reader.document(docNumber);
 
-        //https://lucene.apache.org/core/6_2_0/core/index.html?org/apache/lucene/index/CheckIndex.Status.TermVectorStatus.html
-        Terms tv = reader.getTermVector(docNumber, "contents");
-        //   if (tv.is(org.apache.lucene.index.TermsEnum)) {
-        TermsEnum terms = tv.iterator();
-        PostingsEnum p = null;
+                //https://lucene.apache.org/core/6_2_0/core/index.html?org/apache/lucene/index/CheckIndex.Status.TermVectorStatus.html
+                Terms tv = reader.getTermVector(docNumber, "contents");
+                //   if (tv.is(org.apache.lucene.index.TermsEnum)) {
+                TermsEnum terms = tv.iterator();
+                PostingsEnum p = null;
 
-        BytesRef br = terms.next();
+                BytesRef br = terms.next();
 
-        while (br != null) {
-            println ""
-            println "Term:  ${br.utf8ToString()}"
-            p = terms.postings(p, PostingsEnum.POSITIONS);
+                while (br != null) {
+                    println ""
+                    println "Term:  ${br.utf8ToString()}"
+                    p = terms.postings(p, PostingsEnum.POSITIONS);
 
-            while (p.nextDoc() != PostingsEnum.NO_MORE_DOCS) {
+                    while (p.nextDoc() != PostingsEnum.NO_MORE_DOCS) {
 
-                int freq = p.freq();
-                println "freq: $freq"
+                        int freq = p.freq();
+                                println "freq: $freq"
 
-                freq.times {
-                    int pos = p.nextPosition();
-                    println "Occurence $it :  position $pos"
+                        freq.times {
+                            int pos = p.nextPosition();
+                            println "Occurence $it :  position $pos"
+                        }
+                    }
+                    br = terms.next();
                 }
             }
-            br = terms.next();
         }
+        reader.close();
     }
+
 }
-reader.close();

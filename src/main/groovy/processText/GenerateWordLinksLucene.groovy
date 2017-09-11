@@ -1,234 +1,305 @@
 package processText
 
 import groovy.json.JsonBuilder
+import org.apache.lucene.analysis.standard.StandardAnalyzer
+import org.apache.lucene.document.Document
+import org.apache.lucene.index.DirectoryReader
+import org.apache.lucene.index.IndexReader
+import org.apache.lucene.index.MultiFields
+import org.apache.lucene.index.PostingsEnum
+import org.apache.lucene.index.Terms
+import org.apache.lucene.index.TermsEnum
+import org.apache.lucene.search.IndexSearcher
+import org.apache.lucene.search.MatchAllDocsQuery
+import org.apache.lucene.search.Query
+import org.apache.lucene.search.ScoreDoc
+import org.apache.lucene.search.TopScoreDocCollector
+import org.apache.lucene.store.Directory
+import org.apache.lucene.store.FSDirectory
+import org.apache.lucene.util.BytesRef
+
+import java.nio.file.Path
+import java.nio.file.Paths
 
 class GenerateWordLinksLucene {
 
-	private int highFreqWords = 80
-	private int maxWordPairs = 40
-	private float powerValue = 0.5
-	private String networkType = "tree"
+    private int highFreqWords = 80
+    private int maxWordPairs = 40
+    private float powerValue = 0.5
+    private String networkType = "tree"
 
     GenerateWordLinksLucene(String netType, Float cin, int maxL, int hfq) {
-		networkType = netType
-		this.powerValue = cin
-		this.maxWordPairs=maxL
-		this.highFreqWords=hfq
+        networkType = netType
+        this.powerValue = cin
+        this.maxWordPairs = maxL
+        this.highFreqWords = hfq
 
-		println "**GenerateWordLinks constructor - cocoIn: $powerValue maxWordPairs: $maxWordPairs highFreqWords: $highFreqWords "
-	}
+        println "**GenerateWordLinks constructor - cocoIn: $powerValue maxWordPairs: $maxWordPairs highFreqWords: $highFreqWords "
+    }
+
 
     GenerateWordLinksLucene() {
-	}
+    }
 
     GenerateWordLinksLucene(Map userParameters) {
-		networkType = userParameters['networkType'][0];   
-		powerValue =   userParameters['cooc'][0] as Float
-		maxWordPairs =  userParameters['maxLinks'][0] as Integer
-		highFreqWords =  userParameters['maxWords'][0] as Integer
+        networkType = userParameters['networkType'][0];
+        powerValue = userParameters['cooc'][0] as Float
+        maxWordPairs = userParameters['maxLinks'][0] as Integer
+        highFreqWords = userParameters['maxWords'][0] as Integer
 
-		println "in GWL construction highFreqWords = $highFreqWords netTYpe $networkType"
-	}
+        println "in GWL construction highFreqWords = $highFreqWords netTYpe $networkType"
+    }
 
-	String getJSONnetwork(String s) {
+    String getJSONnetwork() {
 
-		//s=new File ('athenaBookChapter.txt').text
-		s = s ?: "empty text"
+        StandardAnalyzer analyzer = new StandardAnalyzer();
+        // String querystr = "*:*";
+        Query q = new MatchAllDocsQuery()
+        //new QueryParser("contents", analyzer).parse(querystr);
 
-		def words = s.replaceAll(/\W/, "  ").toLowerCase().tokenize().minus(StopSet.stopSet)
-		// smallStopSet2);//  stopSet)
+        int hitsPerPage = 10;
 
-		println " words size: " + words.size() + " unique words " + words.unique(false).size()
+        Path indexPath = Paths.get('indexes/QueensLandFloods')
+        Directory directory = FSDirectory.open(indexPath)
 
-		def stemmer = new PorterStemmer()
-		def stemInfo = [:] //stemmed word is key and value is a map of a particular word form and its frequency
-		def wordToPositionsMap = [:] //stemmed word is key and value is a list of positions where any of the words occur
+        IndexReader reader = DirectoryReader.open(directory);
+        IndexSearcher searcher = new IndexSearcher(reader);
+        TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage);
+        searcher.search(q, collector);
+        ScoreDoc[] hits = collector.topDocs().scoreDocs;
 
-		//min word size 1 or 2?
-		words.findAll { it.size() > 2 }
-		.eachWithIndex { it, indexWordPosition ->
+        println "Found " + hits.length + " hits."
 
-			def stemmedWord = stemmer.stem(it)
-			wordToPositionsMap[stemmedWord] = wordToPositionsMap.get(stemmedWord, []) << indexWordPosition
+        Bits liveDocs = MultiFields.getLiveDocs(reader);
 
-			def forms = [:]
-			forms = stemInfo.get((stemmedWord), [(it): 0])
+        //s=new File ('athenaBookChapter.txt').text
+        //s = s ?: "empty text"
 
-			def n = forms.get((it)) ?: 0
-			forms.put((it), n + 1)
+        //def words = s.replaceAll(/\W/, "  ").toLowerCase().tokenize().minus(StopSet.stopSet)
+        // smallStopSet2);//  stopSet)
 
-			stemInfo[(stemmedWord)] = forms
-		}
+        //	println " words size: " + words.size() + " unique words " + words.unique(false).size()
 
-		println "take 2 steminfo: " + stemInfo.take(2)
+        def stemmer = new PorterStemmer()
 
-		//sort by size of list (word frequency)
-		wordToPositionsMap = wordToPositionsMap.sort { -it.value.size() }
 
-		//wordToFormsMap = wordToFormsMap.drop(wordToFormsMap.size() - highFreqWords)
-		wordToPositionsMap = wordToPositionsMap.take(highFreqWords)
+        hits.each {
+            int docNumber = it.doc;
+            Document d = searcher.doc(docNumber);
+            println "d " + d.get("contents")
+            Map termPositionsMap = [:]
+            if (liveDocs == null || liveDocs.get(docNumber)) {
+                def doc = reader.document(docNumber);
 
-		println "after take wordposmap $wordToPositionsMap  wortopositmap.size " + wordToPositionsMap.size()
+                //https://lucene.apache.org/core/6_2_0/core/index.html?org/apache/lucene/index/CheckIndex.Status.TermVectorStatus.html
+                Terms tv = reader.getTermVector(docNumber, "contents");
+                //   if (tv.is(org.apache.lucene.index.TermsEnum)) {
+                TermsEnum terms = tv.iterator();
+                PostingsEnum p = null;
 
-		def wordPairList = []
+                def stemInfo = [:] //stemmed word is key and value is a map of a particular word form and its frequency
+                def wordToPositionsMap = [:]
+                //stemmed word is key and value is a list of positions where any of the words occur
 
-		wordToPositionsMap.eachWithIndex { a, index ->
-			wordToPositionsMap.drop(index + 1).each { b ->
-				def w0 = a.getKey()
-				def w1 = b.getKey()
+                BytesRef br = terms.next();
+                while (br != null) {
+                    println ""
 
-				def coocValue = getCooc(a.value, b.value)
-				def minF = Math.min(a.value.size,  b.value.size)
+                    String word = br.utf8ToString()
+                    println "word:  $word"
+                    p = terms.postings(p, PostingsEnum.POSITIONS);
 
-				//makes a better tree - more branches?  Needs testing.
-				def srtVal =   minF * coocValue
-				//wordPairList << new WordPair(word0: w0, word1: w1, cooc: coocValue)
+                    def stemmedWord = stemmer.stem(it)
 
-				wordPairList << new WordPair(word0: w0, word1: w1, cooc: coocValue, sortVal: srtVal)
-			}
-		}
+                    def forms = [:]
+                    forms = stemInfo.get((stemmedWord), [(it): 0])
 
-		//wordPairList = wordPairList.sort { -it.cooc }
-		wordPairList = wordPairList.sort { -it.sortVal }
-		println "wordPairList take 5: " + wordPairList.take(30)	
+                    def n = forms.get((word)) ?: 0
+                    forms.put((word), n + 1)
+                    stemInfo[(stemmedWord)] = forms
 
-		wordPairList = wordPairList.take(maxWordPairs)
-		//def json = getJSONgraph(wordPairList, stemInfo)
-		def json;
+                    while (p.nextDoc() != PostingsEnum.NO_MORE_DOCS) {
+                        int freq = p.freq();
+                        println "freq: $freq"
+                        freq.times {
+                            int pos = p.nextPosition();
+                            println "Occurence $it :  position $pos"
+                            wordToPositionsMap[stemmedWord] = wordToPositionsMap.get(stemmedWord, []) << pos
+                        }
+                    }
+                }
+            }
 
-		if (networkType == "forceNet")
-			json= getJSONgraph(wordPairList, stemInfo)		
-		else
-			json = getJSONtree(wordPairList, stemInfo)			
+            println "take 2 steminfo: " + stemInfo.take(2)
 
-		//println "json is $json"
-		return json
-	}
+            //sort by size of list (word frequency)
+            wordToPositionsMap = wordToPositionsMap.sort { -it.value.size() }
 
-	private String getJSONgraph( List wl, Map stemMap){
+            //wordToFormsMap = wordToFormsMap.drop(wordToFormsMap.size() - highFreqWords)
+            wordToPositionsMap = wordToPositionsMap.take(highFreqWords)
 
-		def data = [
+            println "after take wordposmap $wordToPositionsMap  wortopositmap.size " + wordToPositionsMap.size()
 
-			links: wl.collect {
+            def wordPairList = []
 
-				def src = stemMap[it.word0].max { it.value }.key
-				def tgt = stemMap[it.word1].max { it.value }.key
+            wordToPositionsMap.eachWithIndex { a, index ->
+                wordToPositionsMap.drop(index + 1).each { b ->
+                    def w0 = a.getKey()
+                    def w1 = b.getKey()
 
-				[source: src,
-					target: tgt,
-					cooc  : it.cooc,
-				]
-			}
-		]
+                    def coocValue = getCooc(a.value, b.value)
+                    def minF = Math.min(a.value.size, b.value.size)
 
-		def json = new JsonBuilder(data)
-		return json
-	}
+                    //makes a better tree - more branches?  Needs testing.
+                    def srtVal = minF * coocValue
+                    //wordPairList << new WordPair(word0: w0, word1: w1, cooc: coocValue)
 
-	private def internalNodes = [] as Set
-	private def allNodes = [] as Set
-	private String getJSONtree( List wl, Map stemMap){
-		def tree= [:] 
+                    wordPairList << new WordPair(word0: w0, word1: w1, cooc: coocValue, sortVal: srtVal)
+                }
+            }
 
-		wl.collect {
-			def word0 =    stemMap[it.word0].max { it.value }.key
-			def word1 = stemMap[it.word1].max { it.value }.key
+            //wordPairList = wordPairList.sort { -it.cooc }
+            wordPairList = wordPairList.sort { -it.sortVal }
+            println "wordPairList take 5: " + wordPairList.take(30)
 
-			if (tree.isEmpty()){
-				tree <<
-						[name: word0, cooc: it.cooc,
-							children: [[name: word1]]]
-				internalNodes.add(word0)
-				allNodes.add(word0)
-				allNodes.add(word1)
-			}
-			else {
-				addPairToMap(tree, word0, word1, it.cooc)
-				addPairToMap(tree, word1, word0, it.cooc)
-			}
-		}
-		def json = new JsonBuilder(tree)
-		return json
-	}
+            wordPairList = wordPairList.take(maxWordPairs)
+            //def json = getJSONgraph(wordPairList, stemInfo)
+            def json;
 
-	private void addPairToMap (Map m, String w0, String w1, def cooc){
+            if (networkType == "forceNet") json = getJSONgraph(wordPairList, stemInfo)
+            else
+                json = getJSONtree(wordPairList, stemInfo)
 
-		assert w0 !=w1
+            //println "json is $json"
+            return json
+        }
+    }
 
-		m.each {
+    private String getJSONgraph(List wl, Map stemMap) {
 
-			if (it.value in List ){
-				it.value.each{
-					assert it in Map
-					addPairToMap(it, w0, w1, cooc)
-				}
-			}else{
+        def data = [
 
-				if (it.value == w0  &&  allNodes.add(w1))  {
+                links: wl.collect {
 
-					//the node has children.  Check the other word is not also an internal node
-					if (m.children  && ! internalNodes.contains(w1) ){
+                    def src = stemMap[it.word0].max { it.value }.key
+                    def tgt = stemMap[it.word1].max { it.value }.key
 
-						m.children << ["name": w1]
+                    [source: src,
+                     target: tgt,
+                     cooc  : it.cooc,
+                    ]
+                }
+        ]
 
-					}else{
+        def json = new JsonBuilder(data)
+        return json
+    }
 
-						//do not create a new internal node if one already exists
-						if (internalNodes.add( it.value)) {
-							m  << ["name": it.value, "cooc": cooc, "children": [["name" : w1]]]
-						}
-					}
-				}
-			}
-		}
-	}
+    private def internalNodes = [] as Set
+    private def allNodes = [] as Set
 
-	private def getCooc(List w0Positions, List w1Positions) {
-		final int MAX_DISTANCE = 20;
-		def coocVal =
-				[w0Positions, w1Positions].combinations().collect
-				{ a, b -> Math.abs(a - b) - 1 }
-				.findAll { it <= MAX_DISTANCE }
-				.sum {
-					//lookup table should be faster
-					//powers[it]
-					//Math.pow(0.5, it)
-					Math.pow(powerValue, it)
-				}
+    private String getJSONtree(List wl, Map stemMap) {
+        def tree = [:]
 
-		return coocVal ?: 0.0;
-	}
+        wl.collect {
+            def word0 = stemMap[it.word0].max { it.value }.key
+            def word1 = stemMap[it.word1].max { it.value }.key
 
-	//powers for 0.9 - power function could be expensive
-	def final powers = [
-		0 : 1,
-		1 : 0.9,
-		2 : 0.81,
-		3 : 0.729,
-		4 : 0.6561,
-		5 : 0.59049,
-		6 : 0.531441,
-		7 : 0.4782969,
-		8 : 0.43046721,
-		9 : 0.387420489,
-		10: 0.34867844,
-		11: 0.313810596,
-		12: 0.282429536,
-		13: 0.254186583,
-		14: 0.228767925
-	]
-	static main(args) {
-		def gwl = new GenerateWordLinksLucene()
-		//y.getWordPairs("""houses tonight  houses tonight content contents contents housed house houses housed zoo zoo2""")
+            if (tree.isEmpty()) {
+                tree <<
+                        [name    : word0, cooc: it.cooc,
+                         children: [[name: word1]]]
+                internalNodes.add(word0)
+                allNodes.add(word0)
+                allNodes.add(word1)
+            } else {
+                addPairToMap(tree, word0, word1, it.cooc)
+                addPairToMap(tree, word1, word0, it.cooc)
+            }
+        }
+        def json = new JsonBuilder(tree)
+        return json
+    }
 
-		def ali = gwl.getJSONnetwork(mAli)
-		def dd = gwl.getJSONnetwork("zzza ttttk ffffe")
-		println "dd $dd"
-		println "ali $ali"
-	}
+    private void addPairToMap(Map m, String w0, String w1, def cooc) {
 
-	def final static mAli =
-	'''
+        assert w0 != w1
+
+        m.each {
+
+            if (it.value in List) {
+                it.value.each {
+                    assert it in Map
+                    addPairToMap(it, w0, w1, cooc)
+                }
+            } else {
+
+                if (it.value == w0 && allNodes.add(w1)) {
+
+                    //the node has children.  Check the other word is not also an internal node
+                    if (m.children && !internalNodes.contains(w1)) {
+
+                        m.children << ["name": w1]
+
+                    } else {
+
+                        //do not create a new internal node if one already exists
+                        if (internalNodes.add(it.value)) {
+                            m << ["name": it.value, "cooc": cooc, "children": [["name": w1]]]
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private def getCooc(List w0Positions, List w1Positions) {
+        final int MAX_DISTANCE = 20;
+        def coocVal =
+                [w0Positions, w1Positions].combinations().collect
+                { a, b -> Math.abs(a - b) - 1 }
+                        .findAll { it <= MAX_DISTANCE }
+                        .sum {
+                    //lookup table should be faster
+                    //powers[it]
+                    //Math.pow(0.5, it)
+                    Math.pow(powerValue, it)
+                }
+
+        return coocVal ?: 0.0;
+    }
+
+    //powers for 0.9 - power function could be expensive
+    def final powers = [
+            0 : 1,
+            1 : 0.9,
+            2 : 0.81,
+            3 : 0.729,
+            4 : 0.6561,
+            5 : 0.59049,
+            6 : 0.531441,
+            7 : 0.4782969,
+            8 : 0.43046721,
+            9 : 0.387420489,
+            10: 0.34867844,
+            11: 0.313810596,
+            12: 0.282429536,
+            13: 0.254186583,
+            14: 0.228767925
+    ]
+
+    static main(args) {
+        def gwl = new GenerateWordLinksLucene()
+        //y.getWordPairs("""houses tonight  houses tonight content contents contents housed house houses housed zoo zoo2""")
+
+        def ali = gwl.getJSONnetwork(mAli)
+        def dd = gwl.getJSONnetwork("zzza ttttk ffffe")
+        println "dd $dd"
+        println "ali $ali"
+    }
+
+    def final static mAli =
+            '''
 I am America. I am the part you won’t recognise. But get used to me – black, confident, cocky; my name, not yours; my religion, not yours; my goals, my own. Get used to me.”
 Muhammad Ali: the man behind the icon Read moreMuhammad Ali loved the sound of his own voice, and so did everyone else. His words were predictably impossible to top on Saturday, as America mourned the loss of a colossus not only in the boxing ring but the arenas of politics, religion and popular culture.
 Born in the south before Rosa Parks refused to give up her seat for a white bus passenger, he died at the age of 74, having seen the first African American elected to the White House. Barack Obama led tributes to the incandescent athlete, activist, humanitarian, poet and showman with a statement that caught the mood of many.
