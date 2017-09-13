@@ -126,50 +126,51 @@ class GenerateWordLinksLucene {
                             int position = p.nextPosition();
                             println "Occurence $it :  position $position"
                             positions << position
-                           // wordToPositionsMap[stemmedWord] = wordToPositionsMap.get(stemmedWord, []) << pos
+                            // wordToPositionsMap[stemmedWord] = wordToPositionsMap.get(stemmedWord, []) << pos
                         }
-                        stemmedWordToPositionsMap << [stemmedWord : positions]
+                        stemmedWordToPositionsMap << [stemmedWord: positions]
                     }
                 }
             }
             //sort by word frequency (number of positions)
-            stemmedWordToPositionsMap = stemmedWordToPositionsMap.sort {-it.value.size()}
+            stemmedWordToPositionsMap = stemmedWordToPositionsMap.sort { -it.value.size() }
             //wordToFormsMap = wordToFormsMap.drop(wordToFormsMap.size() - highFreqWords)
             stemmedWordToPositionsMap = stemmedWordToPositionsMap.take(highFreqWords)
 
             println "after take wordposmap $stemmedWordToPositionsMap  wortopositmap.size " + stemmedWordToPositionsMap.size()
 
-            [stemmedWordToPositionsMap.keySet(), stemmedWordToPositionsMap.keySet()].combinations{
+            [stemmedWordToPositionsMap.keySet(), stemmedWordToPositionsMap.keySet()].combinations {
 
                 String stemmedWord0 = it[0]
                 String stemmedWord1 = it[1]
                 assert stemmedWord0 < stemmedWord1
-                if (stemmedWord0 != stemmedWord1){
-                    Tuple2 t2 = new Tuple2 (stemmedWord0, stemmedWord1)
-                    double coocDocValue = getCooc(stemmedWordToPositionsMap[stemmedWord0],stemmedWordToPositionsMap[stemmedWord1] )
-                    double coocTotalValue = tuple2CoocMap[t2] ?:0
+                if (stemmedWord0 != stemmedWord1) {
+                    Tuple2 t2 = new Tuple2(stemmedWord0, stemmedWord1)
+                    double coocDocValue = getCooc(stemmedWordToPositionsMap[stemmedWord0], stemmedWordToPositionsMap[stemmedWord1])
+                    double coocTotalValue = tuple2CoocMap[t2] ?: 0
                     coocTotalValue = coocTotalValue + coocDocValue
-                    tuple2CoocMap << [t2 :coocTotalValue]
+                    tuple2CoocMap << [t2: coocTotalValue]
                 }
             }
-
-            tuple2CoocMap = tuple2CoocMap.sort{-it.value}.take(maxWordPairs)
-
-            //wordPairList = wordPairList.sort { -it.cooc }
-        //    wordPairList = wordPairList.sort { -it.sortVal }
-            println "tuple2CoocMap take 5: " + tuple2CoocMap.take(5)
-
-          //  wordPairList = wordPairList.take(maxWordPairs)
-            //def json = getJSONgraph(wordPairList, stemInfo)
-            def json;
-
-            if (networkType == "forceNet") json = getJSONgraph(wordPairList, stemInfo)
-            else
-                json = getJSONtree(wordPairList, stemInfo)
-
-            //println "json is $json"
-            return json
         }
+
+        tuple2CoocMap = tuple2CoocMap.sort { -it.value }.take(maxWordPairs)
+
+        //wordPairList = wordPairList.sort { -it.cooc }
+        //    wordPairList = wordPairList.sort { -it.sortVal }
+        println "tuple2CoocMap take 5: " + tuple2CoocMap.take(5)
+
+        //  wordPairList = wordPairList.take(maxWordPairs)
+        //def json = getJSONgraph(wordPairList, stemInfo)
+        def json;
+
+        if (networkType == "forceNet") json = getJSONgraph(wordPairList, stemInfo)
+        else
+            json = getJSONtree(wordPairList, stemInfo)
+
+        //println "json is $json"
+        return json
+
     }
 
     private String getJSONgraph(List wl, Map stemMap) {
