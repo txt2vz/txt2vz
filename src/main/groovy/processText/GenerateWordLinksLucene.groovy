@@ -9,6 +9,7 @@ import org.apache.lucene.index.MultiFields
 import org.apache.lucene.index.PostingsEnum
 import org.apache.lucene.index.Terms
 import org.apache.lucene.index.TermsEnum
+import org.apache.lucene.queryparser.classic.QueryParser
 import org.apache.lucene.search.IndexSearcher
 import org.apache.lucene.search.MatchAllDocsQuery
 import org.apache.lucene.search.Query
@@ -53,13 +54,13 @@ class GenerateWordLinksLucene {
     String getJSONnetwork() {
 
         StandardAnalyzer analyzer = new StandardAnalyzer();
-        // String querystr = "*:*";
-        Query q = new MatchAllDocsQuery()
-        //new QueryParser("contents", analyzer).parse(querystr);
+         String querystr = "*:*";
+        Query q = //new MatchAllDocsQuery()
+        new QueryParser("contents", analyzer).parse(querystr);
 
-        int hitsPerPage = 10;
+        int hitsPerPage = 4;
 
-        Path indexPath = Paths.get('indexes/QueensLandFloods')
+        Path indexPath = Paths.get('Indexes/QueensLandFloods')
         Directory directory = FSDirectory.open(indexPath)
 
         IndexReader reader = DirectoryReader.open(directory);
@@ -90,6 +91,7 @@ class GenerateWordLinksLucene {
             println "d " + d.get("contents")
 
             def stemmedWordToPositionsMap = [:]
+			
             //stemmed word is key and value is a list of positions where any of the words occur
             if (liveDocs == null || liveDocs.get(docNumber)) {
                 def doc = reader.document(docNumber);
@@ -100,14 +102,12 @@ class GenerateWordLinksLucene {
                 TermsEnum terms = tv.iterator();
                 PostingsEnum p = null;
 
-
-
                 BytesRef br = terms.next();
                 while (br != null) {
                     println ""
 
                     String word = br.utf8ToString()
-                    String stemmedWord = stemmer.stem(it)
+                    String stemmedWord = stemmer.stem(word)
                     println "word:  $word stemmedWord: $stemmedWord"
                     p = terms.postings(p, PostingsEnum.POSITIONS);
 
@@ -128,8 +128,10 @@ class GenerateWordLinksLucene {
                             positions << position
                             // wordToPositionsMap[stemmedWord] = wordToPositionsMap.get(stemmedWord, []) << pos
                         }
-                        stemmedWordToPositionsMap << [stemmedWord: positions]
+						println "stemmedWord: $stemmedWord positions: $positions"
+                        stemmedWordToPositionsMap << [(stemmedWord): positions]
                     }
+					br = terms.next();
                 }
             }
             //sort by word frequency (number of positions)
@@ -138,18 +140,20 @@ class GenerateWordLinksLucene {
             stemmedWordToPositionsMap = stemmedWordToPositionsMap.take(highFreqWords)
 
             println "after take wordposmap $stemmedWordToPositionsMap  wortopositmap.size " + stemmedWordToPositionsMap.size()
-
-            [stemmedWordToPositionsMap.keySet(), stemmedWordToPositionsMap.keySet()].combinations {
-
+           // Set tups
+			
+			println "subseqs " + stemmedWordToPositionsMap.keySet().toList().subsequences().findAll{it.size == 2}
+          //  [stemmedWordToPositionsMap.keySet(), stemmedWordToPositionsMap.keySet()].combinations {
+			stemmedWordToPositionsMap.keySet().toList().subsequences().findAll{it.size == 2}.each{
                 String stemmedWord0 = it[0]
                 String stemmedWord1 = it[1]
-                assert stemmedWord0 < stemmedWord1
+               // assert stemmedWord0 < stemmedWord1
                 if (stemmedWord0 != stemmedWord1) {
                     Tuple2 t2 = new Tuple2(stemmedWord0, stemmedWord1)
                     double coocDocValue = getCooc(stemmedWordToPositionsMap[stemmedWord0], stemmedWordToPositionsMap[stemmedWord1])
                     double coocTotalValue = tuple2CoocMap[t2] ?: 0
                     coocTotalValue = coocTotalValue + coocDocValue
-                    tuple2CoocMap << [t2: coocTotalValue]
+                    tuple2CoocMap << [(t2): coocTotalValue]
                 }
             }
         }
@@ -162,14 +166,15 @@ class GenerateWordLinksLucene {
 
         //  wordPairList = wordPairList.take(maxWordPairs)
         //def json = getJSONgraph(wordPairList, stemInfo)
-        def json;
+    ///    def json;
 
-        if (networkType == "forceNet") json = getJSONgraph(wordPairList, stemInfo)
-        else
-            json = getJSONtree(wordPairList, stemInfo)
+     //   if (networkType == "forceNet") json = getJSONgraph(wordPairList, stemInfo)
+    //    else
+    //        json = getJSONtree(wordPairList, stemInfo)
 
         //println "json is $json"
-        return json
+		println "tubl2CoocMap $tuple2CoocMap"
+        return "json"
 
     }
 
@@ -290,10 +295,11 @@ class GenerateWordLinksLucene {
         def gwl = new GenerateWordLinksLucene()
         //y.getWordPairs("""houses tonight  houses tonight content contents contents housed house houses housed zoo zoo2""")
 
-        def ali = gwl.getJSONnetwork(mAli)
-        def dd = gwl.getJSONnetwork("zzza ttttk ffffe")
-        println "dd $dd"
-        println "ali $ali"
+		gwl.getJSONnetwork()
+//        def ali = gwl.getJSONnetwork(mAli)
+//        def dd = gwl.getJSONnetwork("zzza ttttk ffffe")
+//        println "dd $dd"
+//        println "ali $ali"
     }
 
     def final static mAli =

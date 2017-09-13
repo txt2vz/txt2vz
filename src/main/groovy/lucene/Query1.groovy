@@ -38,7 +38,7 @@ class Query1 {
 
         int hitsPerPage = 10;
 
-        Path indexPath = Paths.get('indexes/QueensLandFloods')
+        Path indexPath = Paths.get('Indexes/QueensLandFloods')
         Directory directory = FSDirectory.open(indexPath)
 
         IndexReader reader = DirectoryReader.open(directory);
@@ -67,7 +67,7 @@ class Query1 {
             if (liveDocs == null || liveDocs.get(docNumber)) {
 
                 println "docNumer $docNumber  **********************************"
-                def doc = reader.document(docNumber);
+                //def doc = reader.document(docNumber);
 
                 //https://lucene.apache.org/core/6_2_0/core/index.html?org/apache/lucene/index/CheckIndex.Status.TermVectorStatus.html
                 Terms tv = reader.getTermVector(docNumber, "contents");

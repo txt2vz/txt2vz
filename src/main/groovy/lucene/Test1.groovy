@@ -27,7 +27,17 @@ class Test1 {
         l<< s2
 
         println "l is $l"
-        println "l combs " + [l,l].combinations()
+		
+		def combs = [l,l].combinations()
+        println "l combs $combs"
+		def combsSet = combs as Set
+		println "combsSet $combsSet"
+		
+		println "subseq " + l.subsequences().findAll{it.size == 2}.each{
+			println "it $it"
+		}
+		
+		//println "combx2 " + GroovyCollections.combinations(l,l).toUnique{ a,b -> a.toString()  != b.toString()}
 
 //        [l,l].combinations{
 //            println "c $it"
