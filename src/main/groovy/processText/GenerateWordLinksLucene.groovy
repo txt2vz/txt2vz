@@ -81,13 +81,16 @@ class GenerateWordLinksLucene {
         //	println " words size: " + words.size() + " unique words " + words.unique(false).size()
 
         def stemmer = new PorterStemmer()
-
+        def stemInfo = [:] //stemmed word is key and value is a map of a particular word form and its frequency
+        def tuple2CoocMap = [:]  //word pair tuple is key - value is cooc value summed across all docs
 
         hits.each {
             int docNumber = it.doc;
             Document d = searcher.doc(docNumber);
             println "d " + d.get("contents")
-            Map termPositionsMap = [:]
+
+            def stemmedWordToPositionsMap = [:]
+            //stemmed word is key and value is a list of positions where any of the words occur
             if (liveDocs == null || liveDocs.get(docNumber)) {
                 def doc = reader.document(docNumber);
 
@@ -97,72 +100,66 @@ class GenerateWordLinksLucene {
                 TermsEnum terms = tv.iterator();
                 PostingsEnum p = null;
 
-                def stemInfo = [:] //stemmed word is key and value is a map of a particular word form and its frequency
-                def wordToPositionsMap = [:]
-                //stemmed word is key and value is a list of positions where any of the words occur
+
 
                 BytesRef br = terms.next();
                 while (br != null) {
                     println ""
 
                     String word = br.utf8ToString()
-                    println "word:  $word"
+                    String stemmedWord = stemmer.stem(it)
+                    println "word:  $word stemmedWord: $stemmedWord"
                     p = terms.postings(p, PostingsEnum.POSITIONS);
 
-                    def stemmedWord = stemmer.stem(it)
-
+                    //count and store word forms for a stemmed word
                     def forms = [:]
                     forms = stemInfo.get((stemmedWord), [(it): 0])
-
                     def n = forms.get((word)) ?: 0
                     forms.put((word), n + 1)
                     stemInfo[(stemmedWord)] = forms
 
+                    def positions = []
                     while (p.nextDoc() != PostingsEnum.NO_MORE_DOCS) {
                         int freq = p.freq();
                         println "freq: $freq"
                         freq.times {
-                            int pos = p.nextPosition();
-                            println "Occurence $it :  position $pos"
-                            wordToPositionsMap[stemmedWord] = wordToPositionsMap.get(stemmedWord, []) << pos
+                            int position = p.nextPosition();
+                            println "Occurence $it :  position $position"
+                            positions << position
+                           // wordToPositionsMap[stemmedWord] = wordToPositionsMap.get(stemmedWord, []) << pos
                         }
+                        stemmedWordToPositionsMap << [stemmedWord : positions]
                     }
                 }
             }
-
-            println "take 2 steminfo: " + stemInfo.take(2)
-
-            //sort by size of list (word frequency)
-            wordToPositionsMap = wordToPositionsMap.sort { -it.value.size() }
-
+            //sort by word frequency (number of positions)
+            stemmedWordToPositionsMap = stemmedWordToPositionsMap.sort {-it.value.size()}
             //wordToFormsMap = wordToFormsMap.drop(wordToFormsMap.size() - highFreqWords)
-            wordToPositionsMap = wordToPositionsMap.take(highFreqWords)
+            stemmedWordToPositionsMap = stemmedWordToPositionsMap.take(highFreqWords)
 
-            println "after take wordposmap $wordToPositionsMap  wortopositmap.size " + wordToPositionsMap.size()
+            println "after take wordposmap $stemmedWordToPositionsMap  wortopositmap.size " + stemmedWordToPositionsMap.size()
 
-            def wordPairList = []
+            [stemmedWordToPositionsMap.keySet(), stemmedWordToPositionsMap.keySet()].combinations{
 
-            wordToPositionsMap.eachWithIndex { a, index ->
-                wordToPositionsMap.drop(index + 1).each { b ->
-                    def w0 = a.getKey()
-                    def w1 = b.getKey()
-
-                    def coocValue = getCooc(a.value, b.value)
-                    def minF = Math.min(a.value.size, b.value.size)
-
-                    //makes a better tree - more branches?  Needs testing.
-                    def srtVal = minF * coocValue
-                    //wordPairList << new WordPair(word0: w0, word1: w1, cooc: coocValue)
-
-                    wordPairList << new WordPair(word0: w0, word1: w1, cooc: coocValue, sortVal: srtVal)
+                String stemmedWord0 = it[0]
+                String stemmedWord1 = it[1]
+                assert stemmedWord0 < stemmedWord1
+                if (stemmedWord0 != stemmedWord1){
+                    Tuple2 t2 = new Tuple2 (stemmedWord0, stemmedWord1)
+                    double coocDocValue = getCooc(stemmedWordToPositionsMap[stemmedWord0],stemmedWordToPositionsMap[stemmedWord1] )
+                    double coocTotalValue = tuple2CoocMap[t2] ?:0
+                    coocTotalValue = coocTotalValue + coocDocValue
+                    tuple2CoocMap << [t2 :coocTotalValue]
                 }
             }
 
-            //wordPairList = wordPairList.sort { -it.cooc }
-            wordPairList = wordPairList.sort { -it.sortVal }
-            println "wordPairList take 5: " + wordPairList.take(30)
+            tuple2CoocMap = tuple2CoocMap.sort{-it.value}.take(maxWordPairs)
 
-            wordPairList = wordPairList.take(maxWordPairs)
+            //wordPairList = wordPairList.sort { -it.cooc }
+        //    wordPairList = wordPairList.sort { -it.sortVal }
+            println "tuple2CoocMap take 5: " + tuple2CoocMap.take(5)
+
+          //  wordPairList = wordPairList.take(maxWordPairs)
             //def json = getJSONgraph(wordPairList, stemInfo)
             def json;
 
@@ -253,9 +250,9 @@ class GenerateWordLinksLucene {
         }
     }
 
-    private def getCooc(List w0Positions, List w1Positions) {
+    private double getCooc(List w0Positions, List w1Positions) {
         final int MAX_DISTANCE = 20;
-        def coocVal =
+        double coocVal =
                 [w0Positions, w1Positions].combinations().collect
                 { a, b -> Math.abs(a - b) - 1 }
                         .findAll { it <= MAX_DISTANCE }
