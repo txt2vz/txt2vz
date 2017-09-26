@@ -24,7 +24,7 @@ import java.nio.file.Paths
 
 class GenerateWordLinksLucene {
 
-    private int highFreqWords = 80
+    private int highFreqWords = 10
     private int maxWordPairs = 40
     private float powerValue = 0.5
     private String networkType = "tree"
@@ -54,13 +54,14 @@ class GenerateWordLinksLucene {
     String getJSONnetwork() {
 
         StandardAnalyzer analyzer = new StandardAnalyzer();
-         String querystr = "*:*";
+        String querystr = "*:*";
         Query q = //new MatchAllDocsQuery()
-        new QueryParser("contents", analyzer).parse(querystr);
+                new QueryParser("contents", analyzer).parse(querystr);
 
-        int hitsPerPage = 4;
+        int hitsPerPage = 200;
 
-        Path indexPath = Paths.get('Indexes/QueensLandFloods')
+        Path indexPath = Paths.get('Indexes/R10CrudeL')
+        //('Indexes/QueensLandFloods')
         Directory directory = FSDirectory.open(indexPath)
 
         IndexReader reader = DirectoryReader.open(directory);
@@ -88,10 +89,12 @@ class GenerateWordLinksLucene {
         hits.each {
             int docNumber = it.doc;
             Document d = searcher.doc(docNumber);
-            println "d " + d.get("contents")
+
+
+        //    println "d ****************************************" + d.get("contents")
 
             def stemmedWordToPositionsMap = [:]
-			
+
             //stemmed word is key and value is a list of positions where any of the words occur
             if (liveDocs == null || liveDocs.get(docNumber)) {
                 def doc = reader.document(docNumber);
@@ -104,34 +107,37 @@ class GenerateWordLinksLucene {
 
                 BytesRef br = terms.next();
                 while (br != null) {
-                    println ""
+              //      println ""
 
                     String word = br.utf8ToString()
-                    String stemmedWord = stemmer.stem(word)
-                    println "word:  $word stemmedWord: $stemmedWord"
-                    p = terms.postings(p, PostingsEnum.POSITIONS);
+                    if (!StopSet.stopSet.contains(word)) {
+                        String stemmedWord = stemmer.stem(word)
+                     //   println "word:  $word stemmedWord: $stemmedWord"
+                        p = terms.postings(p, PostingsEnum.POSITIONS);
 
-                    //count and store word forms for a stemmed word
-                    def forms = [:]
-                    forms = stemInfo.get((stemmedWord), [(it): 0])
-                    def n = forms.get((word)) ?: 0
-                    forms.put((word), n + 1)
-                    stemInfo[(stemmedWord)] = forms
+                        //count and store word forms for a stemmed word
+                        def forms = [:]
+                        forms = stemInfo.get((stemmedWord), [(it): 0])
+                        def n = forms.get((word)) ?: 0
+                        forms.put((word), n + 1)
+                        stemInfo[(stemmedWord)] = forms
 
-                    def positions = []
-                    while (p.nextDoc() != PostingsEnum.NO_MORE_DOCS) {
-                        int freq = p.freq();
-                        println "freq: $freq"
-                        freq.times {
-                            int position = p.nextPosition();
-                            println "Occurence $it :  position $position"
-                            positions << position
-                            // wordToPositionsMap[stemmedWord] = wordToPositionsMap.get(stemmedWord, []) << pos
+                        def positions = []
+                        while (p.nextDoc() != PostingsEnum.NO_MORE_DOCS) {
+                            int freq = p.freq();
+                         //   println "freq: $freq"
+                            freq.times {
+                                int position = p.nextPosition();
+                            //    println "Occurence $it :  position $position"
+                                positions << position
+                                // wordToPositionsMap[stemmedWord] = wordToPositionsMap.get(stemmedWord, []) << pos
+                            }
+                         //   println "stemmedWord: $stemmedWord positions: $positions"
+                            stemmedWordToPositionsMap << [(stemmedWord): positions]
                         }
-						println "stemmedWord: $stemmedWord positions: $positions"
-                        stemmedWordToPositionsMap << [(stemmedWord): positions]
                     }
-					br = terms.next();
+                    br = terms.next();
+
                 }
             }
             //sort by word frequency (number of positions)
@@ -139,22 +145,23 @@ class GenerateWordLinksLucene {
             //wordToFormsMap = wordToFormsMap.drop(wordToFormsMap.size() - highFreqWords)
             stemmedWordToPositionsMap = stemmedWordToPositionsMap.take(highFreqWords)
 
-            println "after take wordposmap $stemmedWordToPositionsMap  wortopositmap.size " + stemmedWordToPositionsMap.size()
-           // Set tups
-			
-			println "subseqs " + stemmedWordToPositionsMap.keySet().toList().subsequences().findAll{it.size == 2}
-          //  [stemmedWordToPositionsMap.keySet(), stemmedWordToPositionsMap.keySet()].combinations {
-			stemmedWordToPositionsMap.keySet().toList().subsequences().findAll{it.size == 2}.each{
+       //     println "after take wordposmap $stemmedWordToPositionsMap  wortopositmap.size " + stemmedWordToPositionsMap.size()
+            // Set tups
+
+      //      println "subseqs " + stemmedWordToPositionsMap.keySet().toList().subsequences().findAll { it.size == 2 }
+            //  [stemmedWordToPositionsMap.keySet(), stemmedWordToPositionsMap.keySet()].combinations {
+            stemmedWordToPositionsMap.keySet().toList().subsequences().findAll { it.size == 2 }.each {
+                it.sort()
                 String stemmedWord0 = it[0]
                 String stemmedWord1 = it[1]
-               // assert stemmedWord0 < stemmedWord1
-                if (stemmedWord0 != stemmedWord1) {
-                    Tuple2 t2 = new Tuple2(stemmedWord0, stemmedWord1)
-                    double coocDocValue = getCooc(stemmedWordToPositionsMap[stemmedWord0], stemmedWordToPositionsMap[stemmedWord1])
-                    double coocTotalValue = tuple2CoocMap[t2] ?: 0
-                    coocTotalValue = coocTotalValue + coocDocValue
-                    tuple2CoocMap << [(t2): coocTotalValue]
-                }
+                // assert stemmedWord0 < stemmedWord1
+                // if (stemmedWord0 != stemmedWord1) {
+                Tuple2 t2 = new Tuple2(stemmedWord0, stemmedWord1)
+                double coocDocValue = getCooc(stemmedWordToPositionsMap[stemmedWord0], stemmedWordToPositionsMap[stemmedWord1])
+                double coocTotalValue = tuple2CoocMap[t2] ?: 0
+                coocTotalValue = coocTotalValue + coocDocValue
+                tuple2CoocMap << [(t2): coocTotalValue]
+                // }
             }
         }
 
@@ -166,14 +173,14 @@ class GenerateWordLinksLucene {
 
         //  wordPairList = wordPairList.take(maxWordPairs)
         //def json = getJSONgraph(wordPairList, stemInfo)
-    ///    def json;
+        ///    def json;
 
-     //   if (networkType == "forceNet") json = getJSONgraph(wordPairList, stemInfo)
-    //    else
-    //        json = getJSONtree(wordPairList, stemInfo)
+        //   if (networkType == "forceNet") json = getJSONgraph(wordPairList, stemInfo)
+        //    else
+        //        json = getJSONtree(wordPairList, stemInfo)
 
         //println "json is $json"
-		println "tubl2CoocMap $tuple2CoocMap"
+        println "tubl2CoocMap $tuple2CoocMap"
         return "json"
 
     }
@@ -267,7 +274,7 @@ class GenerateWordLinksLucene {
                     //powers[it]
                     //Math.pow(0.5, it)
                     Math.pow(powerValue, it)
-                }
+                } ?: 0.0;
 
         return coocVal ?: 0.0;
     }
@@ -295,7 +302,7 @@ class GenerateWordLinksLucene {
         def gwl = new GenerateWordLinksLucene()
         //y.getWordPairs("""houses tonight  houses tonight content contents contents housed house houses housed zoo zoo2""")
 
-		gwl.getJSONnetwork()
+        gwl.getJSONnetwork()
 //        def ali = gwl.getJSONnetwork(mAli)
 //        def dd = gwl.getJSONnetwork("zzza ttttk ffffe")
 //        println "dd $dd"
