@@ -24,8 +24,8 @@ import java.nio.file.Paths
 
 class GenerateWordLinksLucene {
 
-    private int highFreqWords = 10
-    private int maxWordPairs = 40
+    private int highFreqWords = 14
+    private int maxWordPairs = 60
     private float powerValue = 0.5
     private String networkType = "tree"
 
@@ -48,6 +48,9 @@ class GenerateWordLinksLucene {
         maxWordPairs = userParameters['maxLinks'][0] as Integer
         highFreqWords = userParameters['maxWords'][0] as Integer
 
+        maxWordPairs = 20
+        highFreqWords = 14
+
         println "in GWL construction highFreqWords = $highFreqWords netTYpe $networkType"
     }
 
@@ -60,8 +63,8 @@ class GenerateWordLinksLucene {
 
         int hitsPerPage = 2000;
 
-        Path indexPath = Paths.get('Indexes/QueensLandFloods')
-              //  Paths.get('Indexes/R10CrudeL')
+        Path indexPath = //Paths.get('Indexes/QueensLandFloods')
+                Paths.get('Indexes/R10CrudeL')
 
         Directory directory = FSDirectory.open(indexPath)
         IndexReader reader = DirectoryReader.open(directory);
@@ -192,7 +195,7 @@ class GenerateWordLinksLucene {
         println "json $json"
 
 
-        return "json"
+        return json
     }
 
     private def internalNodes = [] as Set
@@ -281,8 +284,7 @@ class GenerateWordLinksLucene {
                 { a, b -> Math.abs(a - b) - 1 }
                         .findAll { it <= MAX_DISTANCE }
                         .sum {
-                    //lookup table should be faster
-                    //powers[it]
+                    //lookup table should be faster    //powers[it]
                     //Math.pow(0.5, it)
                     Math.pow(powerValue, it)
                 } ?: 0.0;

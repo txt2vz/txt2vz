@@ -102,6 +102,7 @@ html {
 						placeholder="Type or paste text here"></textarea>
 					<br> <input type="button" value="viz text"
 						class="btn btn-primary" onclick="textToJSON(txta1.value)">
+
 				</div>
 				<div class="col-md-3">
 					<div>
@@ -118,6 +119,10 @@ html {
 
 					<button onclick="urlToJSON(url.value)" class="btn btn-primary">viz
 						URL</button>
+					<br> <br>
+
+					<button onclick="luceneToJSON(url.value)" class="btn btn-primary">viz
+						Lucene</button>
 					<br> <br>
 
 					<div id="modal">
@@ -384,26 +389,49 @@ html {
 
 		function urlToJSON(urlText) {
 
-			openModal();
+            openModal();
 
-			jQuery.ajax({
-				type : "POST",
-				url : "urlservice",
-				cache : false,
-				data : {
-					urlText : urlText,
-					networkType : $("#networkType").val(),
-					cooc : cooc,
-					maxLinks : maxLinks,
-					maxWords : maxWords
-				},
-				success : function(jsonData, textStatus, jqXHR) {
+            jQuery.ajax({
+                type : "POST",
+                url : "urlservice",
+                cache : false,
+                data : {
+                    urlText : urlText,
+                    networkType : $("#networkType").val(),
+                    cooc : cooc,
+                    maxLinks : maxLinks,
+                    maxWords : maxWords
+                },
+                success : function(jsonData, textStatus, jqXHR) {
 
-					draw(jsonData);
-					closeModal();
-				},
-			});
-		};
+                    draw(jsonData);
+                    closeModal();
+                },
+            });
+        };
+
+        function luceneToJSON() {
+
+            openModal();
+
+            jQuery.ajax({
+                type : "POST",
+                url : "luceneservice",
+                cache : false,
+                data : {
+
+                    networkType : $("#networkType").val(),
+                    cooc : cooc,
+                    maxLinks : maxLinks,
+                    maxWords : maxWords
+                },
+                success : function(jsonData, textStatus, jqXHR) {
+
+                    draw(jsonData);
+                    closeModal();
+                },
+            });
+        };
 
 		function twitter(q) {
 			//q = q.replace(/%/g, '');	

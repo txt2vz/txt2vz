@@ -49,5 +49,14 @@
 		<servlet-name>UrlServlet</servlet-name>
 		<url-pattern>/urlservice</url-pattern>
 	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>LuceneServlet</servlet-name>
+		<servlet-class>lucene.LuceneToJSON</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>LuceneServlet</servlet-name>
+		<url-pattern>/luceneservice</url-pattern>
+	</servlet-mapping>
  
 </web-app>
