@@ -58,12 +58,12 @@ class GenerateWordLinksLucene {
         Query q = //new MatchAllDocsQuery()
                 new QueryParser("contents", analyzer).parse(querystr);
 
-        int hitsPerPage = 200;
+        int hitsPerPage = 2000;
 
-        Path indexPath = Paths.get('Indexes/R10CrudeL')
-        //('Indexes/QueensLandFloods')
+        Path indexPath = Paths.get('Indexes/QueensLandFloods')
+              //  Paths.get('Indexes/R10CrudeL')
+
         Directory directory = FSDirectory.open(indexPath)
-
         IndexReader reader = DirectoryReader.open(directory);
         IndexSearcher searcher = new IndexSearcher(reader);
         TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage);
@@ -85,17 +85,15 @@ class GenerateWordLinksLucene {
         def stemmer = new PorterStemmer()
         def stemInfo = [:] //stemmed word is key and value is a map of a particular word form and its frequency
         def tuple2CoocMap = [:]  //word pair tuple is key - value is cooc value summed across all docs
+        def wordPairList = []
 
         hits.each {
             int docNumber = it.doc;
             Document d = searcher.doc(docNumber);
 
-
-        //    println "d ****************************************" + d.get("contents")
-
+            //stemmed word is key and value is a list of positions where any of the words occur
             def stemmedWordToPositionsMap = [:]
 
-            //stemmed word is key and value is a list of positions where any of the words occur
             if (liveDocs == null || liveDocs.get(docNumber)) {
                 def doc = reader.document(docNumber);
 
@@ -107,12 +105,11 @@ class GenerateWordLinksLucene {
 
                 BytesRef br = terms.next();
                 while (br != null) {
-              //      println ""
 
                     String word = br.utf8ToString()
                     if (!StopSet.stopSet.contains(word)) {
                         String stemmedWord = stemmer.stem(word)
-                     //   println "word:  $word stemmedWord: $stemmedWord"
+                        //   println "word:  $word stemmedWord: $stemmedWord"
                         p = terms.postings(p, PostingsEnum.POSITIONS);
 
                         //count and store word forms for a stemmed word
@@ -125,14 +122,14 @@ class GenerateWordLinksLucene {
                         def positions = []
                         while (p.nextDoc() != PostingsEnum.NO_MORE_DOCS) {
                             int freq = p.freq();
-                         //   println "freq: $freq"
+                            //   println "freq: $freq"
                             freq.times {
                                 int position = p.nextPosition();
-                            //    println "Occurence $it :  position $position"
+                                //    println "Occurence $it :  position $position"
                                 positions << position
                                 // wordToPositionsMap[stemmedWord] = wordToPositionsMap.get(stemmedWord, []) << pos
                             }
-                         //   println "stemmedWord: $stemmedWord positions: $positions"
+                            //   println "stemmedWord: $stemmedWord positions: $positions"
                             stemmedWordToPositionsMap << [(stemmedWord): positions]
                         }
                     }
@@ -145,13 +142,13 @@ class GenerateWordLinksLucene {
             //wordToFormsMap = wordToFormsMap.drop(wordToFormsMap.size() - highFreqWords)
             stemmedWordToPositionsMap = stemmedWordToPositionsMap.take(highFreqWords)
 
-       //     println "after take wordposmap $stemmedWordToPositionsMap  wortopositmap.size " + stemmedWordToPositionsMap.size()
+              println "after take wordposmap $stemmedWordToPositionsMap  wortopositmap.size " + stemmedWordToPositionsMap.size()
             // Set tups
 
-      //      println "subseqs " + stemmedWordToPositionsMap.keySet().toList().subsequences().findAll { it.size == 2 }
+            //      println "subseqs " + stemmedWordToPositionsMap.keySet().toList().subsequences().findAll { it.size == 2 }
             //  [stemmedWordToPositionsMap.keySet(), stemmedWordToPositionsMap.keySet()].combinations {
-            stemmedWordToPositionsMap.keySet().toList().subsequences().findAll { it.size == 2 }.each {
-                it.sort()
+            stemmedWordToPositionsMap.keySet().toList().subsequences().findAll { it.size() == 2 }.each {
+              //  it.sort()
                 String stemmedWord0 = it[0]
                 String stemmedWord1 = it[1]
                 // assert stemmedWord0 < stemmedWord1
@@ -161,6 +158,8 @@ class GenerateWordLinksLucene {
                 double coocTotalValue = tuple2CoocMap[t2] ?: 0
                 coocTotalValue = coocTotalValue + coocDocValue
                 tuple2CoocMap << [(t2): coocTotalValue]
+
+              //  wordPairList << new WordPair(word0: stemmedWord0, word1: stemmedWord1, cooc: coocTotalValue, sortVal: 0.5)
                 // }
             }
         }
@@ -181,50 +180,41 @@ class GenerateWordLinksLucene {
 
         //println "json is $json"
         println "tubl2CoocMap $tuple2CoocMap"
+
+
+        def wordPairListK = tuple2CoocMap.keySet()
+        println "wordpairlistk $wordPairListK"
+      //  println "wordpairlist $wordPairList"
+
+        def json = getJSONtree(tuple2CoocMap, stemInfo)
+       // def json = getJSONgraph(wordPairList, stemInfo)
+        //def json =  getJSONtree(wordPairListK, stemInfo)
+        println "json $json"
+
+
         return "json"
-
-    }
-
-    private String getJSONgraph(List wl, Map stemMap) {
-
-        def data = [
-
-                links: wl.collect {
-
-                    def src = stemMap[it.word0].max { it.value }.key
-                    def tgt = stemMap[it.word1].max { it.value }.key
-
-                    [source: src,
-                     target: tgt,
-                     cooc  : it.cooc,
-                    ]
-                }
-        ]
-
-        def json = new JsonBuilder(data)
-        return json
     }
 
     private def internalNodes = [] as Set
     private def allNodes = [] as Set
 
-    private String getJSONtree(List wl, Map stemMap) {
+    private String getJSONtree(Map tupleMap, Map stemMap) {
         def tree = [:]
 
-        wl.collect {
-            def word0 = stemMap[it.word0].max { it.value }.key
-            def word1 = stemMap[it.word1].max { it.value }.key
+        tupleMap.collect {tuple2 ->
+            def word0 = stemMap[tuple2.getKey().get(0)].max { it.value }.key
+            def word1 = stemMap[tuple2.getKey().get(1)].max { it.value }.key
 
             if (tree.isEmpty()) {
                 tree <<
-                        [name    : word0, cooc: it.cooc,
+                        [name    : word0, cooc: tuple2.value,
                          children: [[name: word1]]]
                 internalNodes.add(word0)
                 allNodes.add(word0)
                 allNodes.add(word1)
             } else {
-                addPairToMap(tree, word0, word1, it.cooc)
-                addPairToMap(tree, word1, word0, it.cooc)
+                addPairToMap(tree, word0, word1, tuple2.value)
+                addPairToMap(tree, word1, word0, tuple2.value)
             }
         }
         def json = new JsonBuilder(tree)
@@ -263,10 +253,31 @@ class GenerateWordLinksLucene {
         }
     }
 
+
+    private String getJSONgraph(List wl, Map stemMap) {
+
+        def data = [
+
+                links: wl.collect {
+
+                    def src = stemMap[it.word0].max { it.value }.key
+                    def tgt = stemMap[it.word1].max { it.value }.key
+
+                    [source: src,
+                     target: tgt,
+                     cooc  : it.cooc,
+                    ]
+                }
+        ]
+
+        def json = new JsonBuilder(data)
+        return json
+    }
+
     private double getCooc(List w0Positions, List w1Positions) {
-        final int MAX_DISTANCE = 20;
+        final int MAX_DISTANCE = 10;
         double coocVal =
-                [w0Positions, w1Positions].combinations().collect
+                [w0Positions, w1Positions].combinations().findAll{w1, w2 -> w1 != w2}.collect
                 { a, b -> Math.abs(a - b) - 1 }
                         .findAll { it <= MAX_DISTANCE }
                         .sum {
