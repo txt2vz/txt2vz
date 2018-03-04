@@ -24,8 +24,8 @@ import java.nio.file.Paths
 
 class GenerateWordLinksLucene {
 
-    private int highFreqWords = 14
-    private int maxWordPairs = 60
+    private int highFreqWords = 20
+    private int maxWordPairs = 40
     private float powerValue = 0.5
     private String networkType = "tree"
 
@@ -57,11 +57,12 @@ class GenerateWordLinksLucene {
     String getJSONnetwork() {
 
         StandardAnalyzer analyzer = new StandardAnalyzer();
-        String querystr = "*:*";
+        String querystr = "oil"
+            //  "*:*";
         Query q = //new MatchAllDocsQuery()
                 new QueryParser("contents", analyzer).parse(querystr);
 
-        int hitsPerPage = 2000;
+        int hitsPerPage = 50;
 
         Path indexPath = //Paths.get('Indexes/QueensLandFloods')
                 Paths.get('Indexes/R10CrudeL')
@@ -98,7 +99,7 @@ class GenerateWordLinksLucene {
             def stemmedWordToPositionsMap = [:]
 
             if (liveDocs == null || liveDocs.get(docNumber)) {
-                def doc = reader.document(docNumber);
+         //      def doc = reader.document(docNumber);
 
                 //https://lucene.apache.org/core/6_2_0/core/index.html?org/apache/lucene/index/CheckIndex.Status.TermVectorStatus.html
                 Terms tv = reader.getTermVector(docNumber, "contents");
@@ -145,7 +146,7 @@ class GenerateWordLinksLucene {
             //wordToFormsMap = wordToFormsMap.drop(wordToFormsMap.size() - highFreqWords)
             stemmedWordToPositionsMap = stemmedWordToPositionsMap.take(highFreqWords)
 
-              println "after take wordposmap $stemmedWordToPositionsMap  wortopositmap.size " + stemmedWordToPositionsMap.size()
+              println "after take wordposmap docNumber $docNumber: stemmedWordToPositionMap: $stemmedWordToPositionsMap  wortopositmap.size " + stemmedWordToPositionsMap.size()
             // Set tups
 
             //      println "subseqs " + stemmedWordToPositionsMap.keySet().toList().subsequences().findAll { it.size == 2 }
@@ -156,11 +157,11 @@ class GenerateWordLinksLucene {
                 String stemmedWord1 = it[1]
                 // assert stemmedWord0 < stemmedWord1
                 // if (stemmedWord0 != stemmedWord1) {
-                Tuple2 t2 = new Tuple2(stemmedWord0, stemmedWord1)
+                Tuple2 wordLink = new Tuple2(stemmedWord0, stemmedWord1)
                 double coocDocValue = getCooc(stemmedWordToPositionsMap[stemmedWord0], stemmedWordToPositionsMap[stemmedWord1])
-                double coocTotalValue = tuple2CoocMap[t2] ?: 0
+                double coocTotalValue = tuple2CoocMap[wordLink] ?: 0
                 coocTotalValue = coocTotalValue + coocDocValue
-                tuple2CoocMap << [(t2): coocTotalValue]
+                tuple2CoocMap << [(wordLink): coocTotalValue]
 
               //  wordPairList << new WordPair(word0: stemmedWord0, word1: stemmedWord1, cooc: coocTotalValue, sortVal: 0.5)
                 // }
@@ -190,6 +191,7 @@ class GenerateWordLinksLucene {
       //  println "wordpairlist $wordPairList"
 
         def json = getJSONtree(tuple2CoocMap, stemInfo)
+     //   def json = getJSONgraph(tuple2CoocMap, stemInfo)
        // def json = getJSONgraph(wordPairList, stemInfo)
         //def json =  getJSONtree(wordPairListK, stemInfo)
         println "json $json"
@@ -201,23 +203,23 @@ class GenerateWordLinksLucene {
     private def internalNodes = [] as Set
     private def allNodes = [] as Set
 
-    private String getJSONtree(Map tupleMap, Map stemMap) {
+    private String getJSONtree(Map wordLinkTuple2Map, Map stemMap) {
         def tree = [:]
 
-        tupleMap.collect {tuple2 ->
-            def word0 = stemMap[tuple2.getKey().get(0)].max { it.value }.key
-            def word1 = stemMap[tuple2.getKey().get(1)].max { it.value }.key
+        wordLinkTuple2Map.collect {wordLink ->
+            def word0 = stemMap[wordLink.getKey().first].max { it.value }.key
+            def word1 = stemMap[wordLink.getKey().second].max { it.value }.key
 
             if (tree.isEmpty()) {
                 tree <<
-                        [name    : word0, cooc: tuple2.value,
+                        [name    : word0, cooc: wordLink.value,
                          children: [[name: word1]]]
                 internalNodes.add(word0)
                 allNodes.add(word0)
                 allNodes.add(word1)
             } else {
-                addPairToMap(tree, word0, word1, tuple2.value)
-                addPairToMap(tree, word1, word0, tuple2.value)
+                addPairToMap(tree, word0, word1, wordLink.value)
+                addPairToMap(tree, word1, word0, wordLink.value)
             }
         }
         def json = new JsonBuilder(tree)
@@ -257,18 +259,18 @@ class GenerateWordLinksLucene {
     }
 
 
-    private String getJSONgraph(List wl, Map stemMap) {
+    private String getJSONgraph(Map wm, Map stemMap) {
 
         def data = [
 
-                links: wl.collect {
+                links: wm.collect {
 
-                    def src = stemMap[it.word0].max { it.value }.key
-                    def tgt = stemMap[it.word1].max { it.value }.key
+                    def src = stemMap[it.key.first].max { it.value }.key
+                    def tgt = stemMap[it.key.second].max { it.value }.key
 
                     [source: src,
                      target: tgt,
-                     cooc  : it.cooc,
+                     cooc  : it.value,
                     ]
                 }
         ]

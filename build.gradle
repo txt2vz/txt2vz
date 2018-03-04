@@ -85,6 +85,7 @@ task wrapper(type: Wrapper) {
 gretty {
     contextPath="/"
     //httpPort = 8081
+    managedClassReload=true
 }
 
 group = 'com.example.appengine'   // Generated output GroupId

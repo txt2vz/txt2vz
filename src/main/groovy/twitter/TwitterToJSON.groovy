@@ -51,7 +51,7 @@ class TwitterToJSON extends GroovyServlet{
 		def m = request.getParameterMap()
 		GenerateWordLinks gw = new GenerateWordLinks(m)
 		def json = gw.getJSONnetwork(combinedTweetText)
-		//println "in twitterTOJSON Json is $json"
+		println "in twitterTOJSON Json is $json"
 
 		response.getWriter().println(json)
 	}	
