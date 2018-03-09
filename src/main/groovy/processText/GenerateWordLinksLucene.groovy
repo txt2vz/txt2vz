@@ -24,8 +24,8 @@ import java.nio.file.Paths
 
 class GenerateWordLinksLucene {
 
-    private int highFreqWords = 20
-    private int maxWordPairs = 40
+    private int highFreqWords = 40
+    private int maxWordPairs = 80
     private float powerValue = 0.5
     private String networkType = "tree"
 
@@ -38,7 +38,6 @@ class GenerateWordLinksLucene {
         println "**GenerateWordLinks constructor - cocoIn: $powerValue maxWordPairs: $maxWordPairs highFreqWords: $highFreqWords "
     }
 
-
     GenerateWordLinksLucene() {
     }
 
@@ -47,25 +46,24 @@ class GenerateWordLinksLucene {
         powerValue = userParameters['cooc'][0] as Float
         maxWordPairs = userParameters['maxLinks'][0] as Integer
         highFreqWords = userParameters['maxWords'][0] as Integer
-
-        maxWordPairs = 20
-        highFreqWords = 14
-
         println "in GWL construction highFreqWords = $highFreqWords netTYpe $networkType"
     }
 
     String getJSONnetwork() {
-
+        //  maxWordPairs = 100
+        //  highFreqWords = 19
+        //   powerValue = 0.5
         StandardAnalyzer analyzer = new StandardAnalyzer();
-        String querystr = "oil"
-            //  "*:*";
-        Query q = //new MatchAllDocsQuery()
+        String querystr = //"bp"
+         "*:*";
+        Query q =  //new MatchAllDocsQuery()
                 new QueryParser("contents", analyzer).parse(querystr);
 
-        int hitsPerPage = 50;
+        int hitsPerPage = 100;
 
-        Path indexPath = //Paths.get('Indexes/QueensLandFloods')
-                Paths.get('Indexes/R10CrudeL')
+        Path indexPath = Paths.get('Indexes/katie')
+                // Paths.get('Indexes/QueensLandFloods')
+               // Paths.get('Indexes/R10CrudeL')
 
         Directory directory = FSDirectory.open(indexPath)
         IndexReader reader = DirectoryReader.open(directory);
@@ -78,28 +76,19 @@ class GenerateWordLinksLucene {
 
         Bits liveDocs = MultiFields.getLiveDocs(reader);
 
-        //s=new File ('athenaBookChapter.txt').text
-        //s = s ?: "empty text"
-
-        //def words = s.replaceAll(/\W/, "  ").toLowerCase().tokenize().minus(StopSet.stopSet)
-        // smallStopSet2);//  stopSet)
-
-        //	println " words size: " + words.size() + " unique words " + words.unique(false).size()
-
         def stemmer = new PorterStemmer()
         def stemInfo = [:] //stemmed word is key and value is a map of a particular word form and its frequency
         def tuple2CoocMap = [:]  //word pair tuple is key - value is cooc value summed across all docs
-        def wordPairList = []
 
         hits.each {
             int docNumber = it.doc;
             Document d = searcher.doc(docNumber);
 
-            //stemmed word is key and value is a list of positions where any of the words occur
-            def stemmedWordToPositionsMap = [:]
-
             if (liveDocs == null || liveDocs.get(docNumber)) {
-         //      def doc = reader.document(docNumber);
+                //      def doc = reader.document(docNumber);
+
+                //stemmed word is key and value is a list of positions where any of the words occur -for each document
+                def stemmedWordPositionsMap = [:]
 
                 //https://lucene.apache.org/core/6_2_0/core/index.html?org/apache/lucene/index/CheckIndex.Status.TermVectorStatus.html
                 Terms tv = reader.getTermVector(docNumber, "contents");
@@ -111,91 +100,114 @@ class GenerateWordLinksLucene {
                 while (br != null) {
 
                     String word = br.utf8ToString()
-                    if (!StopSet.stopSet.contains(word)) {
+
+                    if (!StopSet.stopSet.contains(word) && !word.isNumber()) {
                         String stemmedWord = stemmer.stem(word)
                         //   println "word:  $word stemmedWord: $stemmedWord"
                         p = terms.postings(p, PostingsEnum.POSITIONS);
 
-                        //count and store word forms for a stemmed word
-                        def forms = [:]
-                        forms = stemInfo.get((stemmedWord), [(it): 0])
-                        def n = forms.get((word)) ?: 0
-                        forms.put((word), n + 1)
-                        stemInfo[(stemmedWord)] = forms
-
                         def positions = []
+
                         while (p.nextDoc() != PostingsEnum.NO_MORE_DOCS) {
                             int freq = p.freq();
-                            //   println "freq: $freq"
+
                             freq.times {
                                 int position = p.nextPosition();
-                                //    println "Occurence $it :  position $position"
                                 positions << position
-                                // wordToPositionsMap[stemmedWord] = wordToPositionsMap.get(stemmedWord, []) << pos
                             }
-                            //   println "stemmedWord: $stemmedWord positions: $positions"
-                            stemmedWordToPositionsMap << [(stemmedWord): positions]
+
+                            //count and store word forms for a stemmed word
+                            //def wordForms = [:]
+                            def wordForms = stemInfo.get((stemmedWord), [(word): 0])
+                            wordForms.put((word), positions.size())
+                            stemInfo[(stemmedWord)] = wordForms
+
+                            // def originalPositions = []
+                            def originalPositions = stemmedWordPositionsMap.get((stemmedWord), [])
+                            positions.addAll(originalPositions)
+                            stemmedWordPositionsMap << [(stemmedWord): positions]
+                            // positions = []
+
+                            //   if (word == "art")
+                            //       println "word $word stemmendWord $stemmedWord docnumer $docNumber postinos $positions  stemmedwoksdfjpsoi $stemmedWordPositionsMap"
                         }
+
+
+                        def artpos0 = stemmedWordPositionsMap.get("art")
+                        // println "word $word stemmedWord $stemmedWord  00000000000000 Art Post $artpos0"
                     }
                     br = terms.next();
-
                 }
-            }
-            //sort by word frequency (number of positions)
-            stemmedWordToPositionsMap = stemmedWordToPositionsMap.sort { -it.value.size() }
-            //wordToFormsMap = wordToFormsMap.drop(wordToFormsMap.size() - highFreqWords)
-            stemmedWordToPositionsMap = stemmedWordToPositionsMap.take(highFreqWords)
 
-              println "after take wordposmap docNumber $docNumber: stemmedWordToPositionMap: $stemmedWordToPositionsMap  wortopositmap.size " + stemmedWordToPositionsMap.size()
-            // Set tups
+                println "steminfor $stemInfo"
+                //sort by word frequency (number of positions)
+                stemmedWordPositionsMap = stemmedWordPositionsMap.sort { -it.value.size() }
 
-            //      println "subseqs " + stemmedWordToPositionsMap.keySet().toList().subsequences().findAll { it.size == 2 }
-            //  [stemmedWordToPositionsMap.keySet(), stemmedWordToPositionsMap.keySet()].combinations {
-            stemmedWordToPositionsMap.keySet().toList().subsequences().findAll { it.size() == 2 }.each {
-              //  it.sort()
-                String stemmedWord0 = it[0]
-                String stemmedWord1 = it[1]
-                // assert stemmedWord0 < stemmedWord1
-                // if (stemmedWord0 != stemmedWord1) {
-                Tuple2 wordLink = new Tuple2(stemmedWord0, stemmedWord1)
-                double coocDocValue = getCooc(stemmedWordToPositionsMap[stemmedWord0], stemmedWordToPositionsMap[stemmedWord1])
-                double coocTotalValue = tuple2CoocMap[wordLink] ?: 0
-                coocTotalValue = coocTotalValue + coocDocValue
-                tuple2CoocMap << [(wordLink): coocTotalValue]
+                println "stememd wrodpositmps size " + stemmedWordPositionsMap.size()
+                println "stemedWordPostionsMap.keySet()  " + stemmedWordPositionsMap.keySet()
+                println "art " + stemmedWordPositionsMap.get("art")
 
-              //  wordPairList << new WordPair(word0: stemmedWord0, word1: stemmedWord1, cooc: coocTotalValue, sortVal: 0.5)
-                // }
+                //wordToFormsMap = wordToFormsMap.drop(wordToFormsMap.size() - highFreqWords)
+                stemmedWordPositionsMap = stemmedWordPositionsMap.take(highFreqWords)
+
+                println "after take wordposmap docNumber $docNumber: stemmedWordToPositionMap: $stemmedWordPositionsMap  wortopositmap.size " + stemmedWordPositionsMap.size()
+
+                println "keeeysss tett " + stemmedWordPositionsMap.keySet()
+                //check every possible stemmed word pair
+                def stemmedWords = stemmedWordPositionsMap.keySet()
+                for (int i = 0; i < stemmedWords.size(); i++) {
+                    for (int j = i + 1; j < stemmedWords.size(); j++) {
+                        String stemmedWord0 = stemmedWords[i]
+                        String stemmedWord1 = stemmedWords[j]
+
+                        Tuple2 wordLink = new Tuple2(stemmedWord0, stemmedWord1)
+                        def iy = stemmedWordPositionsMap[(stemmedWord0)] as int[]
+                        def jy = stemmedWordPositionsMap[(stemmedWord1)] as int[]
+                        double coocDocValue = getCooc2(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[])
+                        double coocTotalValue = tuple2CoocMap[(wordLink)] ?: 0
+                        coocTotalValue = coocTotalValue + coocDocValue
+
+                        //     if (stemmedWord0=="art"  || stemmedWord1=="art") {
+                        //        println "XZXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXstemmedword0 $stemmedWord0  coocDocValue $coocDocValue coocTotalValue $coocTotalValue "
+
+                        //    println "iy $stemmedWord0 $iy"
+                        //    println "jy $stemmedWord1 $jy"
+                        //   }
+
+                        tuple2CoocMap << [(wordLink): coocTotalValue]
+                    }
+                }
             }
         }
 
-        tuple2CoocMap = tuple2CoocMap.sort { -it.value }.take(maxWordPairs)
+        println "zz107777777 take 407 steminfo: " + stemInfo.take(1407)
+        println "tupl2 before sort $tuple2CoocMap"
+        tuple2CoocMap = tuple2CoocMap.sort { -it.value }
+        println "tupl2 AFTER sort $tuple2CoocMap"
+        tuple2CoocMap = tuple2CoocMap.take(maxWordPairs)
 
-        //wordPairList = wordPairList.sort { -it.cooc }
-        //    wordPairList = wordPairList.sort { -it.sortVal }
         println "tuple2CoocMap take 5: " + tuple2CoocMap.take(5)
 
-        //  wordPairList = wordPairList.take(maxWordPairs)
-        //def json = getJSONgraph(wordPairList, stemInfo)
-        ///    def json;
-
-        //   if (networkType == "forceNet") json = getJSONgraph(wordPairList, stemInfo)
-        //    else
-        //        json = getJSONtree(wordPairList, stemInfo)
-
-        //println "json is $json"
         println "tubl2CoocMap $tuple2CoocMap"
 
 
         def wordPairListK = tuple2CoocMap.keySet()
         println "wordpairlistk $wordPairListK"
-      //  println "wordpairlist $wordPairList"
+        //  println "wordpairlist $wordPairList"
 
-        def json = getJSONtree(tuple2CoocMap, stemInfo)
-     //   def json = getJSONgraph(tuple2CoocMap, stemInfo)
-       // def json = getJSONgraph(wordPairList, stemInfo)
+        //  def json = getJSONtree(tuple2CoocMap.keySet() as List, stemInfo)
+        //   def json = getJSONgraph(tuple2CoocMap, stemInfo)
+        // def json = getJSONgraph(wordPairList, stemInfo)
         //def json =  getJSONtree(wordPairListK, stemInfo)
-        println "json $json"
+        //      println "json $json"
+        def json = ""
 
+        if (networkType == "forceNet")
+            json = getJSONgraph(tuple2CoocMap, stemInfo)
+        else
+            json = getJSONtree(tuple2CoocMap, stemInfo)
+
+        println "json $json"
 
         return json
     }
@@ -203,12 +215,12 @@ class GenerateWordLinksLucene {
     private def internalNodes = [] as Set
     private def allNodes = [] as Set
 
-    private String getJSONtree(Map wordLinkTuple2Map, Map stemMap) {
+    private String getJSONtree(Map wl, Map stemMap) {
         def tree = [:]
 
-        wordLinkTuple2Map.collect {wordLink ->
-            def word0 = stemMap[wordLink.getKey().first].max { it.value }.key
-            def word1 = stemMap[wordLink.getKey().second].max { it.value }.key
+        wl.collect { wordLink ->
+            def word0 = stemMap[wordLink.key.first].max { it.value }.key
+            def word1 = stemMap[wordLink.key.second].max { it.value }.key
 
             if (tree.isEmpty()) {
                 tree <<
@@ -279,19 +291,33 @@ class GenerateWordLinksLucene {
         return json
     }
 
-    private double getCooc(List w0Positions, List w1Positions) {
+    private double getCooc(int[] w0Positions, int[] w1Positions) {
         final int MAX_DISTANCE = 10;
-        double coocVal =
-                [w0Positions, w1Positions].combinations().findAll{w1, w2 -> w1 != w2}.collect
+        def coocVal =
+                [w0Positions, w1Positions].combinations().collect
                 { a, b -> Math.abs(a - b) - 1 }
                         .findAll { it <= MAX_DISTANCE }
                         .sum {
                     //lookup table should be faster    //powers[it]
                     //Math.pow(0.5, it)
                     Math.pow(powerValue, it)
-                } ?: 0.0;
+                }
 
         return coocVal ?: 0.0;
+    }
+
+    private double getCooc2(int[] w0Positions, int[] w1Positions) {
+        final int MAX_DISTANCE = 10;
+        double coocValue = 0
+        w0Positions.each { w0pos ->
+            w1Positions.each { w1pos ->
+                int distance = Math.abs(w0pos - w1pos) - 1
+                if (distance < MAX_DISTANCE) {
+                    coocValue = coocValue + Math.pow(powerValue, distance)
+                }
+            }
+        }
+        return coocValue
     }
 
     //powers for 0.9 - power function could be expensive

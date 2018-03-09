@@ -22,8 +22,12 @@ import java.nio.file.Paths
 class IndexR10crude {
 
     // Create Lucene index in this directory
-    Path indexPath = Paths.get('Indexes/R10CrudeL')
-    Path docsPath = Paths.get('Datasets/R10Crude')
+ //   Path indexPath = Paths.get('Indexes/R10CrudeL')
+   // Path docsPath = Paths.get('Datasets/R10Crude')
+
+    Path indexPath = Paths.get('Indexes/katie')
+    Path docsPath = Paths.get('Datasets/katie')
+    
     Directory directory = FSDirectory.open(indexPath)
     Analyzer analyzer = //new EnglishAnalyzer();  //with stemming
             new StandardAnalyzer();

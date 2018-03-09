@@ -91,7 +91,7 @@ class GenerateWordLinks {
 
 		//wordPairList = wordPairList.sort { -it.cooc }
 		wordPairList = wordPairList.sort { -it.sortVal }
-		println "wordPairList take 5: " + wordPairList.take(30)	
+		println "wordPairList take 30: " + wordPairList.take(30)
 
 		wordPairList = wordPairList.take(maxWordPairs)
 		//def json = getJSONgraph(wordPairList, stemInfo)
@@ -132,7 +132,7 @@ class GenerateWordLinks {
 		def tree= [:] 
 
 		wl.collect {
-			def word0 =    stemMap[it.word0].max { it.value }.key
+			def word0 = stemMap[it.word0].max { it.value }.key
 			def word1 = stemMap[it.word1].max { it.value }.key
 
 			if (tree.isEmpty()){
