@@ -1,6 +1,7 @@
 package twitter
 
 import groovy.servlet.GroovyServlet
+import processText.WordPairsExtractor
 
 import javax.servlet.ServletConfig
 import javax.servlet.http.HttpServletRequest
@@ -9,7 +10,6 @@ import javax.servlet.http.HttpServletResponse
 import twitter4j.*
 import twitter4j.conf.*
 
-import processText.GenerateWordLinks
 
 class TwitterToJSON extends GroovyServlet{
 
@@ -49,8 +49,9 @@ class TwitterToJSON extends GroovyServlet{
 		println "combined tweetText first 40" + combinedTweetText.take(40)
 		
 		def m = request.getParameterMap()
-		GenerateWordLinks gw = new GenerateWordLinks(m)
-		def json = gw.getJSONnetwork(combinedTweetText)
+		//GenerateWordLinks gw = new GenerateWordLinks(m)
+		//def json = gw.getJSONnetwork(combinedTweetText)
+		def json =  new WordPairsExtractor(m).getJSONnetwork(combinedTweetText)
 		println "in twitterTOJSON Json is $json"
 
 		response.getWriter().println(json)

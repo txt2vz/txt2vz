@@ -1,8 +1,7 @@
 package lucene
 
 import groovy.servlet.GroovyServlet
-import org.apache.tika.Tika
-import processText.GenerateWordLinksLucene
+import processText.WordPairsExtractor
 
 import javax.servlet.ServletConfig
 import javax.servlet.http.HttpServletRequest
@@ -18,9 +17,13 @@ class LuceneToJSON extends GroovyServlet {
 
          def m = request.getParameterMap();
 
-        GenerateWordLinksLucene gw = new GenerateWordLinksLucene(m);
-        def json = gw.getJSONnetwork()
+       //println "yo"
 
+        WordPairsExtractor wpe = new WordPairsExtractor(m);
+        def json = wpe.getJSONnetwork('Indexes/R10CrudeL', 'bp')
+
+
+      // def json = new WordPairsExtractor(m).getJSONnetwork('Indexes/R10CrudeL', 'bp')
         response.getWriter().println(json)
     }
 }

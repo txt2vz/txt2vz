@@ -5,13 +5,11 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.document.Document
 import org.apache.lucene.index.DirectoryReader
 import org.apache.lucene.index.IndexReader
-import org.apache.lucene.index.MultiFields
 import org.apache.lucene.index.PostingsEnum
 import org.apache.lucene.index.Terms
 import org.apache.lucene.index.TermsEnum
 import org.apache.lucene.queryparser.classic.QueryParser
 import org.apache.lucene.search.IndexSearcher
-import org.apache.lucene.search.MatchAllDocsQuery
 import org.apache.lucene.search.Query
 import org.apache.lucene.search.ScoreDoc
 import org.apache.lucene.search.TopScoreDocCollector
@@ -22,7 +20,7 @@ import org.apache.lucene.util.BytesRef
 import java.nio.file.Path
 import java.nio.file.Paths
 
-class GenerateWordLinksLucene {
+class WordPairsExtractor {
 
     private int highFreqWords = 40
     private int maxWordPairs = 80
@@ -30,7 +28,7 @@ class GenerateWordLinksLucene {
     private String networkType = "tree"
     private def stemmer = new PorterStemmer()
 
-    GenerateWordLinksLucene(String netType, Float cin, int maxL, int hfq) {
+    WordPairsExtractor(String netType, Float cin, int maxL, int hfq) {
         networkType = netType
         this.powerValue = cin
         this.maxWordPairs = maxL
@@ -39,10 +37,10 @@ class GenerateWordLinksLucene {
         println "**GenerateWordLinks constructor - cocoIn: $powerValue maxWordPairs: $maxWordPairs highFreqWords: $highFreqWords "
     }
 
-    GenerateWordLinksLucene() {
+    WordPairsExtractor() {
     }
 
-    GenerateWordLinksLucene(Map userParameters) {
+    WordPairsExtractor(Map userParameters) {
         networkType = userParameters['networkType'][0];
         powerValue = userParameters['cooc'][0] as Float
         maxWordPairs = userParameters['maxLinks'][0] as Integer
@@ -97,7 +95,6 @@ class GenerateWordLinksLucene {
         println "json $json"
         return json
     }
-
 
 
     String getJSONnetwork(String indexPathString, String queryString) {
@@ -200,10 +197,11 @@ class GenerateWordLinksLucene {
     private String getJSON(LinkedHashMap tuple2CoocMap, LinkedHashMap stemInfo) {
         tuple2CoocMap = tuple2CoocMap.sort { -it.value }
         tuple2CoocMap = tuple2CoocMap.take(maxWordPairs)
-
         println "tuple2CoocMap take 5: " + tuple2CoocMap.take(5)
+        WordPairsToJSON wptj = new WordPairsToJSON()
 
-        def json = (networkType == 'forceNet') ? getJSONgraph(tuple2CoocMap, stemInfo) : getJSONtree(tuple2CoocMap, stemInfo)
+
+        def json = (networkType == 'forceNet') ? wptj.getJSONgraph(tuple2CoocMap, stemInfo) : wptj.getJSONtree(tuple2CoocMap, stemInfo)
         json
     }
 
@@ -216,92 +214,14 @@ class GenerateWordLinksLucene {
                 String stemmedWord0 = stemmedWords[i]
                 String stemmedWord1 = stemmedWords[j]
 
-                Tuple2 wordLink = new Tuple2(stemmedWord0, stemmedWord1)
+                Tuple2 wordPair = new Tuple2(stemmedWord0, stemmedWord1)
 
                 double coocDocValue = getCooc(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[])
-                double coocTotalValue = tuple2CoocMap[(wordLink)] ?: 0
+                double coocTotalValue = tuple2CoocMap[(wordPair)] ?: 0
                 coocTotalValue = coocTotalValue + coocDocValue
-                tuple2CoocMap << [(wordLink): coocTotalValue]
+                tuple2CoocMap << [(wordPair): coocTotalValue]
             }
         }
-    }
-
-    private def internalNodes = [] as Set
-    private def allNodes = [] as Set
-
-    private String getJSONtree(Map wl, Map stemMap) {
-        def tree = [:]
-
-        wl.collect { wordLink ->
-            def word0 = stemMap[wordLink.key.first].max { it.value }.key
-            def word1 = stemMap[wordLink.key.second].max { it.value }.key
-
-            if (tree.isEmpty()) {
-                tree <<
-                        [name    : word0, cooc: wordLink.value,
-                         children: [[name: word1]]]
-                internalNodes.add(word0)
-                allNodes.add(word0)
-                allNodes.add(word1)
-            } else {
-                addPairToMap(tree, word0, word1, wordLink.value)
-                addPairToMap(tree, word1, word0, wordLink.value)
-            }
-        }
-        def json = new JsonBuilder(tree)
-        return json
-    }
-
-    private void addPairToMap(Map m, String w0, String w1, def cooc) {
-
-        assert w0 != w1
-
-        m.each {
-
-            if (it.value in List) {
-                it.value.each {
-                    assert it in Map
-                    addPairToMap(it, w0, w1, cooc)
-                }
-            } else {
-
-                if (it.value == w0 && allNodes.add(w1)) {
-
-                    //the node has children.  Check the other word is not also an internal node
-                    if (m.children && !internalNodes.contains(w1)) {
-
-                        m.children << ["name": w1]
-
-                    } else {
-
-                        //do not create a new internal node if one already exists
-                        if (internalNodes.add(it.value)) {
-                            m << ["name": it.value, "cooc": cooc, "children": [["name": w1]]]
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private String getJSONgraph(Map wm, Map stemMap) {
-
-        def data = [
-
-                links: wm.collect {
-
-                    def src = stemMap[it.key.first].max { it.value }.key
-                    def tgt = stemMap[it.key.second].max { it.value }.key
-
-                    [source: src,
-                     target: tgt,
-                     cooc  : it.value,
-                    ]
-                }
-        ]
-
-        def json = new JsonBuilder(data)
-        return json
     }
 
     private double getCooc(int[] w0Positions, int[] w1Positions) {
@@ -338,10 +258,10 @@ class GenerateWordLinksLucene {
     ]
 
     static main(args) {
-        def gwl = new GenerateWordLinksLucene()
+        def wpe = new WordPairsExtractor()
         //y.getWordPairs("""houses tonight  houses tonight content contents contents housed house houses housed zoo zoo2""")
 
-        gwl.getJSONnetwork('Indexes/R10CrudeL', 'bp')
+        wpe.getJSONnetwork('Indexes/R10CrudeL', 'bp')
     //    def ali = gwl.getJSONnetwork(mAli)
 //        def dd = gwl.getJSONnetwork("zzza ttttk ffffe")
 //        println "dd $dd"

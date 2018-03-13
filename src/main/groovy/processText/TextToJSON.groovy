@@ -6,7 +6,6 @@ import javax.servlet.ServletConfig
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-import processText.GenerateWordLinks
 
 public class TextToJSON extends GroovyServlet {
 
@@ -18,8 +17,8 @@ public class TextToJSON extends GroovyServlet {
 		def text = request.getParameter("text");
 		def m = request.getParameterMap();	
 	
-		GenerateWordLinks gw = new GenerateWordLinks(m);
-		def json = gw.getJSONnetwork(text)
+		//WordPairsExtractor wpe = new WordPairsExtractor(m);
+		def json =  new WordPairsExtractor(m).getJSONnetwork(text)
 
 		response.getWriter().println(json)
 	}

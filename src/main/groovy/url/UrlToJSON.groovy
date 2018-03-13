@@ -1,5 +1,7 @@
 package url
 
+import processText.WordPairsExtractor
+
 import javax.servlet.ServletConfig
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -7,7 +9,6 @@ import org.apache.tika.Tika
 //import org.jsoup.Jsoup
 
 import groovy.servlet.GroovyServlet
-import processText.GenerateWordLinks
 
 class UrlToJSON extends GroovyServlet{
 
@@ -27,8 +28,10 @@ class UrlToJSON extends GroovyServlet{
 	
 		def m = request.getParameterMap();
 
-		GenerateWordLinks gw = new GenerateWordLinks(m);
-		def json = gw.getJSONnetwork(extractedText)
+	//	GenerateWordLinks gw = new GenerateWordLinks(m);
+	//	def json = gw.getJSONnetwork(extractedText)
+
+		def json =  new WordPairsExtractor(m).getJSONnetwork(extractedText)
 
 		response.getWriter().println(json)
 	}

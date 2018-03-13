@@ -1,7 +1,7 @@
 package processText
 
 import groovy.json.JsonSlurper
-import processText.GenerateWordLinks
+
 import spock.lang.*
 
 class WordLinksSpec extends spock.lang.Specification {
