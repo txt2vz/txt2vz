@@ -55,18 +55,16 @@ class GenerateWordLinksLucene {
         //s=new File ('athenaBookChapter.txt').text
         s = s ?: "empty text"
 
-        def words = s.replaceAll(/\W/, "  ").toLowerCase().tokenize().minus(StopSet.stopSet)
-        // smallStopSet2);//  stopSet)
+        def words = s.replaceAll(/\W/, "  ").toLowerCase().tokenize().minus(StopSet.stopSet)   // smallStopSet2);//  stopSet)
 
         println " words size: " + words.size() + " unique words " + words.unique(false).size()
-
-        def stemmer = new PorterStemmer()
+     
         def stemInfo = [:] //stemmed word is key and value is a map of a particular word form and its frequency
         def stemmedWordPositionsMap = [:] //stemmed word is key and value is a list of positions where any of the words occur
         def tuple2CoocMap = [:]  //word pair tuple is key - value is cooc value summed across all docs
 
         //min word size 1 or 2?
-        words.findAll { it.size() > 2 }
+        words.findAll { it.size() >= 2 }
                 .eachWithIndex { it, indexWordPosition ->
 
             def stemmedWord = stemmer.stem(it)
@@ -343,8 +341,8 @@ class GenerateWordLinksLucene {
         def gwl = new GenerateWordLinksLucene()
         //y.getWordPairs("""houses tonight  houses tonight content contents contents housed house houses housed zoo zoo2""")
 
-     //   gwl.getJSONnetwork('Indexes/R10CrudeL', 'oil')
-        def ali = gwl.getJSONnetwork(mAli)
+        gwl.getJSONnetwork('Indexes/R10CrudeL', 'bp')
+    //    def ali = gwl.getJSONnetwork(mAli)
 //        def dd = gwl.getJSONnetwork("zzza ttttk ffffe")
 //        println "dd $dd"
 //        println "ali $ali"
