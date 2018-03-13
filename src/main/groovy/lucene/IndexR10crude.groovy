@@ -25,8 +25,8 @@ class IndexR10crude {
  //   Path indexPath = Paths.get('Indexes/R10CrudeL')
    // Path docsPath = Paths.get('Datasets/R10Crude')
 
-    Path indexPath = Paths.get('Indexes/katie')
-    Path docsPath = Paths.get('Datasets/katie')
+    Path indexPath = Paths.get('Indexes/20NG')
+    Path docsPath = Paths.get('C:\\Users\\aceslh\\Dataset\\20bydate')
     
     Directory directory = FSDirectory.open(indexPath)
     Analyzer analyzer = //new EnglishAnalyzer();  //with stemming
@@ -65,7 +65,8 @@ class IndexR10crude {
         int max = 500
 
         docsPath.toFile().eachFileRecurse { file ->
-            if (x < max) {
+         //   if (x < max) {
+            if (!file.isDirectory()){
                 def doc = new Document()
                 doc.add(new Field("contents", file.text, ft))
                 writer.addDocument(doc);

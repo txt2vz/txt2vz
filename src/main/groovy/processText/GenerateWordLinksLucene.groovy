@@ -11,6 +11,7 @@ import org.apache.lucene.index.Terms
 import org.apache.lucene.index.TermsEnum
 import org.apache.lucene.queryparser.classic.QueryParser
 import org.apache.lucene.search.IndexSearcher
+import org.apache.lucene.search.MatchAllDocsQuery
 import org.apache.lucene.search.Query
 import org.apache.lucene.search.ScoreDoc
 import org.apache.lucene.search.TopScoreDocCollector
@@ -27,6 +28,7 @@ class GenerateWordLinksLucene {
     private int maxWordPairs = 80
     private float powerValue = 0.5
     private String networkType = "tree"
+    private def stemmer = new PorterStemmer()
 
     GenerateWordLinksLucene(String netType, Float cin, int maxL, int hfq) {
         networkType = netType
@@ -48,21 +50,76 @@ class GenerateWordLinksLucene {
         println "in GWL construction highFreqWords = $highFreqWords netTYpe $networkType userParameters: $userParameters"
     }
 
-    String getJSONnetwork() {
+    String getJSONnetwork(String s) {
+
+        //s=new File ('athenaBookChapter.txt').text
+        s = s ?: "empty text"
+
+        def words = s.replaceAll(/\W/, "  ").toLowerCase().tokenize().minus(StopSet.stopSet)
+        // smallStopSet2);//  stopSet)
+
+        println " words size: " + words.size() + " unique words " + words.unique(false).size()
+
+        def stemmer = new PorterStemmer()
+        def stemInfo = [:] //stemmed word is key and value is a map of a particular word form and its frequency
+        def stemmedWordPositionsMap = [:] //stemmed word is key and value is a list of positions where any of the words occur
+        def tuple2CoocMap = [:]  //word pair tuple is key - value is cooc value summed across all docs
+
+        //min word size 1 or 2?
+        words.findAll { it.size() > 2 }
+                .eachWithIndex { it, indexWordPosition ->
+
+            def stemmedWord = stemmer.stem(it)
+            stemmedWordPositionsMap[stemmedWord] = stemmedWordPositionsMap.get(stemmedWord, []) << indexWordPosition
+
+            def forms = [:]
+            forms = stemInfo.get((stemmedWord), [(it): 0])
+
+            def n = forms.get((it)) ?: 0
+            forms.put((it), n + 1)
+
+            stemInfo[(stemmedWord)] = forms
+        }
+
+        println "take 5 steminfo: " + stemInfo.take(5)
+
+        //sort by size of list (word frequency)
+        stemmedWordPositionsMap = stemmedWordPositionsMap.sort { -it.value.size() }
+
+        //wordToFormsMap = wordToFormsMap.drop(wordToFormsMap.size() - highFreqWords)
+        stemmedWordPositionsMap = stemmedWordPositionsMap.take(highFreqWords)
+
+        println "after take wordposmap $stemmedWordPositionsMap  wortopositmap.size " + stemmedWordPositionsMap.size()
+
+        def wordPairList = []
+
+        buildTuple2CoocMap(stemmedWordPositionsMap, tuple2CoocMap)
+        String json = getJSON(tuple2CoocMap, stemInfo)
+
+        println "json $json"
+        return json
+    }
+
+
+
+    String getJSONnetwork(String indexPathString, String queryString) {
         //  maxWordPairs = 100
         //  highFreqWords = 19
         //   powerValue = 0.5
         StandardAnalyzer analyzer = new StandardAnalyzer();
-        String querystr = //"bp"
-                "*:*";
+       //String querystr =
+                //"oil"
+              //  "*:*";
         Query q =  //new MatchAllDocsQuery()
-                new QueryParser("contents", analyzer).parse(querystr);
+                new QueryParser("contents", analyzer).parse(queryString);
 
         int hitsPerPage = 100;
 
-        Path indexPath = //Paths.get('Indexes/katie')
+        Path indexPath = Paths.get(indexPathString)
+                //Paths.get('Indexes/katie')
         // Paths.get('Indexes/QueensLandFloods')
-        Paths.get('Indexes/R10CrudeL')
+      //  Paths.get('Indexes/R10CrudeL')
+       // Paths.get('Indexes/20NG')
 
         Directory directory = FSDirectory.open(indexPath)
         IndexReader reader = DirectoryReader.open(directory);
@@ -75,7 +132,7 @@ class GenerateWordLinksLucene {
 
       //  Bits liveDocs = MultiFields.getLiveDocs(reader);
 
-        def stemmer = new PorterStemmer()
+
         def stemInfo = [:] //stemmed word is key and value is a map of a particular word form and its frequency
         def tuple2CoocMap = [:]  //word pair tuple is key - value is cooc value summed across all docs
 
@@ -128,51 +185,47 @@ class GenerateWordLinksLucene {
                 br = terms.next();
             }
 
-         //   println "steminfor $stemInfo"
-            //sort by word frequency (number of positions)
+             //sort by word frequency (number of positions)
             stemmedWordPositionsMap = stemmedWordPositionsMap.sort { -it.value.size() }
-
-          //  println "stememd wrodpositmps size " + stemmedWordPositionsMap.size()
-           // println "stemedWordPostionsMap.keySet()  " + stemmedWordPositionsMap.keySet()
 
             stemmedWordPositionsMap = stemmedWordPositionsMap.take(highFreqWords)
 
-           // println "after take wordposmap docNumber $docNumber: stemmedWordToPositionMap: $stemmedWordPositionsMap  wortopositmap.size " + stemmedWordPositionsMap.size()
-
-            //check every possible stemmed word pair
-            def stemmedWords = stemmedWordPositionsMap.keySet()
-            for (int i = 0; i < stemmedWords.size(); i++) {
-                for (int j = i + 1; j < stemmedWords.size(); j++) {
-                    String stemmedWord0 = stemmedWords[i]
-                    String stemmedWord1 = stemmedWords[j]
-
-                    Tuple2 wordLink = new Tuple2(stemmedWord0, stemmedWord1)
-                    def iy = stemmedWordPositionsMap[(stemmedWord0)] as int[]
-                    def jy = stemmedWordPositionsMap[(stemmedWord1)] as int[]
-                    double coocDocValue = getCooc(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[])
-                    double coocTotalValue = tuple2CoocMap[(wordLink)] ?: 0
-                    coocTotalValue = coocTotalValue + coocDocValue
-                    tuple2CoocMap << [(wordLink): coocTotalValue]
-                }
-            }
+            buildTuple2CoocMap(stemmedWordPositionsMap, tuple2CoocMap)
         }
 
-        tuple2CoocMap = tuple2CoocMap.sort { -it.value }
-      //  println "tupl2 AFTER sort $tuple2CoocMap"
-        tuple2CoocMap = tuple2CoocMap.take(maxWordPairs)
-
-        println "tuple2CoocMap take 5: " + tuple2CoocMap.take(5)
-       // println "tubl2CoocMap $tuple2CoocMap"
-
-        def json = ""
-
-        if (networkType == "forceNet")
-            json = getJSONgraph(tuple2CoocMap, stemInfo)
-        else
-            json = getJSONtree(tuple2CoocMap, stemInfo)
+        String json = getJSON(tuple2CoocMap, stemInfo)
 
         println "json: $json"
         return json
+    }
+
+    private String getJSON(LinkedHashMap tuple2CoocMap, LinkedHashMap stemInfo) {
+        tuple2CoocMap = tuple2CoocMap.sort { -it.value }
+        tuple2CoocMap = tuple2CoocMap.take(maxWordPairs)
+
+        println "tuple2CoocMap take 5: " + tuple2CoocMap.take(5)
+
+        def json = (networkType == 'forceNet') ? getJSONgraph(tuple2CoocMap, stemInfo) : getJSONtree(tuple2CoocMap, stemInfo)
+        json
+    }
+
+    private void buildTuple2CoocMap(Map stemmedWordPositionsMap, Map tuple2CoocMap) {
+
+//check every possible stemmed word pair
+        def stemmedWords = stemmedWordPositionsMap.keySet()
+        for (int i = 0; i < stemmedWords.size(); i++) {
+            for (int j = i + 1; j < stemmedWords.size(); j++) {
+                String stemmedWord0 = stemmedWords[i]
+                String stemmedWord1 = stemmedWords[j]
+
+                Tuple2 wordLink = new Tuple2(stemmedWord0, stemmedWord1)
+
+                double coocDocValue = getCooc(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[])
+                double coocTotalValue = tuple2CoocMap[(wordLink)] ?: 0
+                coocTotalValue = coocTotalValue + coocDocValue
+                tuple2CoocMap << [(wordLink): coocTotalValue]
+            }
+        }
     }
 
     private def internalNodes = [] as Set
@@ -290,8 +343,8 @@ class GenerateWordLinksLucene {
         def gwl = new GenerateWordLinksLucene()
         //y.getWordPairs("""houses tonight  houses tonight content contents contents housed house houses housed zoo zoo2""")
 
-        gwl.getJSONnetwork()
-//        def ali = gwl.getJSONnetwork(mAli)
+     //   gwl.getJSONnetwork('Indexes/R10CrudeL', 'oil')
+        def ali = gwl.getJSONnetwork(mAli)
 //        def dd = gwl.getJSONnetwork("zzza ttttk ffffe")
 //        println "dd $dd"
 //        println "ali $ali"
