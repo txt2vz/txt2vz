@@ -1,6 +1,7 @@
 package processText
 
 import groovy.json.JsonBuilder
+import lucene.IndexR10crude
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.document.Document
 import org.apache.lucene.index.DirectoryReader
@@ -90,14 +91,25 @@ class WordPairsExtractor {
         def wordPairList = []
 
         buildTuple2CoocMap(stemmedWordPositionsMap, tuple2CoocMap)
-        String json = getJSON(tuple2CoocMap, stemInfo)
-
-        println "json $json"
+        String json = new WordPairsToJSON().getJSON(tuple2CoocMap, stemInfo, maxWordPairs, networkType)
+        println "json: $json"
         return json
     }
 
-
     String getJSONnetwork(String indexPathString, String queryString) {
+
+        Path indexPath = Paths.get(indexPathString)
+        //Paths.get('Indexes/katie')
+        // Paths.get('Indexes/QueensLandFloods')
+        //  Paths.get('Indexes/R10CrudeL')
+        // Paths.get('Indexes/20NG')
+
+        Directory directory = FSDirectory.open(indexPath)
+        getJSONnetwork(directory, queryString)
+    }
+
+
+    String getJSONnetwork(Directory directory, String queryString) {
         //  maxWordPairs = 100
         //  highFreqWords = 19
         //   powerValue = 0.5
@@ -105,18 +117,11 @@ class WordPairsExtractor {
        //String querystr =
                 //"oil"
               //  "*:*";
-        Query q =  //new MatchAllDocsQuery()
-                new QueryParser("contents", analyzer).parse(queryString);
 
         int hitsPerPage = 100;
 
-        Path indexPath = Paths.get(indexPathString)
-                //Paths.get('Indexes/katie')
-        // Paths.get('Indexes/QueensLandFloods')
-      //  Paths.get('Indexes/R10CrudeL')
-       // Paths.get('Indexes/20NG')
-
-        Directory directory = FSDirectory.open(indexPath)
+        Query q =  //new MatchAllDocsQuery()
+                new QueryParser("contents", analyzer).parse(queryString);
         IndexReader reader = DirectoryReader.open(directory);
         IndexSearcher searcher = new IndexSearcher(reader);
         TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage);
@@ -126,7 +131,6 @@ class WordPairsExtractor {
         println "Found " + hits.length + " hits."
 
       //  Bits liveDocs = MultiFields.getLiveDocs(reader);
-
 
         def stemInfo = [:] //stemmed word is key and value is a map of a particular word form and its frequency
         def tuple2CoocMap = [:]  //word pair tuple is key - value is cooc value summed across all docs
@@ -188,21 +192,9 @@ class WordPairsExtractor {
             buildTuple2CoocMap(stemmedWordPositionsMap, tuple2CoocMap)
         }
 
-        String json = getJSON(tuple2CoocMap, stemInfo)
-
+        String json = new WordPairsToJSON().getJSON(tuple2CoocMap, stemInfo, maxWordPairs, networkType)
         println "json: $json"
         return json
-    }
-
-    private String getJSON(LinkedHashMap tuple2CoocMap, LinkedHashMap stemInfo) {
-        tuple2CoocMap = tuple2CoocMap.sort { -it.value }
-        tuple2CoocMap = tuple2CoocMap.take(maxWordPairs)
-        println "tuple2CoocMap take 5: " + tuple2CoocMap.take(5)
-        WordPairsToJSON wptj = new WordPairsToJSON()
-
-
-        def json = (networkType == 'forceNet') ? wptj.getJSONgraph(tuple2CoocMap, stemInfo) : wptj.getJSONtree(tuple2CoocMap, stemInfo)
-        json
     }
 
     private void buildTuple2CoocMap(Map stemmedWordPositionsMap, Map tuple2CoocMap) {
@@ -261,7 +253,12 @@ class WordPairsExtractor {
         def wpe = new WordPairsExtractor()
         //y.getWordPairs("""houses tonight  houses tonight content contents contents housed house houses housed zoo zoo2""")
 
-        wpe.getJSONnetwork('Indexes/R10CrudeL', 'bp')
+      //  wpe.getJSONnetwork('Indexes/R10CrudeL', 'bp')
+
+        def x = new IndexR10crude()
+        def y = x.buildIndex()
+
+        wpe.getJSONnetwork(y, "bp")
     //    def ali = gwl.getJSONnetwork(mAli)
 //        def dd = gwl.getJSONnetwork("zzza ttttk ffffe")
 //        println "dd $dd"

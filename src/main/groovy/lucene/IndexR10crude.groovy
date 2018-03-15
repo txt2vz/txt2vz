@@ -14,6 +14,7 @@ import org.apache.lucene.search.similarities.ClassicSimilarity
 import org.apache.lucene.search.similarities.Similarity
 import org.apache.lucene.store.Directory
 import org.apache.lucene.store.FSDirectory
+import org.apache.lucene.store.RAMDirectory
 
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -22,13 +23,14 @@ import java.nio.file.Paths
 class IndexR10crude {
 
     // Create Lucene index in this directory
- //   Path indexPath = Paths.get('Indexes/R10CrudeL')
-   // Path docsPath = Paths.get('Datasets/R10Crude')
+     Path indexPath = Paths.get('Indexes/R10CrudeL')
+     Path docsPath = Paths.get('Datasets/R10Crude')
 
-    Path indexPath = Paths.get('Indexes/20NG')
-    Path docsPath = Paths.get('C:\\Users\\aceslh\\Dataset\\20bydate')
+  //  Path indexPath = Paths.get('Indexes/20NG')
+   // Path docsPath = Paths.get('C:\\Users\\aceslh\\Dataset\\20bydate')
     
-    Directory directory = FSDirectory.open(indexPath)
+    //Directory directory = FSDirectory.open(indexPath)
+    RAMDirectory ramDir = new RAMDirectory();
     Analyzer analyzer = //new EnglishAnalyzer();  //with stemming
             new StandardAnalyzer();
     def catsFreq = [:]
@@ -38,7 +40,7 @@ class IndexR10crude {
         i.buildIndex()
     }
 
-    def buildIndex() {
+    Directory buildIndex() {
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
         Similarity tfidf = new ClassicSimilarity()
         iwc.setSimilarity(tfidf)
@@ -47,7 +49,8 @@ class IndexR10crude {
         // previously indexed documents:
         iwc.setOpenMode(OpenMode.CREATE);
 
-        IndexWriter writer = new IndexWriter(directory, iwc);
+     //   IndexWriter writer = new IndexWriter(directory, iwc);
+        IndexWriter writer = new IndexWriter(ramDir, iwc);
 
         Date start = new Date();
         println("Indexing to directory $indexPath ...");
@@ -76,5 +79,8 @@ class IndexR10crude {
         println "Total docs in index: ${writer.maxDoc()}"
         writer.close()
         println "done"
+
+        return ramDir
+
       }
 }

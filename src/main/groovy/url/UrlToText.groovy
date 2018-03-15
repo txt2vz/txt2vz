@@ -10,7 +10,7 @@ import org.apache.tika.Tika
 
 import groovy.servlet.GroovyServlet
 
-class UrlToJSON extends GroovyServlet{
+class UrlToText extends GroovyServlet{
 
 	void init(ServletConfig config) {
 		System.out.println " UrlToJSON Servlet initialized"
@@ -28,11 +28,7 @@ class UrlToJSON extends GroovyServlet{
 	
 		def m = request.getParameterMap();
 
-	//	GenerateWordLinks gw = new GenerateWordLinks(m);
-	//	def json = gw.getJSONnetwork(extractedText)
-
 		def json =  new WordPairsExtractor(m).getJSONnetwork(extractedText)
-
 		response.getWriter().println(json)
 	}
 }

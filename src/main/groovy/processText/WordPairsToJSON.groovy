@@ -7,7 +7,16 @@ class WordPairsToJSON {
     private def internalNodes = [] as Set
     private def allNodes = [] as Set
 
-    String getJSONgraph(Map wm, Map stemMap) {
+    String getJSON(LinkedHashMap tuple2CoocMap, LinkedHashMap stemInfo, int maxWordPairs, String networkType){
+        tuple2CoocMap = tuple2CoocMap.sort { -it.value }
+        tuple2CoocMap = tuple2CoocMap.take(maxWordPairs)
+        println "tuple2CoocMap take 5: " + tuple2CoocMap.take(5)
+
+        def json = (networkType=='forceNet') ? getJSONgraph(tuple2CoocMap, stemInfo) : getJSONtree(tuple2CoocMap, stemInfo)
+        return json
+    }
+
+    private String getJSONgraph(Map wm, Map stemMap) {
 
         def data = [
 
@@ -27,7 +36,7 @@ class WordPairsToJSON {
         return json
     }
 
-    String getJSONtree(Map wl, Map stemMap) {
+    private String getJSONtree(Map wl, Map stemMap) {
         def tree = [:]
 
         wl.collect { wordLink ->
@@ -81,6 +90,4 @@ class WordPairsToJSON {
             }
         }
     }
-
-
 }

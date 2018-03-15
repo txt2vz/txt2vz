@@ -98,5 +98,4 @@ class Query1 {
         }
         reader.close();
     }
-
 }

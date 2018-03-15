@@ -25,7 +25,7 @@
 
 	<servlet>
 		<servlet-name>TextToJsonServlet</servlet-name>
-		<servlet-class>processText.TextToJSON</servlet-class>
+		<servlet-class>processText.PlainText</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>TextToJsonServlet</servlet-name>
@@ -34,7 +34,7 @@
 
 	<servlet>
 		<servlet-name>TwitterServlet</servlet-name>
-		<servlet-class>twitter.TwitterToJSON</servlet-class>
+		<servlet-class>twitter.TweetsToLucene</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>TwitterServlet</servlet-name>
@@ -43,7 +43,7 @@
 
 	<servlet>
 		<servlet-name>UrlServlet</servlet-name>
-		<servlet-class>url.UrlToJSON</servlet-class>
+		<servlet-class>url.UrlToText</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>UrlServlet</servlet-name>
