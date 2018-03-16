@@ -37,7 +37,7 @@ class TweetsToLucene extends GroovyServlet{
 		ft.setStoreTermVectorPositions(true);
 		ft.setStored(true)
 		ft.setTokenized(true)
-
+		
 		IndexWriter writer = new IndexWriter(ramDir, iwc)
 		
 		String queryText = request.getParameter("q");
@@ -50,19 +50,16 @@ class TweetsToLucene extends GroovyServlet{
 		println "twitter query text $queryText"
 		QueryResult result = twitter.search(query);
 
-		int twCount = 0;
-		String combinedTweetText= ""
+		int twCount = 0
 
 		for   (i in 0..20){//(;;) {
 			result = twitter.search(query);
 			def tweets = result.getTweets()
 
-			tweets.each {
+			tweets.each { tweet ->
 				twCount++
-			//	combinedTweetText = combinedTweetText + it.getText()
-
 				def doc = new Document()
-				doc.add(new Field("contents", it.getText(), ft))
+				doc.add(new Field("contents", tweet.getText(), ft))
 				writer.addDocument(doc);
 			}
 
@@ -73,12 +70,8 @@ class TweetsToLucene extends GroovyServlet{
 		println "Total docs in index: ${writer.maxDoc()}"
 		writer.close()
 		println( "twCount : $twCount" )
-	//	println "combined tweetText first 40" + combinedTweetText.take(40)
 		
 		def m = request.getParameterMap()
-		//GenerateWordLinks gw = new GenerateWordLinks(m)
-		//def json = gw.getJSONnetwork(combinedTweetText)
-		//def json =  new WordPairsExtractor(m).getJSONnetwork(combinedTweetText)
 
 		def json =  new WordPairsExtractor(m).getJSONnetwork(ramDir, '*:*')
 		println "in twitterTOJSON Json is $json"

@@ -17,10 +17,10 @@ class LuceneToJSON extends GroovyServlet {
 
         def m = request.getParameterMap();
 
-        WordPairsExtractor wpe = new WordPairsExtractor(m);
-        def json = wpe.getJSONnetwork('Indexes/R10CrudeL', 'bp')
+        //WordPairsExtractor wpe = new WordPairsExtractor(m);
+        //def json = wpe.getJSONnetwork('Indexes/R10CrudeL', 'bp')
 
-        // def json = new WordPairsExtractor(m).getJSONnetwork('Indexes/R10CrudeL', 'bp')
+        def json = new WordPairsExtractor(m).getJSONnetwork('Indexes/R10CrudeL', 'bp')
         response.getWriter().println(json)
     }
 }

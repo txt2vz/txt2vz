@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse
 public class PlainText extends GroovyServlet {
 
 	void init(ServletConfig config) {
-		System.out.println " Text Servlet initialized"
+		System.out.println "Plain text Servlet initialized"
 	}	
 
 	void service(HttpServletRequest request, HttpServletResponse response) {

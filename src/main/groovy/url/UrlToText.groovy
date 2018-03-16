@@ -22,9 +22,8 @@ class UrlToText extends GroovyServlet{
 		def url = urlText.toURL()
 	
 	//	def extractedText = Jsoup.parse(url.getText()).text()		
-	
-		Tika tika = new Tika();
-		def extractedText = tika.parseToString(url)
+
+		def extractedText = new Tika().parseToString(url)
 	
 		def m = request.getParameterMap();
 
