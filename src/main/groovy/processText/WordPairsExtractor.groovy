@@ -95,33 +95,33 @@ class WordPairsExtractor {
         println "json: $json"
         return json
     }
+//
+//    String getJSONnetwork(String indexPathString, String queryString) {
+//
+//        Path indexPath = Paths.get(indexPathString)
+//        //Paths.get('Indexes/katie')
+//        // Paths.get('Indexes/QueensLandFloods')
+//        //  Paths.get('Indexes/R10CrudeL')
+//        // Paths.get('Indexes/20NG')
+//
+//        Directory directory = FSDirectory.open(indexPath)
+//        getJSONnetwork(directory, queryString)
+//    }
 
-    String getJSONnetwork(String indexPathString, String queryString) {
 
-        Path indexPath = Paths.get(indexPathString)
-        //Paths.get('Indexes/katie')
-        // Paths.get('Indexes/QueensLandFloods')
-        //  Paths.get('Indexes/R10CrudeL')
-        // Paths.get('Indexes/20NG')
-
-        Directory directory = FSDirectory.open(indexPath)
-        getJSONnetwork(directory, queryString)
-    }
-
-
-    String getJSONnetwork(Directory directory, String queryString) {
+    String getJSONnetwork(Directory directory, Query q) {
         //  maxWordPairs = 100
         //  highFreqWords = 19
         //   powerValue = 0.5
-        StandardAnalyzer analyzer = new StandardAnalyzer();
+      // StandardAnalyzer analyzer = new StandardAnalyzer();
        //String querystr =
                 //"oil"
               //  "*:*";
 
         int hitsPerPage = 100;
 
-        Query q =  //new MatchAllDocsQuery()
-                new QueryParser("contents", analyzer).parse(queryString);
+     //   Query q =  //new MatchAllDocsQuery()
+    //            new QueryParser("contents", analyzer).parse(queryString);
         IndexReader reader = DirectoryReader.open(directory);
         IndexSearcher searcher = new IndexSearcher(reader);
         TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage);
@@ -253,12 +253,12 @@ class WordPairsExtractor {
         def wpe = new WordPairsExtractor()
         //y.getWordPairs("""houses tonight  houses tonight content contents contents housed house houses housed zoo zoo2""")
 
-      //  wpe.getJSONnetwork('Indexes/R10CrudeL', 'bp')
+        wpe.getJSONnetwork('Indexes/R10CrudeL', 'bp')
 
         def x = new IndexR10crude()
         def y = x.buildIndex()
 
-        wpe.getJSONnetwork(y, "bp")
+      //  wpe.getJSONnetwork(y, "bp")
     //    def ali = gwl.getJSONnetwork(mAli)
 //        def dd = gwl.getJSONnetwork("zzza ttttk ffffe")
 //        println "dd $dd"

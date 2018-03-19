@@ -89,7 +89,7 @@ gretty {
 }
 
 group = 'com.example.appengine'   // Generated output GroupId
-version = '1.0-SNAPSHOT'          // Version in generated output
+version = '0.82'          // Version in generated output
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8

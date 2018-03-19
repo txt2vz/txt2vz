@@ -23,13 +23,16 @@ import java.nio.file.Paths
 class IndexR10crude {
 
     // Create Lucene index in this directory
-     Path indexPath = Paths.get('Indexes/R10CrudeL')
-     Path docsPath = Paths.get('Datasets/R10Crude')
+//     Path indexPath = Paths.get('Indexes/R10CrudeL')
+  //  Path docsPath = Paths.get('Datasets/R10Crude')
+
+    Path indexPath = Paths.get('Indexes/R3cornCrudeShip')
+    Path docsPath = Paths.get('C:\\Users\\aceslh\\Dataset\\reut3')
 
   //  Path indexPath = Paths.get('Indexes/20NG')
    // Path docsPath = Paths.get('C:\\Users\\aceslh\\Dataset\\20bydate')
     
-    //Directory directory = FSDirectory.open(indexPath)
+    Directory directory = FSDirectory.open(indexPath)
     RAMDirectory ramDir = new RAMDirectory();
     Analyzer analyzer = //new EnglishAnalyzer();  //with stemming
             new StandardAnalyzer();
