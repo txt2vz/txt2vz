@@ -74,8 +74,8 @@ html {
 }
 
 #hint {
-	color: magenta; 
-	font-style : italic;
+	color: magenta;
+	font-style: italic;
 	font-weight: bold;
 	font-style: italic;
 }
@@ -125,15 +125,13 @@ html {
 					<div>
 						<div>Enter lucene query:</div>
 						<input type="text" name="luceneQ" id="luceneQ" size=18
-							   value="corn"> <input type="button"
-														  class="btn btn-primary" value="viz R3 lucene "
-														  onclick="luceneToJSON(luceneQ.value)">
-						<br> Category: <select id="category">
-						<option value="01_corn">Corn</option>
-						<option value="02_crude">Crude</option>
-						<option value="07_ship">Ship</option>
-						<option value="*:*">All</option>
-					</select> <br /> <br />
+							value="corn"> <br> Category: <select id="category">
+							<option value="01_corn">Corn</option>
+							<option value="02_crude">Crude</option>
+							<option value="07_ship">Ship</option>
+							<option value="*:*">All</option>
+						</select> <input type="button" class="btn btn-primary"
+							value="viz R3 lucene " onclick="luceneToJSON(luceneQ.value)"><br />
 					</div>
 
 					<div id="modal">
@@ -144,22 +142,22 @@ html {
 				</div>
 
 				<div class="col-md-3">
-				
+
 					<br> Network Type: <select id="networkType">
 						<option value="radial">Radial</option>
 						<option value="dendro">Dendrogram</option>
 						<option value="forceTree">Force(tree)</option>
 						<option value="forceNet">Force (network)</option>
 					</select> <br /> <br />
-					
+
 					<div class="btn btn-info fileinput-button">
 						<i class="icon-plus icon-white"></i>
 						<div>Drag and drop file here (pdf,docx,ppt etc.)</div>
 						<input id="fileupload" type="file" name="files[]" multiple>
 					</div>
-					<br /> <br />	
+					<br /> <br />
 
-				
+
 					<div id="hint">
 						Mouse wheel to zoom. <br /> Hold click and move mouse to move
 						tree
@@ -276,22 +274,22 @@ html {
 		});
 
 		//Bind keypress event to textbox
-        jQuery('#url').keypress(function(event) {
-            var keycode = (event.keyCode ? event.keyCode : event.which);
-            if (keycode == '13') {
-                urlToJSON(url.value);
-            }
-            event.stopPropagation();
-        });
+		jQuery('#url').keypress(function(event) {
+			var keycode = (event.keyCode ? event.keyCode : event.which);
+			if (keycode == '13') {
+				urlToJSON(url.value);
+			}
+			event.stopPropagation();
+		});
 
-        //Bind keypress event to textbox
-        jQuery('#luceneQ').keypress(function(event) {
-            var keycode = (event.keyCode ? event.keyCode : event.which);
-            if (keycode == '13') {
-                luceneToJSON(luceneQ.value);
-            }
-            event.stopPropagation();
-        });
+		//Bind keypress event to textbox
+		jQuery('#luceneQ').keypress(function(event) {
+			var keycode = (event.keyCode ? event.keyCode : event.which);
+			if (keycode == '13') {
+				luceneToJSON(luceneQ.value);
+			}
+			event.stopPropagation();
+		});
 	</script>
 
 	<script>
@@ -409,50 +407,50 @@ html {
 
 		function urlToJSON(urlText) {
 
-            openModal();
+			openModal();
 
-            jQuery.ajax({
-                type : "POST",
-                url : "urlservice",
-                cache : false,
-                data : {
-                    urlText : urlText,
-                    networkType : $("#networkType").val(),
-                    cooc : cooc,
-                    maxLinks : maxLinks,
-                    maxWords : maxWords
-                },
-                success : function(jsonData, textStatus, jqXHR) {
+			jQuery.ajax({
+				type : "POST",
+				url : "urlservice",
+				cache : false,
+				data : {
+					urlText : urlText,
+					networkType : $("#networkType").val(),
+					cooc : cooc,
+					maxLinks : maxLinks,
+					maxWords : maxWords
+				},
+				success : function(jsonData, textStatus, jqXHR) {
 
-                    draw(jsonData);
-                    closeModal();
-                },
-            });
-        };
+					draw(jsonData);
+					closeModal();
+				},
+			});
+		};
 
-        function luceneToJSON(luceneQuery) {
+		function luceneToJSON(luceneQuery) {
 
-            openModal();
+			openModal();
 
-            jQuery.ajax({
-                type : "POST",
-                url : "luceneservice",
-                cache : false,
-                data : {
-                    luceneQuery: luceneQuery,
-                    category : $("#category").val(),
-                    networkType : $("#networkType").val(),
-                    cooc : cooc,
-                    maxLinks : maxLinks,
-                    maxWords : maxWords
-                },
-                success : function(jsonData, textStatus, jqXHR) {
+			jQuery.ajax({
+				type : "POST",
+				url : "luceneservice",
+				cache : false,
+				data : {
+					luceneQuery : luceneQuery,
+					category : $("#category").val(),
+					networkType : $("#networkType").val(),
+					cooc : cooc,
+					maxLinks : maxLinks,
+					maxWords : maxWords
+				},
+				success : function(jsonData, textStatus, jqXHR) {
 
-                    draw(jsonData);
-                    closeModal();
-                },
-            });
-        };
+					draw(jsonData);
+					closeModal();
+				},
+			});
+		};
 
 		function twitter(q) {
 			//q = q.replace(/%/g, '');	

@@ -20,49 +20,52 @@ import java.nio.file.Paths
 
 class LuceneToJSON extends GroovyServlet {
 
-    void init(ServletConfig config) {
-        System.out.println " LuceneToJSON Servlet initialized"
-    }
+	void init(ServletConfig config) {
+		System.out.println " LuceneToJSON Servlet initialized"
+	}
 
-    void service(HttpServletRequest request, HttpServletResponse response) {
+	void service(HttpServletRequest request, HttpServletResponse response) {
 
-        def m = request.getParameterMap()
+		def m = request.getParameterMap()
 
-       //for docker
-       // def linuxpath = '/var/lib/jetty/webapps/Indexes/R10CrudeL'
+		//for docker
+		// def linuxpath = '/var/lib/jetty/webapps/Indexes/R10CrudeL'
 
-        String localpath ='Indexes/R3'
+		String localpath ='Indexes/R3'
 
-        def luceneQuery = request.getParameter("luceneQuery");
-        def category = request.getParameter("category")
+		def luceneQuery = request.getParameter("luceneQuery");
+		def category = request.getParameter("category")
 
-//        def q0 = "contents:$luceneQuery AND category:$category"
-        // new QueryParser("contents", new StandardAnalyzer()).parse(q0);
-        ///  catsFreq [01_corn:237, 02_crude:578, 07_ship:286]
-        //new MatchAllDocsQuery()
+		//        def q0 = "contents:$luceneQuery AND category:$category"
+		// new QueryParser("contents", new StandardAnalyzer()).parse(q0);
+		///  catsFreq [01_corn:237, 02_crude:578, 07_ship:286]
+		//new MatchAllDocsQuery()
 
-        println "category: $category"
-        println "m.lucenequery: " + m.luceneQuery;
+		println "category: $category"
+		println "m.lucenequery: " + m.luceneQuery;
 
-        Path indexPath = Paths.get(localpath)
-        Directory directory = FSDirectory.open(indexPath)
+		Path indexPath = Paths.get(localpath)
+		Directory directory = FSDirectory.open(indexPath)
 
-        TermQuery  catQ = new TermQuery(new Term(BuildIndex.FIELD_CATEGORY_NAME, category));
-        println "catQ: $catQ"
 
-        BooleanQuery.Builder bqb = new BooleanQuery.Builder()
-        bqb.add(catQ, BooleanClause.Occur.FILTER)
+		BooleanQuery.Builder bqb = new BooleanQuery.Builder()
 
-        Query q = new TermQuery(new Term(BuildIndex.FIELD_CONTENTS,luceneQuery))
-        bqb.add(q, BooleanClause.Occur.MUST)
-        BooleanQuery bq = bqb.build()
+		if (category != '*:*'){
+			TermQuery  catQ = new TermQuery(new Term(BuildIndex.FIELD_CATEGORY_NAME, category));
+			println "catQ: $catQ"
+			bqb.add(catQ, BooleanClause.Occur.FILTER)
+		}
 
-        println "bq: $bq"
+		Query q = new TermQuery(new Term(BuildIndex.FIELD_CONTENTS,luceneQuery))
+		bqb.add(q, BooleanClause.Occur.MUST)
+		BooleanQuery bq = bqb.build()
 
-        WordPairsExtractor wpe = new WordPairsExtractor(m);
-        def json = wpe.getJSONnetwork(directory, bq)
-        response.getWriter().println(json)
-    }
+		println "bq: $bq"
+
+		WordPairsExtractor wpe = new WordPairsExtractor(m);
+		def json = wpe.getJSONnetwork(directory, bq)
+		response.getWriter().println(json)
+	}
 }
 
 

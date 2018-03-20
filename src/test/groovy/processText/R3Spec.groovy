@@ -10,7 +10,7 @@ class R3Spec extends spock.lang.Specification {
 		JsonSlurper slurper = new JsonSlurper()
 
 		when:
-		def jsonText = wpe.getJSONnetwork('indexes/R3', 'oil')
+		def jsonText = wpe.getJSONnetwork('Indexes/R3', 'oil')
 		def json = slurper.parseText(jsonText)
 
 		then:
@@ -24,7 +24,7 @@ class R3Spec extends spock.lang.Specification {
 		JsonSlurper slurper = new JsonSlurper()
 
 		when:
-		def jsonText = wpe.getJSONnetwork('indexes/R3', 'wheat')
+		def jsonText = wpe.getJSONnetwork('Indexes/R3', 'wheat')
 		def json = slurper.parseText(jsonText)
 
 		then:
