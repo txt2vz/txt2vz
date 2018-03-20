@@ -276,13 +276,22 @@ html {
 		});
 
 		//Bind keypress event to textbox
-		jQuery('#url').keypress(function(event) {
-			var keycode = (event.keyCode ? event.keyCode : event.which);
-			if (keycode == '13') {
-				urlToJSON(url.value);
-			}
-			event.stopPropagation();
-		});
+        jQuery('#url').keypress(function(event) {
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            if (keycode == '13') {
+                urlToJSON(url.value);
+            }
+            event.stopPropagation();
+        });
+
+        //Bind keypress event to textbox
+        jQuery('#luceneQ').keypress(function(event) {
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            if (keycode == '13') {
+                luceneToJSON(luceneQ.value);
+            }
+            event.stopPropagation();
+        });
 	</script>
 
 	<script>

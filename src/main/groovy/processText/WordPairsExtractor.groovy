@@ -1,6 +1,6 @@
 package processText
 
-import groovy.json.JsonBuilder
+import lucene.BuildIndex
 import lucene.IndexR10crude
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.document.Document
@@ -96,32 +96,26 @@ class WordPairsExtractor {
         return json
     }
 //
-//    String getJSONnetwork(String indexPathString, String queryString) {
-//
-//        Path indexPath = Paths.get(indexPathString)
-//        //Paths.get('Indexes/katie')
-//        // Paths.get('Indexes/QueensLandFloods')
-//        //  Paths.get('Indexes/R10CrudeL')
-//        // Paths.get('Indexes/20NG')
-//
-//        Directory directory = FSDirectory.open(indexPath)
-//        getJSONnetwork(directory, queryString)
-//    }
+    String getJSONnetwork(String indexPathString, String queryString) {
+
+        Path indexPath = Paths.get(indexPathString)
+        //Paths.get('Indexes/katie')
+        // Paths.get('Indexes/QueensLandFloods')
+        //  Paths.get('Indexes/R10CrudeL')
+        // Paths.get('Indexes/20NG')
+
+         Query q =  //new MatchAllDocsQuery()
+                  new QueryParser("contents", new StandardAnalyzer()).parse(queryString);
+
+        Directory directory = FSDirectory.open(indexPath)
+        getJSONnetwork(directory, q)
+    }
 
 
     String getJSONnetwork(Directory directory, Query q) {
-        //  maxWordPairs = 100
-        //  highFreqWords = 19
-        //   powerValue = 0.5
-      // StandardAnalyzer analyzer = new StandardAnalyzer();
-       //String querystr =
-                //"oil"
-              //  "*:*";
 
-        int hitsPerPage = 100;
+        final int hitsPerPage = 100;
 
-     //   Query q =  //new MatchAllDocsQuery()
-    //            new QueryParser("contents", analyzer).parse(queryString);
         IndexReader reader = DirectoryReader.open(directory);
         IndexSearcher searcher = new IndexSearcher(reader);
         TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage);
@@ -145,7 +139,7 @@ class WordPairsExtractor {
             def stemmedWordPositionsMap = [:]
 
             //https://lucene.apache.org/core/6_2_0/core/index.html?org/apache/lucene/index/CheckIndex.Status.TermVectorStatus.html
-            Terms tv = reader.getTermVector(docNumber, "contents");
+            Terms tv = reader.getTermVector(docNumber, BuildIndex.FIELD_CONTENTS);
             //   if (tv.is(org.apache.lucene.index.TermsEnum)) {
             TermsEnum terms = tv.iterator();
             PostingsEnum p = null;
@@ -260,8 +254,6 @@ class WordPairsExtractor {
 
       //  wpe.getJSONnetwork(y, "bp")
     //    def ali = gwl.getJSONnetwork(mAli)
-//        def dd = gwl.getJSONnetwork("zzza ttttk ffffe")
-//        println "dd $dd"
 //        println "ali $ali"
     }
 

@@ -2,17 +2,15 @@ package processText
 
 import groovy.json.JsonSlurper
 
-import spock.lang.*
-
 class WordLinksSpec extends spock.lang.Specification {
 
-	def "word links produced correctly short "() {
+	def "three word test "() {
 		given:
-		def gwl = new GenerateWordLinks()		
+		def wpe = new WordPairsExtractor()
 		JsonSlurper slurper = new JsonSlurper()
 
 		when:
-		def jsonText = gwl.getJSONnetwork("one1 two2 three3")
+		def jsonText = wpe.getJSONnetwork("one1 two2 three3")
 		def json = slurper.parseText(jsonText)
 
 		then:
@@ -38,11 +36,11 @@ Ali had long battled Parkinson’s disease, which impaired his speech and made t
 On Saturday, family spokesman Bob Gunnell said Ali died from septic shock due to unspecified natural causes. He did not suffer, Gunnell said. A White House statement said Obama had called Lonnie Ali, the champion’s fourth wife, “to offer his family’s deepest condolences for the passing of her husband”.
 View image on Twitter
 '''
-		def gwl = new GenerateWordLinks()
+		def wpe = new WordPairsExtractor()
 		JsonSlurper slurper = new JsonSlurper()
 
 		when:
-		def jsonText = gwl.getJSONnetwork(mAli)
+		def jsonText = wpe.getJSONnetwork(mAli)
 		def json = slurper.parseText(jsonText)
 
 		then:	
