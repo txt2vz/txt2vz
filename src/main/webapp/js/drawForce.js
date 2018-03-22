@@ -1,6 +1,6 @@
 function drawForce(json) {
 
-	var width = 960, height = 500, root;
+	//var width = 960, height = 500, root;
 
 	d3.select("svg").remove();
 
@@ -8,13 +8,16 @@ function drawForce(json) {
 			.size([ width, height ]).on("tick", tick);	
 
 
-	var svg = d3.select("#vis").append("svg").attr("width", width).attr(
-			"height", height);
+	var svg = d3.select("#vis").append("svg")//.attr("width", width).attr(
+		//	"height", height);
 
 	var link = svg.selectAll(".link"), node = svg.selectAll(".node");
 
 	root = JSON.parse(json);
 	console.log ("root in drawForce" + root.name);
+
+    resize();
+    d3.select(window).on("resize", resize);
 
 	update();
 
@@ -56,6 +59,7 @@ function drawForce(json) {
 		node.select("circle").style("fill", color);
 		node.select("circle").style("opacity", opacity);
 	}
+
 
 	function tick() {
 		link.attr("x1", function(d) {
@@ -116,4 +120,10 @@ function drawForce(json) {
 		recurse(root);
 		return nodes;
 	}
+
+    function resize() {
+        width = window.innerWidth, height = window.innerHeight;
+        svg.attr("width", width).attr("height", height);
+        force.size([width, height]).resume();
+    }
 };

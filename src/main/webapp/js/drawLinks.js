@@ -12,10 +12,10 @@ function drawLinks(jsonlinks) {
 	var links = linksobj.links;
 	var nodes = {};
 
-	var w = 700,
+	var w = 960,
 		h = 800;
-	var svg = d3.select("#vis").append("svg").attr("width", w).attr("height",
-		h);
+	var svg = d3.select("#vis").append("svg")//.attr("width", w).attr("height",
+		//h);
 
 	// Compute the distinct nodes from the links.
 	links.forEach(function(link) {
@@ -39,7 +39,7 @@ function drawLinks(jsonlinks) {
 		nodes[tg].totalCooc += link.cooc;
 	});
 
-	var force = d3.layout.force().gravity(.05).charge(-200).size([w, h]);
+	var force = d3.layout.force().gravity(.05).charge(-200)//.size([w, h]);
 
 	var linkCoocExtent = d3.extent(links, function(d) {
 		return d.cooc
@@ -127,6 +127,9 @@ function drawLinks(jsonlinks) {
 		return d.name; // + " cooc: " + d.totalCooc;
 	});
 
+    resize();
+    d3.select(window).on("resize", resize);
+
 	force.on("tick", function() {
 		link.attr("x1", function(d) {
 			return d.source.x;
@@ -142,4 +145,10 @@ function drawLinks(jsonlinks) {
 			return "translate(" + d.x + "," + d.y + ")";
 		});
 	});
+
+    function resize() {
+        width = window.innerWidth, height = window.innerHeight;
+        svg.attr("width", width).attr("height", height);
+        force.size([width, height]).resume();
+    }
 }
