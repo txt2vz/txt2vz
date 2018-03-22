@@ -29,12 +29,12 @@ class LuceneToJSON extends GroovyServlet {
 		def m = request.getParameterMap()
 
 		//for docker
-		// def linuxpath = '/var/lib/jetty/webapps/Indexes/R10CrudeL'
+		String linuxpath = '/var/lib/jetty/webapps/Indexes/R3'
 
 		String localpath ='Indexes/R3'
 
-		def luceneQuery = request.getParameter("luceneQuery");
-		def category = request.getParameter("category")
+		String luceneQuery = request.getParameter("luceneQuery");
+		String category = request.getParameter("category")
 
 		//        def q0 = "contents:$luceneQuery AND category:$category"
 		// new QueryParser("contents", new StandardAnalyzer()).parse(q0);
@@ -44,7 +44,8 @@ class LuceneToJSON extends GroovyServlet {
 		println "category: $category"
 		println "m.lucenequery: " + m.luceneQuery;
 
-		Path indexPath = Paths.get(localpath)
+		//Path indexPath = Paths.get(localpath)
+		Path indexPath = Paths.get(linuxpath)
 		Directory directory = FSDirectory.open(indexPath)
 		BooleanQuery.Builder bqb = new BooleanQuery.Builder()
 

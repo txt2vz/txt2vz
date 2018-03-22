@@ -9,6 +9,7 @@ import org.apache.lucene.document.FieldType
 import org.apache.lucene.index.IndexOptions
 import org.apache.lucene.index.IndexWriter
 import org.apache.lucene.index.IndexWriterConfig
+import org.apache.lucene.search.MatchAllDocsQuery
 import org.apache.lucene.store.RAMDirectory
 import processText.WordPairsExtractor
 
@@ -73,7 +74,7 @@ class TweetsToLucene extends GroovyServlet{
 		
 		def m = request.getParameterMap()
 
-		def json =  new WordPairsExtractor(m).getJSONnetwork(ramDir, '*:*')
+		def json =  new WordPairsExtractor(m).getJSONnetwork(ramDir, new MatchAllDocsQuery())
 		println "in twitterTOJSON Json is $json"
 
 		response.getWriter().println(json)
