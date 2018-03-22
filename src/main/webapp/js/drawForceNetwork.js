@@ -1,4 +1,4 @@
-function drawLinks(jsonlinks) {
+function drawForceNetwork(jsonlinks) {
 
 	d3.select("svg").remove();
 	var linksobj;

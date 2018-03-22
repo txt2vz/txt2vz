@@ -1,4 +1,4 @@
-function drawForce(json) {
+function drawForceTree(json) {
 
 	//var width = 960, height = 500, root;
 
@@ -14,7 +14,7 @@ function drawForce(json) {
 	var link = svg.selectAll(".link"), node = svg.selectAll(".node");
 
 	root = JSON.parse(json);
-	console.log ("root in drawForce" + root.name);
+	console.log ("root in drawForceTree" + root.name);
 
     resize();
     d3.select(window).on("resize", resize);
@@ -78,11 +78,19 @@ function drawForce(json) {
 	}
 
 	function color(d) {
-		return  d.name == root.name ? "green"
-		: d._children ? "blueviolet" //"#3182bd" // collapsed package
-		: d.children ? "aqua"//"#c6dbef" // expanded package
-		: "magenta";//"#fd8d3c"; // leaf node
+        return  d.name == root.name ? colorbrewer.BuPu[0]
+            : d._children ?  colorbrewer.BuPu[3]
+            : d.children ?  colorbrewer.BuPu[6]
+            : colorbrewer.BuPu[8];
+
+
+		// return  d.name == root.name ? "green"
+		// : d._children ? "blueviolet" //"#3182bd" // collapsed package
+		// : d.children ? "aqua"//"#c6dbef" // expanded package
+		// : "magenta";//"#fd8d3c"; // leaf node
 	}
+
+   // colorbrewer.BuPu[8]
 	
 	function opacity(d) { 
 		return  d.name == root.name ? 0.9

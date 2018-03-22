@@ -44,8 +44,8 @@ class LuceneToJSON extends GroovyServlet {
 		println "category: $category"
 		println "m.lucenequery: " + m.luceneQuery;
 
-		//Path indexPath = Paths.get(localpath)
-		Path indexPath = Paths.get(linuxpath)
+		Path indexPath = Paths.get(localpath)
+		//Path indexPath = Paths.get(linuxpath)
 		Directory directory = FSDirectory.open(indexPath)
 		BooleanQuery.Builder bqb = new BooleanQuery.Builder()
 

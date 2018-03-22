@@ -64,7 +64,7 @@ appengine {
         // deploy configuration
         stopPreviousVersion = false  // default - stop the current version
         promote = false              // default - & make this the current version
-        version = '32'
+        version = '34'
         project = 'txt2vz'
     }
 }

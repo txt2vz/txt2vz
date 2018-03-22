@@ -53,5 +53,5 @@ function frontPage() {
 		'cooc' : 4,
 		'rank' : 2
 	} ];
-	drawLinks(jl);
+	drawForceNetwork(jl);
 };

@@ -171,12 +171,12 @@ html {
 				<div class="col-md-2 controls">
 					<label for="maxWords">Max Words</label>
 					<output for="maxWords" id="maxWords2">100</output>
-					<input type="range" min="1" max="1000" value="50" id="maxWords"
+					<input type="range" min="1" max="1000" value="100" id="maxWords"
 						step="1" oninput="outputMaxWords(value)"> <br> <br>
 
 					<label for="maxLinks">Max Word Pairs: </label>
-					<output for="maxLinks" id="maxLinks2">100</output>
-					<input type="range" min="1" max="1000" value="30" id="maxLinks"
+					<output for="maxLinks" id="maxLinks2">200</output>
+					<input type="range" min="1" max="1000" value="200" id="maxLinks"
 						step="1" oninput="outputMaxLinks(value)"> <br> <br>
 
 					<label for="cooc">Power Value: </label>
@@ -203,9 +203,9 @@ html {
 	<script
 		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 	<script src="https://d3js.org/d3.v3.min.js"></script>
-	<script src="js/drawForce.js"></script>
+	<script src="js/drawForceTree.js"></script>
 	<script src="js/drawDendrogram.js"></script>
-	<script src="js/drawLinks.js"></script>
+	<script src="js/drawForceNetwork.js"></script>
 	<script src="js/drawRadial.js"></script>
 	<script src="js/colorbrewer.js"></script>
 	<script src="js/frontPage.js"></script>
@@ -220,7 +220,7 @@ html {
 
 	<script>
 		var cooc = 0.5;
-		var maxLinks = 30;
+		var maxLinks = 100;
 		var maxWords = 50;
 		var oneLevel = true;
 
@@ -331,9 +331,9 @@ html {
 			//console.log("j.name " + j.name);
 
 			if ($("#networkType").val() == "forceNet")
-				drawLinks(jsonData);
+				drawForceNetwork(jsonData);
 			else if ($("#networkType").val() == "forceTree")
-				drawForce(jsonData);
+				drawForceTree(jsonData);
 			else if ($("#networkType").val() == "radial")
 				radialZC(jsonData);
 			else
