@@ -20,4 +20,4 @@ bin/
 .idea/libraries
 t2vgae.iml
 *.iml
-*TwitterKeys.groovy
+/src/main/groovy/twitter/TwitterKeys.groovy
