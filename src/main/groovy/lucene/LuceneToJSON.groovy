@@ -1,9 +1,8 @@
 package lucene
 
 import groovy.servlet.GroovyServlet
-import org.apache.lucene.analysis.standard.StandardAnalyzer
+import groovy.transform.CompileStatic
 import org.apache.lucene.index.Term
-import org.apache.lucene.queryparser.classic.QueryParser
 import org.apache.lucene.search.BooleanClause
 import org.apache.lucene.search.BooleanQuery
 import org.apache.lucene.search.Query
@@ -18,6 +17,7 @@ import javax.servlet.http.HttpServletResponse
 import java.nio.file.Path
 import java.nio.file.Paths
 
+@CompileStatic
 class LuceneToJSON extends GroovyServlet {
 
 	void init(ServletConfig config) {
@@ -28,25 +28,15 @@ class LuceneToJSON extends GroovyServlet {
 
 		def m = request.getParameterMap()
 
-		//for docker
-		String linuxpath = '/var/lib/jetty/webapps/Indexes/R3'
-
-		String localpath ='Indexes/R3'
-
 		String luceneQuery = request.getParameter("luceneQuery");
 		String category = request.getParameter("category")
 
-		//        def q0 = "contents:$luceneQuery AND category:$category"
-		// new QueryParser("contents", new StandardAnalyzer()).parse(q0);
-		///  catsFreq [01_corn:237, 02_crude:578, 07_ship:286]
-		//new MatchAllDocsQuery()
+		println "category: $category lucenequery: $luceneQuery"
 
-		println "category: $category"
-		println "m.lucenequery: " + m.luceneQuery;
+		Path localPath = Paths.get('Indexes/R3')
+		Path linuxPath = Paths.get('/var/lib/jetty/webapps/Indexes/R3')
 
-		Path indexPath = Paths.get(localpath)
-		//Path indexPath = Paths.get(linuxpath)
-		Directory directory = FSDirectory.open(indexPath)
+		Directory directory = localPath.toFile().exists() ? FSDirectory.open(localPath): FSDirectory.open(linuxPath)
 		BooleanQuery.Builder bqb = new BooleanQuery.Builder()
 
 		if (category != '*:*'){
@@ -58,14 +48,14 @@ class LuceneToJSON extends GroovyServlet {
 		Query q = new TermQuery(new Term(BuildIndex.FIELD_CONTENTS,luceneQuery))
 		bqb.add(q, BooleanClause.Occur.MUST)
 		BooleanQuery bq = bqb.build()
-
 		println "bq: $bq"
 
 		WordPairsExtractor wpe = new WordPairsExtractor(m);
-		def json = wpe.getJSONnetwork(directory, bq)
+		String json = wpe.getJSONnetwork(directory, bq)
 		response.getWriter().println(json)
 	}
 }
 
+//R3  catsFreq [01_corn:237, 02_crude:578, 07_ship:286]
 
 

@@ -57,7 +57,7 @@ function drawForceTree(json) {
 		});
 
 		node.select("circle").style("fill", color);
-		node.select("circle").style("opacity", opacity);
+		//node.select("circle").style("opacity", opacity);
 	}
 
 
@@ -78,10 +78,10 @@ function drawForceTree(json) {
 	}
 
 	function color(d) {
-        return  d.name == root.name ? colorbrewer.BuPu[0]
-            : d._children ?  colorbrewer.BuPu[3]
-            : d.children ?  colorbrewer.BuPu[6]
-            : colorbrewer.BuPu[8];
+        return  d.name == root.name ? colorbrewer.BuPu[8][6]
+            : d._children ?  colorbrewer.BuPu[8][5]
+            : d.children ?  colorbrewer.BuPu[8][4]
+            : colorbrewer.BuPu[8][1];
 
 
 		// return  d.name == root.name ? "green"
