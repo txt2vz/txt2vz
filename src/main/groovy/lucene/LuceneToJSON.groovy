@@ -33,10 +33,11 @@ class LuceneToJSON extends GroovyServlet {
 
 		println "category: $category lucenequery: $luceneQuery"
 
-		Path localPath = Paths.get('Indexes/R3')
-		Path linuxPath = Paths.get('/var/lib/jetty/webapps/Indexes/R3')
+		Path localPath = Paths.get('Indexes/20NG')
+		//Path linuxPath = Paths.get('/var/lib/jetty/webapps/Indexes/R3')
 
-		Directory directory = localPath.toFile().exists() ? FSDirectory.open(localPath): FSDirectory.open(linuxPath)
+		//Directory directory = localPath.toFile().exists() ? FSDirectory.open(localPath): FSDirectory.open(linuxPath)
+		Directory directory = FSDirectory.open(localPath)
 		BooleanQuery.Builder bqb = new BooleanQuery.Builder()
 
 		if (category != '*:*'){

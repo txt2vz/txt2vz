@@ -202,7 +202,7 @@ class WordPairsExtractor {
 
                 Tuple2 wordPair = new Tuple2(stemmedWord0, stemmedWord1)
 
-                double coocDocValue = getCooc(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[])
+                double coocDocValue = getCoocFast(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[])
                 double coocTotalValue = tuple2CoocMap[(wordPair)] ?: 0
                 coocTotalValue = coocTotalValue + coocDocValue
                 tuple2CoocMap << [(wordPair): coocTotalValue]
@@ -216,6 +216,22 @@ class WordPairsExtractor {
         w0Positions.each { w0pos ->
             w1Positions.each { w1pos ->
                 int distance = Math.abs(w0pos - w1pos) - 1
+                if (distance < MAX_DISTANCE) {
+                    coocValue = coocValue + Math.pow(powerValue, distance)
+                }
+            }
+        }
+        return coocValue
+    }
+
+    double getCoocFast(int[] w0Positions, int[] w1Positions) {
+        final int MAX_DISTANCE = 10;
+        double coocValue = 0
+
+        for (int w0pos: w0Positions){
+            for (int w1pos: w1Positions){
+                assert w0pos!=w1pos
+                final int distance = Math.abs(w0pos - w1pos) - 1
                 if (distance < MAX_DISTANCE) {
                     coocValue = coocValue + Math.pow(powerValue, distance)
                 }
