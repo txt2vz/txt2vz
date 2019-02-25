@@ -25,7 +25,7 @@ class WordPairsExtractor {
         powerValue = userParameters['cooc'][0] as Float
         maxWordPairs = userParameters['maxLinks'][0] as Integer
         highFreqWords = userParameters['maxWords'][0] as Integer
-        println "in GWL construction highFreqWords = $highFreqWords netTYpe $networkType userParameters: $userParameters"
+        println "in GWL construction highFreqWords = $highFreqWords netTYpe $networkType" //userParameters: $userParameters"
     }
 
     String getJSONnetwork(String s) {
