@@ -1,5 +1,8 @@
 package processText
 
+import groovy.transform.CompileStatic
+
+//@CompileStatic
 class WordPairsExtractor {
 
     private int highFreqWords = 40
@@ -20,11 +23,16 @@ class WordPairsExtractor {
     WordPairsExtractor() {
     }
 
-    WordPairsExtractor(Map userParameters) {
-        networkType = userParameters['networkType'][0];
-        powerValue = userParameters['cooc'][0] as Float
-        maxWordPairs = userParameters['maxLinks'][0] as Integer
-        highFreqWords = userParameters['maxWords'][0] as Integer
+  //  @CompileStatic
+    WordPairsExtractor(Map m) {
+
+        String networkType = m['networkType'][0];
+
+       // String s = userParameters['cooc'][0]
+        // networkType = userParameters['networkType'][0];
+   //     powerValue = userParameters['cooc'][0] as Float
+     //   maxWordPairs = userParameters['maxLinks'][0] as Integer
+      //  highFreqWords = userParameters['maxWords'][0] as Integer
         println "in GWL construction highFreqWords = $highFreqWords netTYpe $networkType" //userParameters: $userParameters"
     }
 
@@ -109,23 +117,4 @@ class WordPairsExtractor {
         }
         return coocValue
     }
-
-    //powers for 0.9 - power function could be expensive
-    def final powers = [
-            0 : 1,
-            1 : 0.9,
-            2 : 0.81,
-            3 : 0.729,
-            4 : 0.6561,
-            5 : 0.59049,
-            6 : 0.531441,
-            7 : 0.4782969,
-            8 : 0.43046721,
-            9 : 0.387420489,
-            10: 0.34867844,
-            11: 0.313810596,
-            12: 0.282429536,
-            13: 0.254186583,
-            14: 0.228767925
-    ]
 }
