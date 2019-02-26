@@ -24,7 +24,7 @@ public class PlainText extends GroovyServlet {
 	//	String networkType = m['networkType'][0];
 	//	System.out.println "net typey " + networkType
 
-		// String s = userParameters['cooc'][0]
+		// String s = userParameters['cooc'][
 		String networkType = m['networkType'][0];
 		float     powerValue = m['cooc'][0] as Float
 		int   maxWordPairs = m['maxLinks'][0] as Integer
