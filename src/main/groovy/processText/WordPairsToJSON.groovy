@@ -1,29 +1,34 @@
 package processText
 
 import groovy.json.JsonBuilder
+import groovy.transform.CompileStatic
+
 
 class WordPairsToJSON {
 
-    private def internalNodes = [] as Set
-    private def allNodes = [] as Set
+    private Set<String> internalNodes = [] as Set
+    private Set<String> allNodes = [] as Set
 
-    String getJSON(LinkedHashMap tuple2CoocMap, LinkedHashMap stemInfo, int maxWordPairs, String networkType) {
-        tuple2CoocMap = tuple2CoocMap.sort { -it.value }
-        tuple2CoocMap = tuple2CoocMap.take(maxWordPairs)
-        println "tuple2CoocMap take 5: " + tuple2CoocMap.take(5)
+    String getJSON(LinkedHashMap<Tuple2<String, String>, Double> tuple2CoocMap,  Map<String,Map<String, Integer>> stemInfo, int maxWordPairs, String networkType) {
+//        Map <Tuple2<String, String>, Double> tuple2CoocMapSorted = tuple2CoocMap.sort { -it.value }
+//        Map <Tuple2<String, String>, Double> tuple2CoocMapReduced = tuple2CoocMapSorted.take(maxWordPairs)
+//        println "tuple2CoocMap take 5: " + tuple2CoocMap.take(5)
 
-        def json = (networkType == 'forceNet') ? getJSONgraph(tuple2CoocMap, stemInfo) : getJSONtree(tuple2CoocMap, stemInfo)
-        return json
+        //def json = (networkType == 'forceNet') ? getJSONgraph(tuple2CoocMapReduced, stemInfo) : getJSONtree(tuple2CoocMap, stemInfo)
+        return ""//  json
     }
 
-    private String getJSONgraph(Map wm, Map stemMap) {
+    @CompileStatic
+     String getJSONgraph( Tuple2< Map<Tuple2<String,String>,Double>, Map<String,Map<String, Integer>>>   stemT2) {
 
+        Map<String,Map<String, Integer>> stemInfo = stemT2.second
+         Map <Tuple2<String,String>, Double> wm = stemT2.first
         def data = [
 
                 links: wm.collect {
 
-                    def src = stemMap[it.key.first].max { it.value }.key
-                    def tgt = stemMap[it.key.second].max { it.value }.key
+                    def src = stemInfo[it.key.first].max { it.value }.key
+                    def tgt = stemInfo[it.key.second].max { it.value }.key
 
                     [source: src,
                      target: tgt,
@@ -36,12 +41,16 @@ class WordPairsToJSON {
         return json
     }
 
-    private String getJSONtree(Map wl, Map stemMap) {
-        def tree = [:]
+    @CompileStatic
+    String getJSONtree(Tuple2< Map<Tuple2<String,String>,Double>, Map<String,Map<String, Integer>>>   stemT2   ) {
+       Map<String,Map<String, Integer>> stemInfo = stemT2.second
+       Map <Tuple2<String,String>, Double> wordPairWithCooc = stemT2.first
 
-        wl.collect { wordLink ->
-            def word0 = stemMap[wordLink.key.first].max { it.value }.key
-            def word1 = stemMap[wordLink.key.second].max { it.value }.key
+       def tree = [:]
+
+        wordPairWithCooc.collect { wordLink ->
+            def word0 = stemInfo[wordLink.key.first].max { it.value }.key
+            def word1 = stemInfo[wordLink.key.second].max { it.value }.key
 
             if (tree.isEmpty()) {
                 tree <<
@@ -55,6 +64,8 @@ class WordPairsToJSON {
                 addPairToMap(tree, word1, word0, wordLink.value)
             }
         }
+       println "tree $tree"
+
         def json = new JsonBuilder(tree)
         return json
     }

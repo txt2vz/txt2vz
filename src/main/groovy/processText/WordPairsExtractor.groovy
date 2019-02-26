@@ -2,88 +2,76 @@ package processText
 
 import groovy.transform.CompileStatic
 
-//@CompileStatic
+@CompileStatic
 class WordPairsExtractor {
 
     private int highFreqWords = 40
     private int maxWordPairs = 80
     private float powerValue = 0.5
-    private String networkType = "tree"
-    private def stemmer = new PorterStemmer()
+   // private String networkType = "tree"
 
-    WordPairsExtractor(String netType, Float cin, int maxL, int hfq) {
-        networkType = netType
-        this.powerValue = cin
+
+    WordPairsExtractor(String netType, Float powerIn, int maxL, int hfq) {
+     //   networkType = netType
+        this.powerValue = powerIn
         this.maxWordPairs = maxL
         this.highFreqWords = hfq
 
-        println "**GenerateWordLinks constructor - cocoIn: $powerValue maxWordPairs: $maxWordPairs highFreqWords: $highFreqWords "
+    //    println "**GenerateWordLinks constructor - cocoIn: $powerValue maxWordPairs: $maxWordPairs highFreqWords: $highFreqWords "
     }
 
     WordPairsExtractor() {
     }
 
-  //  @CompileStatic
     WordPairsExtractor(Map m) {
-
-        String networkType = m['networkType'][0];
-
+       // String networkType = m['networkType'][0];
        // String s = userParameters['cooc'][0]
         // networkType = userParameters['networkType'][0];
    //     powerValue = userParameters['cooc'][0] as Float
      //   maxWordPairs = userParameters['maxLinks'][0] as Integer
       //  highFreqWords = userParameters['maxWords'][0] as Integer
-        println "in GWL construction highFreqWords = $highFreqWords netTYpe $networkType" //userParameters: $userParameters"
+     //   println "in GWL construction highFreqWords = $highFreqWords netTYpe $networkType" //userParameters: $userParameters"
     }
 
-    String getJSONnetwork(String s) {
+    Tuple2< Map<Tuple2<String,String>,Double>, Map<String,Map<String, Integer>>> getWordPairWithCooc(String s) {
 
-        //s=new File ('athenaBookChapter.txt').text
+       // println "s is $s"
         s = s ?: "empty text"
 
-        def words = s.replaceAll(/\W/, "  ").toLowerCase().tokenize().minus(StopSet.stopSet)   // smallStopSet2);//  stopSet)
+       List<String> words = s.replaceAll(/\W/, "  ").toLowerCase().tokenize().minus(StopSet.stopSet)   // smallStopSet2);//  stopSet)
 
         println " words size: " + words.size() + " unique words " + words.unique(false).size()
      
-        def stemInfo = [:] //stemmed word is key and value is a map of a particular word form and its frequency
-        def stemmedWordPositionsMap = [:] //stemmed word is key and value is a list of positions where any of the words occur
-        def tuple2CoocMap = [:]  //word pair tuple is key - value is cooc value summed across all docs
+        Map<String,Map<String, Integer>> stemInfo = [:] //stemmed word is key and value is a map of a particular word form and its frequency
+        Map<String, List<Integer>> stemmedWordPositionsMap = [:] //stemmed word is key and value is a list of positions where any of the words occur
+
 
         //min word size 1 or 2?
         words.findAll { it.size() >= 2 }
-                .eachWithIndex { it, indexWordPosition ->
+                .eachWithIndex { word, wordPositionIndex ->
 
-            def stemmedWord = stemmer.stem(it)
-            stemmedWordPositionsMap[stemmedWord] = stemmedWordPositionsMap.get(stemmedWord, []) << indexWordPosition
 
-            def forms = [:]
-            forms = stemInfo.get((stemmedWord), [(it): 0])
+            String stemmedWord = new PorterStemmer().stem(word)
+            stemmedWordPositionsMap[stemmedWord] = stemmedWordPositionsMap.get(stemmedWord, []) << wordPositionIndex
 
-            def n = forms.get((it)) ?: 0
-            forms.put((it), n + 1)
+            Map<String,Integer> forms = stemInfo.get((stemmedWord), [(word): 0])
+
+            int n = forms.get((word)) ?: 0
+            forms.put((word), n + 1)
 
             stemInfo[(stemmedWord)] = forms
         }
 
         println "take 5 steminfo: " + stemInfo.take(5)
 
-        //sort by size of list (word frequency)
-        stemmedWordPositionsMap = stemmedWordPositionsMap.sort { -it.value.size() }
+        Map<Tuple2<String,String>,Double> wordPairWithCooccurence = getTuple2CoocMap(stemmedWordPositionsMap.sort { -it.value.size() }.take(highFreqWords))
 
-        //wordToFormsMap = wordToFormsMap.drop(wordToFormsMap.size() - highFreqWords)
-        stemmedWordPositionsMap = stemmedWordPositionsMap.take(highFreqWords)
-
-        println "after take wordposmap $stemmedWordPositionsMap  wortopositmap.size " + stemmedWordPositionsMap.size()
-
-        def wordPairList = []
-
-        buildTuple2CoocMap(stemmedWordPositionsMap, tuple2CoocMap)
-        String json = new WordPairsToJSON().getJSON(tuple2CoocMap, stemInfo, maxWordPairs, networkType)
-        println "json: $json"
-        return json
+        return new Tuple2(wordPairWithCooccurence.sort { -it.value }.take(maxWordPairs), stemInfo)
     }
 
-    private void buildTuple2CoocMap(Map stemmedWordPositionsMap, Map tuple2CoocMap) {
+    Map<Tuple2<String,String>,Double> getTuple2CoocMap(Map <String, List<Integer>> stemmedWordPositionsMap) {
+
+        Map<Tuple2<String,String>,Double> tuple2CoocMap = [:]  //word pair tuple is key - value is cooc value summed across all docs
 
 //check every possible stemmed word pair
         def stemmedWords = stemmedWordPositionsMap.keySet()
@@ -92,14 +80,15 @@ class WordPairsExtractor {
                 String stemmedWord0 = stemmedWords[i]
                 String stemmedWord1 = stemmedWords[j]
 
-                Tuple2 wordPair = new Tuple2(stemmedWord0, stemmedWord1)
+                Tuple2<String, String> wordPair = new Tuple2(stemmedWord0, stemmedWord1)
 
                 double coocDocValue = getCooc(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[])
                 double coocTotalValue = tuple2CoocMap[(wordPair)] ?: 0
                 coocTotalValue = coocTotalValue + coocDocValue
-                tuple2CoocMap << [(wordPair): coocTotalValue]
+                tuple2CoocMap.put(wordPair,coocTotalValue)
             }
         }
+        return tuple2CoocMap
     }
 
     double getCooc(int[] w0Positions, int[] w1Positions) {

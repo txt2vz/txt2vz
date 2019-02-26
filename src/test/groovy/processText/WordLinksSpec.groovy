@@ -10,7 +10,9 @@ class WordLinksSpec extends spock.lang.Specification {
 		JsonSlurper slurper = new JsonSlurper()
 
 		when:
-		def jsonText = wpe.getJSONnetwork("one1 two2 three3")
+		def stemT2 = wpe.getWordPairWithCooc("one1 two2 three3")
+		def jsonText = new WordPairsToJSON().getJSONtree(stemT2)
+
 		def json = slurper.parseText(jsonText)
 
 		then:
@@ -34,13 +36,14 @@ Barack Obama Obama said he kept a pair of Ali’s gloves on display in his priva
 The three-time world heavyweight champion died late on Friday evening, a day after he was admitted to a Phoenix-area hospital with a respiratory ailment. His family were gathered around him.
 Ali had long battled Parkinson’s disease, which impaired his speech and made the irrepressible athlete – known for saying he could float like a butterfly and sting like a bee – something of a prisoner in his own body.
 On Saturday, family spokesman Bob Gunnell said Ali died from septic shock due to unspecified natural causes. He did not suffer, Gunnell said. A White House statement said Obama had called Lonnie Ali, the champion’s fourth wife, “to offer his family’s deepest condolences for the passing of her husband”.
-View image on Twitter
+
 '''
 		def wpe = new WordPairsExtractor()
 		JsonSlurper slurper = new JsonSlurper()
 
 		when:
-		def jsonText = wpe.getJSONnetwork(mAli)
+		def stemT2 = wpe.getWordPairWithCooc(mAli)
+		def jsonText = new WordPairsToJSON().getJSONtree(stemT2)
 		def json = slurper.parseText(jsonText)
 
 		then:	

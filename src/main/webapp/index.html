@@ -85,21 +85,16 @@
 
 <body>
 <div class="container  col-md-12">
-    <a
-            href="https://plus.google.com/u/0/b/117816592489907408686/117816592489907408686/about"
-            target="_blank"> <em style="font-size: 28px"><b> <span
-            style="color: blueviolet">t</span><span style="color: cyan">xt</span><span
-            style="color: magenta">2</span><span style="color: cyan">vz</span></b></em>
-    </a>
+
     <button type="button" class="btn btn-info" data-toggle="collapse"
             data-target="#control2">Show/Hide controls/selections
     </button>
     <div id="control2" class="collapse in well">
 
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-4">
 
-					<textarea id="txta1" COLS="77" ROWS="6"
+					<textarea id="txta1" COLS="48" ROWS="6"
                               placeholder="Type or paste text here"></textarea>
                 <br> <input type="button" value="viz text"
                             class="btn btn-primary" onclick="textToJSON(txta1.value)">
@@ -123,6 +118,13 @@
                 <option value="forceNet">Force (network)</option>
             </select> <br/> <br/>
 
+                <div class="btn btn-info fileinput-button">
+                    <i class="icon-plus icon-white"></i>
+                    <div>Drag and drop file here (pdf,docx,ppt etc.)</div>
+                    <input id="fileupload" type="file" name="files[]" multiple>
+                </div>
+                <br/> <br/>
+
 
                 <div id="hint">
                     Mouse wheel to zoom. <br/> Hold click and move mouse to move
@@ -132,13 +134,13 @@
 
             <div class="col-md-2 controls">
                 <label for="maxWords">Max Words</label>
-                <output for="maxWords" id="maxWords2">50</output>
-                <input type="range" min="1" max="1000" value="50" id="maxWords"
+                <output for="maxWords" id="maxWords2">100</output>
+                <input type="range" min="1" max="1000" value="100" id="maxWords"
                        step="1" oninput="outputMaxWords(value)"> <br> <br>
 
                 <label for="maxLinks">Max Word Pairs: </label>
-                <output for="maxLinks" id="maxLinks2">100</output>
-                <input type="range" min="1" max="1000" value="100" id="maxLinks"
+                <output for="maxLinks" id="maxLinks2">200</output>
+                <input type="range" min="1" max="1000" value="200" id="maxLinks"
                        step="1" oninput="outputMaxLinks(value)"> <br> <br>
 
                 <label for="cooc">Power Value: </label>
@@ -153,13 +155,6 @@
         <div class="main"></div>
         <div id="vis"></div>
     </div>
-
-    <div class="navbar navbar-fixed-bottom"
-         style="font-family: arial; font-size: 10px; background-color: white;">
-        By Laurie Hirsch Info: <a
-            href="https://plus.google.com/u/0/b/117816592489907408686/117816592489907408686/about"
-            target="_blank">txt2vz</a>
-    </div>
 </div>
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script
@@ -172,8 +167,10 @@
 <script src="js/colorbrewer.js"></script>
 <script src="js/frontPage.js"></script>
 
-
-
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.18.0/js/vendor/jquery.ui.widget.min.js"></script>
+<script
+        src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.18.0/js/jquery.fileupload.min.js"></script>
 <script
         src="https://rawgit.com/misoproject/d3.chart/master/d3.chart.min.js"></script>
 <script src="js/d3.chart.layout.hierarchy.js"></script>
@@ -226,6 +223,7 @@
         }
         event.stopPropagation();
     });
+
 
 </script>
 
@@ -294,6 +292,31 @@
                         });
             });
 
+    $(function () {
+
+        $('#fileupload').fileupload({
+            url: "uploadservice",
+            replaceFileInput: false,
+            dataType: 'text',
+            done: function (e, data) {
+                closeModal();
+                if (data.result.startsWith("#error"))
+                    alert("error in file upload " + data.result);
+                else {
+                    textToJSON(data.result);
+                    //console.log("dat is " + data.result);
+                    //closeModal();
+                }
+            },
+            progress: function (e, data) {
+                //console.log ("in progresss");
+                openModal();
+                //   var progress = parseInt(data.loaded / data.total * 100, 10);
+                //  $('#progress .bar').css('width', progress + '%');
+            }
+        });
+    });
+
     function textToJSON(text) {
         text = text.replace(/%/g, '');
         console.log("in texttojson net.val " + $("#networkType").val());
@@ -317,30 +340,9 @@
         });
     };
 
-    function luceneToJSON() {
-
-        openModal();
-
-        jQuery.ajax({
-            type: "POST",
-            url: "luceneservice",
-            cache: false,
-            data: {
-
-                networkType: $("#networkType").val(),
-                cooc: cooc,
-                maxLinks: maxLinks,
-                maxWords: maxWords
-            },
-            success: function (jsonData, textStatus, jqXHR) {
-
-                draw(jsonData);
-                closeModal();
-            },
-        });
-    };
 
     closeModal();
 </script>
+
 </body>
 </html>
