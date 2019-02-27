@@ -8,29 +8,14 @@ class WordPairsExtractor {
     private int highFreqWords = 40
     private int maxWordPairs = 80
     private float powerValue = 0.5
-   // private String networkType = "tree"
 
-
-    WordPairsExtractor(String netType, Float powerIn, int maxL, int hfq) {
-     //   networkType = netType
+    WordPairsExtractor(Float powerIn, int maxL, int hfq) {
         this.powerValue = powerIn
         this.maxWordPairs = maxL
         this.highFreqWords = hfq
-
-    //    println "**GenerateWordLinks constructor - cocoIn: $powerValue maxWordPairs: $maxWordPairs highFreqWords: $highFreqWords "
     }
 
     WordPairsExtractor() {
-    }
-
-    WordPairsExtractor(Map m) {
-       // String networkType = m['networkType'][0];
-       // String s = userParameters['cooc'][0]
-        // networkType = userParameters['networkType'][0];
-   //     powerValue = userParameters['cooc'][0] as Float
-     //   maxWordPairs = userParameters['maxLinks'][0] as Integer
-      //  highFreqWords = userParameters['maxWords'][0] as Integer
-     //   println "in GWL construction highFreqWords = $highFreqWords netTYpe $networkType" //userParameters: $userParameters"
     }
 
     Tuple2< Map<Tuple2<String,String>,Double>, Map<String,Map<String, Integer>>> getWordPairWithCooc(String s) {
@@ -45,11 +30,9 @@ class WordPairsExtractor {
         Map<String,Map<String, Integer>> stemInfo = [:] //stemmed word is key and value is a map of a particular word form and its frequency
         Map<String, List<Integer>> stemmedWordPositionsMap = [:] //stemmed word is key and value is a list of positions where any of the words occur
 
-
         //min word size 1 or 2?
         words.findAll { it.size() >= 2 }
                 .eachWithIndex { word, wordPositionIndex ->
-
 
             String stemmedWord = new PorterStemmer().stem(word)
             stemmedWordPositionsMap[stemmedWord] = stemmedWordPositionsMap.get(stemmedWord, []) << wordPositionIndex
@@ -62,7 +45,7 @@ class WordPairsExtractor {
             stemInfo[(stemmedWord)] = forms
         }
 
-        println "take 5 steminfo: " + stemInfo.take(5)
+        println "Take 5 steminfo: " + stemInfo.take(5)
 
         Map<Tuple2<String,String>,Double> wordPairWithCooccurence = getTuple2CoocMap(stemmedWordPositionsMap.sort { -it.value.size() }.take(highFreqWords))
 
@@ -71,10 +54,11 @@ class WordPairsExtractor {
 
     Map<Tuple2<String,String>,Double> getTuple2CoocMap(Map <String, List<Integer>> stemmedWordPositionsMap) {
 
-        Map<Tuple2<String,String>,Double> tuple2CoocMap = [:]  //word pair tuple is key - value is cooc value summed across all docs
+        Map<Tuple2<String,String>,Double> tuple2CoocMap = [:]  //word pair tuple is key - value is sum of cooc
 
 //check every possible stemmed word pair
-        def stemmedWords = stemmedWordPositionsMap.keySet()
+        Set stemmedWords = stemmedWordPositionsMap.keySet()
+
         for (int i = 0; i < stemmedWords.size(); i++) {
             for (int j = i + 1; j < stemmedWords.size(); j++) {
                 String stemmedWord0 = stemmedWords[i]

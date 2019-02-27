@@ -23,16 +23,13 @@ public class PlainText extends GroovyServlet {
         int maxWordPairs = m['maxLinks'][0] as Integer
         int highFreqWords = m['maxWords'][0] as Integer
 
-        WordPairsExtractor wpe = new WordPairsExtractor(networkType, powerValue, maxWordPairs, highFreqWords)
+        WordPairsExtractor wpe = new WordPairsExtractor(powerValue, maxWordPairs, highFreqWords)
 
         Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> stemT2 = wpe.getWordPairWithCooc(text)
 
-        String json
-        if (networkType == 'forceNet')
-            json = new WordPairsToJSON().getJSONgraph(stemT2)
-        else
-            json = new WordPairsToJSON().getJSONtree(stemT2)
-        println "json $json"
+        WordPairsToJSON wptj = new WordPairsToJSON()
+
+        String json = (networkType == 'forceNet') ? wptj.getJSONgraph(stemT2) : wptj.getJSONtree(stemT2)
 
         response.getWriter().println(json)
     }

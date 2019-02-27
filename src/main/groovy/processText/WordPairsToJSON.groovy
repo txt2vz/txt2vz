@@ -3,20 +3,11 @@ package processText
 import groovy.json.JsonBuilder
 import groovy.transform.CompileStatic
 
-
+//@CompileStatic
 class WordPairsToJSON {
 
     private Set<String> internalNodes = [] as Set
     private Set<String> allNodes = [] as Set
-
-    String getJSON(LinkedHashMap<Tuple2<String, String>, Double> tuple2CoocMap,  Map<String,Map<String, Integer>> stemInfo, int maxWordPairs, String networkType) {
-//        Map <Tuple2<String, String>, Double> tuple2CoocMapSorted = tuple2CoocMap.sort { -it.value }
-//        Map <Tuple2<String, String>, Double> tuple2CoocMapReduced = tuple2CoocMapSorted.take(maxWordPairs)
-//        println "tuple2CoocMap take 5: " + tuple2CoocMap.take(5)
-
-        //def json = (networkType == 'forceNet') ? getJSONgraph(tuple2CoocMapReduced, stemInfo) : getJSONtree(tuple2CoocMap, stemInfo)
-        return ""//  json
-    }
 
     @CompileStatic
      String getJSONgraph( Tuple2< Map<Tuple2<String,String>,Double>, Map<String,Map<String, Integer>>>   stemT2) {
@@ -49,12 +40,11 @@ class WordPairsToJSON {
        def tree = [:]
 
         wordPairWithCooc.collect { wordLink ->
-            def word0 = stemInfo[wordLink.key.first].max { it.value }.key
-            def word1 = stemInfo[wordLink.key.second].max { it.value }.key
+            String word0 = stemInfo[wordLink.key.first].max { it.value }.key
+            String word1 = stemInfo[wordLink.key.second].max { it.value }.key
 
             if (tree.isEmpty()) {
-                tree <<
-                        [name    : word0, cooc: wordLink.value,
+                tree =  [name    : word0, cooc: wordLink.value,
                          children: [[name: word1]]]
                 internalNodes.add(word0)
                 allNodes.add(word0)
@@ -70,7 +60,7 @@ class WordPairsToJSON {
         return json
     }
 
-    private void addPairToMap(Map m, String w0, String w1, def cooc) {
+    private void addPairToMap(Map m, String w0, String w1, double cooc) {
 
         assert w0 != w1
 
@@ -79,7 +69,7 @@ class WordPairsToJSON {
             if (it.value in List) {
                 it.value.each {
                     assert it in Map
-                    addPairToMap(it, w0, w1, cooc)
+                    addPairToMap(it as Map, w0, w1, cooc)
                 }
             } else {
 
@@ -93,7 +83,7 @@ class WordPairsToJSON {
                     } else {
 
                         //do not create a new internal node if one already exists
-                        if (internalNodes.add(it.value)) {
+                        if (internalNodes.add(it.value.toString())) {
                             m << ["name": it.value, "cooc": cooc, "children": [["name": w1]]]
                         }
                     }
