@@ -15,13 +15,12 @@ public class PlainText extends GroovyServlet {
     }
 
     void service(HttpServletRequest request, HttpServletResponse response) {
-        String text = request.getParameter("text");
-        Map m = request.getParameterMap();
 
-        String networkType = m['networkType'][0];
-        float powerValue = m['cooc'][0] as Float
-        int maxWordPairs = m['maxLinks'][0] as Integer
-        int highFreqWords = m['maxWords'][0] as Integer
+        String text = request.getParameter("text");
+		String networkType = request.getParameter('networkType');
+		final float powerValue = request.getParameter('cooc') as Float
+		final int maxWordPairs = request.getParameter('maxLinks') as Integer
+		final int highFreqWords = request.getParameter('maxWords') as Integer
 
         WordPairsExtractor wpe = new WordPairsExtractor(powerValue, maxWordPairs, highFreqWords)
 

@@ -2,54 +2,54 @@ function frontPage() {
 	//console.log("in front page");
 	var jl = {};
 	jl.links = [ {
-		'source' : 'txt2vz',
-		'target' : 'by',
+		'source' : 'british',
+		'target' : 'online',
 		'cooc' : 4,
 		'rank' : 7
 
 	}, {
-		'source' : 'laurie',
-		'target' : 'by',
+		'source' : 'british',
+		'target' : 'archives',
 		'cooc' : 4,
 		'rank' : 8
 	}, {
-		'source' : 'txt2vz',
-		'target' : 'document',
+		'source' : 'archives',
+		'target' : 'online',
 		'cooc' : 4,
 		'rank' : 0
 	}, {
-		'source' : 'analysis',
-		'target' : 'visualization',
+		'source' : 'archives',
+		'target' : 'collections',
 		'cooc' : 4,
 		'rank' : 2
 	}, {
-		'source' : 'summary',
-		'target' : 'visualization',
+		'source' : 'archives',
+		'target' : 'academic',
 		'cooc' : 4,
 		'rank' : 3
 	}, {
-		'source' : 'concept',
-		'target' : 'visualization',
+		'source' : 'academic',
+		'target' : 'publishers',
 		'cooc' : 4,
 		'rank' : 4
 	}, {
-		'source' : 'document',
-		'target' : 'mind',
+		'source' : 'online',
+		'target' : 'website',
 		'cooc' : 4,
 		'rank' : 7
 	}, {
-		'source' : 'mind',
-		'target' : 'map',
+		'source' : 'website',
+		'target' : '3 million',
 		'cooc' : 4,
 		'rank' : 7
 	}, {
-		'source' : 'document',
-		'target' : 'visualization',
+		'source' : '3 million',
+		'target' : 'records',
 		'cooc' : 4,
 		'rank' : 1
 	}, {
-		'source' : 'laurie',
-		'target' : 'hirsch',
+		'source' : 'archives',
+		'target' : 'history',
 		'cooc' : 4,
 		'rank' : 2
 	} ];

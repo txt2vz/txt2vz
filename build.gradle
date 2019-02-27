@@ -9,8 +9,7 @@ repositories {
 
 apply from: 'https://raw.github.com/akhikhl/gretty/master/pluginScripts/gretty.plugin'
 apply plugin: 'groovy'
-apply plugin: 'war'                               // standard Web Archive plugin
-
+apply plugin: 'war'             
 
 dependencies {
     providedCompile group: 'javax.servlet', name: 'servlet-api', version:'2.5'

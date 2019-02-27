@@ -57,7 +57,7 @@ class WordPairsExtractor {
         Map<Tuple2<String,String>,Double> tuple2CoocMap = [:]  //word pair tuple is key - value is sum of cooc
 
 //check every possible stemmed word pair
-        Set stemmedWords = stemmedWordPositionsMap.keySet()
+        Set<String> stemmedWords = stemmedWordPositionsMap.keySet()
 
         for (int i = 0; i < stemmedWords.size(); i++) {
             for (int j = i + 1; j < stemmedWords.size(); j++) {
