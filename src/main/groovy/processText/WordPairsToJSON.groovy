@@ -3,7 +3,7 @@ package processText
 import groovy.json.JsonBuilder
 import groovy.transform.CompileStatic
 
-//@CompileStatic
+@CompileStatic
 class WordPairsToJSON {
 
     private Set<String> internalNodes = [] as Set
@@ -27,17 +27,14 @@ class WordPairsToJSON {
                     ]
                 }
         ]
-
-        def json = new JsonBuilder(data)
-        return json
+        return new JsonBuilder(data)
     }
 
     @CompileStatic
     String getJSONtree(Tuple2< Map<Tuple2<String,String>,Double>, Map<String,Map<String, Integer>>>   stemT2   ) {
        Map<String,Map<String, Integer>> stemInfo = stemT2.second
        Map <Tuple2<String,String>, Double> wordPairWithCooc = stemT2.first
-
-       def tree = [:]
+       Map tree = [:]
 
         wordPairWithCooc.collect { wordLink ->
             String word0 = stemInfo[wordLink.key.first].max { it.value }.key
@@ -78,7 +75,9 @@ class WordPairsToJSON {
                     //the node has children.  Check the other word is not also an internal node
                     if (m.children && !internalNodes.contains(w1)) {
 
-                        m.children << ["name": w1]
+                        List mChildren = m.children as List
+                        Map leafMap = ["name": w1]
+                        mChildren.add(leafMap)
 
                     } else {
 

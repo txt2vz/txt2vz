@@ -25,7 +25,7 @@
         }
 
         .well {
-            background-color: #e6fff2;
+            background-color: #f0f0f0;
         }
 
         html {
@@ -46,6 +46,10 @@
             cursor: default;
         }
 
+        .btn-info{
+            background-color: #66a3ff;
+        }
+
         .node circle {
             fill: mediumslateblue;
             stroke: steelblue;
@@ -58,7 +62,6 @@
 
         .node text {
             font-size: 12px;
-            font: bold;
             font-family: sans-serif;
         }
 
@@ -74,7 +77,8 @@
         }
 
         #hint {
-            color: magenta;
+            color: #a94dff;
+            font-size: 11px;
             font-style: italic;
             font-weight: bold;
             font-style: italic;
@@ -92,9 +96,9 @@
     <div id="control2" class="collapse in well">
 
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-5">
 
-					<textarea id="txta1" COLS="48" ROWS="6"
+					<textarea id="txta1" COLS="68" ROWS="6"
                               placeholder="Type or paste text here"></textarea>
                 <br> <input type="button" value="viz text"
                             class="btn btn-primary" onclick="textToJSON(txta1.value)">
@@ -125,9 +129,8 @@
                 </div>
                 <br/> <br/>
 
-
                 <div id="hint">
-                    Mouse wheel to zoom. <br/> Hold click and move mouse to move
+                    Mouse wheel to zoom (radial). <br/> Hold click and move mouse to move
                     tree
                 </div>
             </div>
