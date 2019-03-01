@@ -9,7 +9,6 @@ class WordPairsToJSON {
     private Set<String> internalNodes = [] as Set
     private Set<String> allNodes = [] as Set
 
-    @CompileStatic
      String getJSONgraph( Tuple2< Map<Tuple2<String,String>,Double>, Map<String,Map<String, Integer>>>   stemT2) {
 
         Map<String,Map<String, Integer>> stemInfo = stemT2.second
@@ -30,7 +29,6 @@ class WordPairsToJSON {
         return new JsonBuilder(data)
     }
 
-    @CompileStatic
     String getJSONtree(Tuple2< Map<Tuple2<String,String>,Double>, Map<String,Map<String, Integer>>>   stemT2   ) {
        Map<String,Map<String, Integer>> stemInfo = stemT2.second
        Map <Tuple2<String,String>, Double> wordPairWithCooc = stemT2.first

@@ -45,9 +45,9 @@ class WordPairsExtractor {
             stemInfo[(stemmedWord)] = forms
         }
 
-        println "Take 5 steminfo: " + stemInfo.take(5)
-
         Map<Tuple2<String,String>,Double> wordPairWithCooccurence = getTuple2CoocMap(stemmedWordPositionsMap.sort { -it.value.size() }.take(highFreqWords))
+        println "Take 5 steminfo: " + stemInfo.take(5)
+        println "Take 10 wordPairWithCooccurence " + wordPairWithCooccurence.take(10)
 
         return new Tuple2(wordPairWithCooccurence.sort { -it.value }.take(maxWordPairs), stemInfo)
     }

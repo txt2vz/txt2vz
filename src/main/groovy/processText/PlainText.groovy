@@ -29,6 +29,7 @@ public class PlainText extends GroovyServlet {
         WordPairsToJSON wptj = new WordPairsToJSON()
 
         String json = (networkType == 'forceNet') ? wptj.getJSONgraph(stemT2) : wptj.getJSONtree(stemT2)
+        println "json: $json"
 
         response.getWriter().println(json)
     }

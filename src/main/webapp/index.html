@@ -170,6 +170,7 @@
 <script src="js/drawRadial.js"></script>
 <script src="js/colorbrewer.js"></script>
 <script src="js/frontPage.js"></script>
+<script src="js/frontPage2.js"></script>
 
 <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.18.0/js/vendor/jquery.ui.widget.min.js"></script>
@@ -186,6 +187,7 @@
     var oneLevel = true;
 
     frontPage();
+    //frontPage2();
 
     jQuery('input').click(function () {
         jQuery(this).select();
@@ -256,8 +258,7 @@
 
             tree.draw(json);
         }
-        ;
-    };
+    }
 
     function draw(jsonData) {
         //jsonDataTemp = jsonData;
