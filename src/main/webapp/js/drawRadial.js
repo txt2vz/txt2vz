@@ -11,7 +11,7 @@ function drawRadial(json) {
 
 	var i = 0, duration = 350, root;
 
-	var tree = d3.layout.tree().size([ 360, diameter / 2 - 80 ]).separation(
+	var tree = d3.tree().size([ 360, diameter / 2 - 80 ]).separation(
 			function(a, b) {
 				return (a.parent == b.parent ? 1 : 10) / a.depth;
 			});

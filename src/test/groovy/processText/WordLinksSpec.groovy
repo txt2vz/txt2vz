@@ -10,7 +10,7 @@ class WordLinksSpec extends spock.lang.Specification {
 		JsonSlurper slurper = new JsonSlurper()
 
 		when:
-		def stemT2 = wpe.getWordPairWithCooc("one1 two2 three3")
+		def stemT2 = wpe.wordPairCooc("one1 two2 three3")
 		def jsonText = new WordPairsToJSON().getJSONtree(stemT2)
 
 		def json = slurper.parseText(jsonText)
@@ -42,8 +42,8 @@ On Saturday, family spokesman Bob Gunnell said Ali died from septic shock due to
 		JsonSlurper slurper = new JsonSlurper()
 
 		when:
-		def stemT2 = wpe.getWordPairWithCooc(mAli)
-		def jsonText = new WordPairsToJSON().getJSONtree(stemT2)
+		def wpCooc = wpe.wordPairCooc(mAli)
+		def jsonText = new WordPairsToJSON().getJSONtree(wpCooc)
 		def json = slurper.parseText(jsonText)
 
 		then:	

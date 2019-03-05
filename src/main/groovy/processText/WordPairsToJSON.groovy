@@ -9,16 +9,14 @@ class WordPairsToJSON {
     private Set<String> internalNodes = [] as Set
     private Set<String> allNodes = [] as Set
 
-     String getJSONgraph( Tuple2< Map<Tuple2<String,String>,Double>, Map<String,Map<String, Integer>>>   stemT2) {
+    String getJSONgraph(Map<Tuple2<String, String>, Double> wordPairCooc) {
 
-        Map<String,Map<String, Integer>> stemInfo = stemT2.second
-         Map <Tuple2<String,String>, Double> wm = stemT2.first
         def data = [
 
-                links: wm.collect {
+                links: wordPairCooc.collect {
 
-                    def src = stemInfo[it.key.first].max { it.value }.key
-                    def tgt = stemInfo[it.key.second].max { it.value }.key
+                    def src = it.key.first
+                    def tgt = it.key.second
 
                     [source: src,
                      target: tgt,
@@ -29,18 +27,17 @@ class WordPairsToJSON {
         return new JsonBuilder(data)
     }
 
-    String getJSONtree(Tuple2< Map<Tuple2<String,String>,Double>, Map<String,Map<String, Integer>>>   stemT2   ) {
-       Map<String,Map<String, Integer>> stemInfo = stemT2.second
-       Map <Tuple2<String,String>, Double> wordPairWithCooc = stemT2.first
-       Map tree = [:]
+    String getJSONtree(Map<Tuple2<String, String>, Double> wordPairWithCooc) {
+
+        Map tree = [:]
 
         wordPairWithCooc.collect { wordLink ->
-            String word0 = stemInfo[wordLink.key.first].max { it.value }.key
-            String word1 = stemInfo[wordLink.key.second].max { it.value }.key
+            String word0 = wordLink.key.first
+            String word1 = wordLink.key.second
 
             if (tree.isEmpty()) {
-                tree =  [name    : word0, cooc: wordLink.value,
-                         children: [[name: word1]]]
+                tree = [name    : word0, cooc: wordLink.value,
+                        children: [[name: word1]]]
                 internalNodes.add(word0)
                 allNodes.add(word0)
                 allNodes.add(word1)
@@ -49,7 +46,7 @@ class WordPairsToJSON {
                 addPairToMap(tree, word1, word0, wordLink.value)
             }
         }
-       println "tree $tree"
+        println "tree $tree"
 
         def json = new JsonBuilder(tree)
         return json
@@ -74,14 +71,17 @@ class WordPairsToJSON {
                     if (m.children && !internalNodes.contains(w1)) {
 
                         List mChildren = m.children as List
-                        Map leafMap = ["name": w1]
-                        mChildren.add(leafMap)
+                        //..def leaf = [name: w1]
+                      //  Map m2 = [name:w1]
+                       // m2.cooc = cooc
+                         mChildren.add(name:w1)//    [[name:w1, cooc:cooc]])//leaf)
+                        //mChildren.add([cooc:cooc])
 
                     } else {
 
                         //do not create a new internal node if one already exists
                         if (internalNodes.add(it.value.toString())) {
-                            m << ["name": it.value, "cooc": cooc, "children": [["name": w1]]]
+                            m << [name: it.value, cooc: cooc, children: [[name: w1]]]
                         }
                     }
                 }

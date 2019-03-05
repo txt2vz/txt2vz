@@ -5,7 +5,8 @@
       "name": "Level 2: A",
       "children": [
         { "name": "Son of A" },
-        { "name": "Daughter of A" }
+        { "name": "Daughter of A",
+        "children":  [{"name":"om"}]}
       ]
     },
     { "name": "Level 2: B" }
