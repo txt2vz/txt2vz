@@ -41,7 +41,7 @@ class WordPairsToJSON2 {
 
         m.each { mapElement ->
 
-            //list means array of children - each child should be a map
+            //list is array of children - each child should be a map
             if (mapElement.value in List) {
                 mapElement.value.each {childListElement ->
                     assert childListElement in Map
@@ -62,7 +62,6 @@ class WordPairsToJSON2 {
                     } else {
 
                         //do not create a new internal node if one already exists
-                        //we could call this w0?
                         if (internalNodes.add(w0)) {
                             m << [name: w0, children: [[name: w1]]]
                         }

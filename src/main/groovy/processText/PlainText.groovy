@@ -27,7 +27,7 @@ public class PlainText extends GroovyServlet {
         Map<Tuple2<String,String>,Double> wordPairAndCooc = wpe.wordPairCooc( text)
         Set<Tuple2<String,String>>wordPairs = wordPairAndCooc.keySet()
 
-        println "in plain text wordparandcooc " + wordPairAndCooc.take(20)
+        println "in plain text wordpairandcooc " + wordPairAndCooc.take(20)
 
         //WordPairsToJSON2 wptj = new WordPairsToJSON2()
         WordPairsToJSON wptj = new WordPairsToJSON()

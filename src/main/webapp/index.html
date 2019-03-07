@@ -11,8 +11,8 @@
 
         html {
             display: table;
-            margin: auto; }
-
+            margin: auto;
+        }
 
 
         line.link {
@@ -93,15 +93,18 @@
         .partition rect {
             cursor: pointer;
             fill: steelblue;
-            stroke: #fff; }
+            stroke: #fff;
+        }
 
         .partition text {
-            pointer-events: none; }
+            pointer-events: none;
+        }
 
         .partition.leaf rect {
             stroke: #eee;
-            fill: #aaa; }
+            fill: #aaa;
         }
+
     </style>
 </head>
 <title>txt2vz</title>
@@ -139,6 +142,7 @@
                 <option value="dendro">Dendrogram</option>
                 <option value="forceTree">Force(tree)</option>
                 <option value="forceNet">Force (network)</option>
+                <option value="partition">Partition</option>
             </select> <br/> <br/>
 
                 <div class="btn btn-info fileinput-button">
@@ -209,8 +213,8 @@
     var oneLevel = true;
 
     frontPage();
-   // artai();
-  //frontPage2();
+    // artai();
+    //frontPage2();
 
     jQuery('input').click(function () {
         jQuery(this).select();
@@ -259,10 +263,10 @@
 <script>
     //http://bl.ocks.org/bansaghi/f3cbb5e7b759b6a58aff
     //radial zoomable collapsible
-    function radial(jsonText) {
-        	console.log ("jsonText in radial " + jsonText);
+    function radial(json) {
+        console.log("jsonText in radial " + json);
 
-        var json = JSON.parse(jsonText);
+        //var json = JSON.parse(jsonText);
 
         d3.select("svg").remove();
         var tree = d3.select("#vis").append("svg")
@@ -273,7 +277,7 @@
             .radius(4)
             //     function (d) {
             //     var x = 5;
-            //     if (d.cooc > 2) {
+            //     if (d.cooc > 2) {  //scale d.cooc - increase top 3?
             //
             //         return 20;
             //     }
@@ -289,23 +293,71 @@
 
     }
 
+    function drawPartition(json) {
+
+        //var json3 = JSON.parse(json2);
+
+        d3.select("svg").remove();
+
+        var partition = d3.select("#vis").append("svg")
+
+            .chart("partition.rectangle")
+
+            .value("cooc")
+            //.zoomable([1, 5])
+            .collapsible()
+            //.duration(200)
+            .sortable("_DESC_")
+        ;
+
+        partition.draw(json);
+    }
+
     function draw(jsonData) {
         //jsonDataTemp = jsonData;
         //console.log("json d " + jsonDataTemp);
         var j = JSON.parse(jsonData);
         //console.log("j.name " + j.name);
 
-        if ($("#networkType").val() == "forceNet")
-            drawForceNetwork(jsonData);
-        else if ($("#networkType").val() == "forceTree")
-            drawForceTree(jsonData);
-        else if ($("#networkType").val() == "radial")
-            radial(jsonData);
-            //drawRadial(jsonData);
-        else
-          //  radial()
-            partitionD(jsonData)
-          //  drawRadial(jsonData)
+        var visType = $("#networkType").val();
+
+        switch (visType) {
+            case 'forceTree':
+                drawForceTree(j);
+                break;
+
+            case 'radial':
+                radial(j);
+                break;
+
+            case 'forceNet':
+                drawForceNetwork(jsonData);
+                break;
+
+            case 'partition':
+                drawPartition(j)
+                break;
+
+            case 'dendro':
+                drawDendrogram(j)
+                break;
+
+        }
+
+
+        //
+        // if ($( //if word0 is the map value and word1 is not already a node
+        //     //could be mapElement.name? == "forceNet")
+        //     drawForceNetwork(jsonData);
+        // else if ($("#networkType").val() == "forceTree")
+        //     drawForceTree(jsonData);
+        // else if ($("#networkType").val() == "radial")
+        //     radial(jsonData);
+        //     //drawRadial(jsonData);
+        // else
+        //  radial()
+        //    partitionD(jsonData)
+        //  drawRadial(jsonData)
         //   drawDendrogram(jsonData)
     };
 

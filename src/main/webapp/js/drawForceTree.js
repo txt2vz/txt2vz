@@ -13,7 +13,7 @@ function drawForceTree(json) {
 
 	var link = svg.selectAll(".link"), node = svg.selectAll(".node");
 
-	root = JSON.parse(json);
+	root = json;//JSON.parse(json);
 	console.log ("root in drawForceTree" + root.name);
 
     resize();

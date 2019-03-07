@@ -4,7 +4,7 @@ function drawDendrogram(json) {
 	console.log("in drawDendrongram");
 	d3.select("svg").remove();
 	// var jsonFile = e.target.result;
-	var treeData = JSON.parse(json);
+	var treeData =  json;// JSON.parse(json);
 
 	var fillColour = "mediumslateblue";
 	// Calculate total nodes, max label length

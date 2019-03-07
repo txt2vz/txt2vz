@@ -16,7 +16,8 @@ class WordLinksSpec extends spock.lang.Specification {
 		def json = slurper.parseText(jsonText)
 
 		then:
-		jsonText == '''{"name":"one1","cooc":1.0,"children":[{"name":"two2","cooc":1.0,"children":[{"name":"three3"}]}]}'''
+		//jsonText == '''{"name":"one1","cooc":1.0,"children":[{"name":"two2","cooc":1.0,"children":[{"name":"three3"}]}]}'''
+		jsonText == '''{"name":"one1","children":[{"name":"two2","children":[{"name":"three3","cooc":1.0}],"cooc":1.0}]}'''
 		json.name == "one1"
 		json.children[0].name == "two2"
 	}

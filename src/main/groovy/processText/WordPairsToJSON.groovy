@@ -29,25 +29,24 @@ class WordPairsToJSON {
     }
 
 
-     String getJSONtree(Map<Tuple2<String, String>, Double> wordPairWithCooc) {
+    String getJSONtree(Map<Tuple2<String, String>, Double> wordPairWithCooc) {
 
         Map tree = new ConcurrentHashMap()
 
-        wordPairWithCooc.collect { wordLink ->
+        wordPairWithCooc.each { wordLink ->
             String word0 = wordLink.key.first
             String word1 = wordLink.key.second
             double coocValue = wordLink.value
 
             if (tree.isEmpty()) {
-                List l =
-                Collections.synchronizedList(new ArrayList<Map>());
+                List listOfChildren = new ArrayList<Map>().asSynchronized()
+                        //Collections.synchronizedList(new ArrayList<Map>());
 
-                Map m0 = new ConcurrentHashMap()
-                m0  << [name:word1, cooc:coocValue]// .addname: w1])//, cooc:cooc]  //concurrent error - use tramploine?
-                l.add(m0)
+                Map childMapElements = new ConcurrentHashMap()
+                childMapElements << [name: word1, cooc: coocValue]
+                listOfChildren.add(childMapElements)
 
-                tree = [name    : word0,
-                        children: l]
+                tree = [name: word0,   children: listOfChildren]
 
 //                tree = [name    : word0,
 //                        children: [[name: word1, cooc:coocValue]]]
@@ -60,54 +59,48 @@ class WordPairsToJSON {
                 addPairToMap(tree, word1, word0, coocValue)
             }
         }
-        println "tree $tree"
+        println "tree: $tree"
 
         def json = new JsonBuilder(tree)
         return json
     }
 
 
-     private void addPairToMap(Map m, String w0, String w1, double cooc) {
+    private void addPairToMap(Map m, String w0, String w1, double cooc) {
 
         assert w0 != w1
 
-        m.each {
+        m.each {mapElement ->
 
-            if (it.value in List) {
-                it.value.each {
+            //list is array of children - each child should be a map
+            if (mapElement.value in List) {
+                mapElement.value.each {
                     assert it in Map
                     addPairToMap(it as Map, w0, w1, cooc)
                 }
             } else {
 
-                if (it.value == w0 && allNodes.add(w1)) {
+                //if word0 is the map value and word1 is not already a node
+                //could be mapElement.name?
+                if (mapElement.value == w0 && allNodes.add(w1)) {
 
                     //the node has children.  Check the other word is not also an internal node
                     if (m.children && !internalNodes.contains(w1)) {
 
-                        //   m.children << [name: w1]
+                        List childrenList = m.children as List
+                        childrenList.asSynchronized()
 
-                        // m.children << [coocXX:cooc]
-                        List mChildren = m.children  as List
-                        mChildren.asSynchronized()
-
-                       Map m2 = new ConcurrentHashMap()
-                          m2  << [name:w1, cooc:cooc]// .addname: w1])//, cooc:cooc]  //concurrent error - use tramploine?
-                        mChildren.add(m2)
-                        //..def leaf = [name: w1]
-                        //  Map m2 = [name:w1, coocBBB:cooc]
-                        // m.children << m2
-                        // m2.cooc = cooc
-                        //mChildren.add(m2)//name:w1)//    [[name:w1, cooc:cooc]])//leaf)
-                        //mChildren.add([cooc:cooc])
+                        Map w0children = new ConcurrentHashMap()
+                        w0children << [name: w1, cooc: cooc]
+                        childrenList.add(w0children)
 
                     } else {
 
                         //do not create a new internal node if one already exists
-                        if (internalNodes.add(it.value.toString())) {
-                            Map m3 = new ConcurrentHashMap()
-                            m3 << [name: w1, cooc:cooc]
-                            m << [name: it.value,  children: [m3]]
+                        if (internalNodes.add(w0.toString())) {
+                            Map w1Map = new ConcurrentHashMap()
+                            w1Map << [name: w1, cooc: cooc]
+                            m << [name: w0, children: [w1Map]]
                         }
                     }
                 }
