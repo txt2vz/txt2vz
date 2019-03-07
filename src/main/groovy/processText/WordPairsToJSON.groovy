@@ -31,7 +31,7 @@ class WordPairsToJSON {
 
      String getJSONtree(Map<Tuple2<String, String>, Double> wordPairWithCooc) {
 
-        Map tree = [:]
+        Map tree = new ConcurrentHashMap()
 
         wordPairWithCooc.collect { wordLink ->
             String word0 = wordLink.key.first
@@ -39,8 +39,18 @@ class WordPairsToJSON {
             double coocValue = wordLink.value
 
             if (tree.isEmpty()) {
+                List l =
+                Collections.synchronizedList(new ArrayList<Map>());
+
+                Map m0 = new ConcurrentHashMap()
+                m0  << [name:word1, cooc:coocValue]// .addname: w1])//, cooc:cooc]  //concurrent error - use tramploine?
+                l.add(m0)
+
                 tree = [name    : word0,
-                        children: [[name: word1, cooc:coocValue]]]
+                        children: l]
+
+//                tree = [name    : word0,
+//                        children: [[name: word1, cooc:coocValue]]]
 
                 internalNodes.add(word0)
                 allNodes.add(word0)
@@ -78,7 +88,9 @@ class WordPairsToJSON {
                         //   m.children << [name: w1]
 
                         // m.children << [coocXX:cooc]
-                        List mChildren = m.children as List
+                        List mChildren = m.children  as List
+                        mChildren.asSynchronized()
+
                        Map m2 = new ConcurrentHashMap()
                           m2  << [name:w1, cooc:cooc]// .addname: w1])//, cooc:cooc]  //concurrent error - use tramploine?
                         mChildren.add(m2)
@@ -93,7 +105,9 @@ class WordPairsToJSON {
 
                         //do not create a new internal node if one already exists
                         if (internalNodes.add(it.value.toString())) {
-                            m << [name: it.value,  children: [[name: w1]]]
+                            Map m3 = new ConcurrentHashMap()
+                            m3 << [name: w1, cooc:cooc]
+                            m << [name: it.value,  children: [m3]]
                         }
                     }
                 }

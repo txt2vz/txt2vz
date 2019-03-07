@@ -2,6 +2,7 @@ function drawRadial(json) {
 	d3.select("svg").remove();
 	var diameter = 800;
 
+	console.log("in drawRadial");
 	var margin = {
 		top : 20,
 		right : 120,
@@ -11,7 +12,7 @@ function drawRadial(json) {
 
 	var i = 0, duration = 350, root;
 
-	var tree = d3.tree().size([ 360, diameter / 2 - 80 ]).separation(
+	var tree = d3.layout.tree().size([ 360, diameter / 2 - 80 ]).separation(
 			function(a, b) {
 				return (a.parent == b.parent ? 1 : 10) / a.depth;
 			});
@@ -20,7 +21,8 @@ function drawRadial(json) {
 		return [ d.y, d.x / 180 * Math.PI ];
 	});
 
-	var svg = d3.select("#tree-container").append("svg").attr("width", width).attr(
+	//var svg = d3.select("#tree-container").append("svg").attr("width", width).attr(
+	var svg = d3.select("#vis").append("svg").attr("width", width).attr(
 			"height", height).append("g").attr("transform",
 			"translate(" + diameter / 2 + "," + diameter / 2 + ")");
 

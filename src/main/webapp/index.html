@@ -88,10 +88,7 @@
             font-style: italic;
             font-weight: bold;
             font-style: italic;
-
-
-
-
+        }
 
         .partition rect {
             cursor: pointer;
@@ -263,7 +260,7 @@
     //http://bl.ocks.org/bansaghi/f3cbb5e7b759b6a58aff
     //radial zoomable collapsible
     function radial(jsonText) {
-        //	console.log ("jsonText in radial " + jsonText);
+        	console.log ("jsonText in radial " + jsonText);
 
         var json = JSON.parse(jsonText);
 
@@ -304,8 +301,11 @@
             drawForceTree(jsonData);
         else if ($("#networkType").val() == "radial")
             radial(jsonData);
+            //drawRadial(jsonData);
         else
+          //  radial()
             partitionD(jsonData)
+          //  drawRadial(jsonData)
         //   drawDendrogram(jsonData)
     };
 
