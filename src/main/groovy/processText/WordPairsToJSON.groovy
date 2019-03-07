@@ -10,8 +10,8 @@ import java.util.concurrent.ConcurrentHashMap
 @CompileStatic
 class WordPairsToJSON {
 
-    Set<String> internalNodes = [] as Set
-    Set<String> allNodes = [] as Set
+    Set<String> internalNodes = []
+    Set<String> allNodes = []
 
     String getJSONgraph(Map<Tuple2<String, String>, Double> wordPairCooc) {
 
@@ -28,25 +28,24 @@ class WordPairsToJSON {
         return new JsonBuilder(data)
     }
 
-
     String getJSONtree(Map<Tuple2<String, String>, Double> wordPairWithCooc) {
 
         Map tree = new ConcurrentHashMap()
 
-        wordPairWithCooc.each { wordLink ->
-            String word0 = wordLink.key.first
-            String word1 = wordLink.key.second
-            double coocValue = wordLink.value
+        wordPairWithCooc.each { k, v ->
+            String word0 = k.first
+            String word1 = k.second
+            double coocValue = v
 
             if (tree.isEmpty()) {
                 List listOfChildren = new ArrayList<Map>().asSynchronized()
-                        //Collections.synchronizedList(new ArrayList<Map>());
+                //Collections.synchronizedList(new ArrayList<Map>());
 
                 Map childMapElements = new ConcurrentHashMap()
                 childMapElements << [name: word1, cooc: coocValue]
                 listOfChildren.add(childMapElements)
 
-                tree = [name: word0,   children: listOfChildren]
+                tree << [name: word0, children: listOfChildren]//.asSynchronized()
 
 //                tree = [name    : word0,
 //                        children: [[name: word1, cooc:coocValue]]]
@@ -70,19 +69,19 @@ class WordPairsToJSON {
 
         assert w0 != w1
 
-        m.each {mapElement ->
+        m.each { k, v ->
 
             //list is array of children - each child should be a map
-            if (mapElement.value in List) {
-                mapElement.value.each {
-                    assert it in Map
-                    addPairToMap(it as Map, w0, w1, cooc)
+            if (v in List) {
+                v.each {listElement ->
+                    assert listElement in Map
+                    addPairToMap(listElement as Map, w0, w1, cooc)
                 }
             } else {
 
                 //if word0 is the map value and word1 is not already a node
-                //could be mapElement.name?
-                if (mapElement.value == w0 && allNodes.add(w1)) {
+                //could be mapEntry.name?
+                if (v == w0 && allNodes.add(w1)) {
 
                     //the node has children.  Check the other word is not also an internal node
                     if (m.children && !internalNodes.contains(w1)) {
