@@ -39,16 +39,11 @@ class WordPairsToJSON {
 
             if (tree.isEmpty()) {
                 List listOfChildren = new ArrayList<Map>().asSynchronized()
-                //Collections.synchronizedList(new ArrayList<Map>());
-
                 Map childMapElements = new ConcurrentHashMap()
                 childMapElements << [name: word1, cooc: coocValue]
                 listOfChildren.add(childMapElements)
 
                 tree << [name: word0, children: listOfChildren]//.asSynchronized()
-
-//                tree = [name    : word0,
-//                        children: [[name: word1, cooc:coocValue]]]
 
                 internalNodes.add(word0)
                 allNodes.add(word0)
@@ -63,7 +58,6 @@ class WordPairsToJSON {
         def json = new JsonBuilder(tree)
         return json
     }
-
 
     private void addPairToMap(Map m, String w0, String w1, double cooc) {
 
@@ -80,7 +74,6 @@ class WordPairsToJSON {
             } else {
 
                 //if word0 is the map value and word1 is not already a node
-                //could be mapEntry.name?
                 if (v == w0 && allNodes.add(w1)) {
 
                     //the node has children.  Check the other word is not also an internal node

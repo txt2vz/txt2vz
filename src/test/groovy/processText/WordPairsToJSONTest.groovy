@@ -1,11 +1,28 @@
 package processText
 
 import spock.lang.Specification
-
-//in plain text wordparandcooc [[star, host]:7.2578125, [kepler, 1658]:6.03515625, [01, koi]:5.3125, [exoplanet, candidate]:5.0, [kepler, 1658b]:4.31640625, [kepler, space]:4.017578125, [telescope, space]:4.0, [years, 10]:4.0, [kepler, observations]:3.515625, [star, orbiting]:3.40625, [kepler, system]:3.130859375, [kepler, data]:3.0, [years, ago]:3.0, [earth, days]:3.0, [kepler, exoplanet]:2.619140625, [kepler, telescope]:2.537109375, [kepler, launch]:2.53515625, [kepler, illustration]:2.265625, [kepler, nasa]:2.2578125, [telescope, 10]:2.25]
-//tree [name:star, cooc0:7.2578125, children:[[name:host], [name:orbiting, children:[[name:planet], [name:1658b]], coocYY:2.033203125], [name:earth]]]
-//json: {"name":"star","cooc0":7.2578125,"children":[{"name":"host"},{"name":"orbiting","children":[{"name":"planet"},{"name":"1658b"}],"coocYY":2.033203125},{"name":"earth"}]}
-
-
+import groovy.json.JsonSlurper
 class WordPairsToJSONTest extends Specification {
+
+
+    def "json from map"() {
+        given:
+        Map<Tuple2<String, String>, Double> wordPairMap = [['ice', 'sheet']: 8.029296875, ['ice', 'melting']: 5.888671875, ['rain', 'winter']: 3.62890625, ['ice', 'greenland']: 3.455078125, ['rain', 'snow']: 2.958984375, ['study', 'scientists']: 2.765625, ['ice', 'darker']: 2.638671875, ['warm', 'flow']: 2.5703125, ['image', 'caption']: 2.25, ['rain', 'important']: 2.0390625, ['found', 'analysis']: 2.03125, ['snow', 'temperatures']: 2.0234375, ['scientists', 'find']: 2.0, ['taking', 'place']: 2.0, ['sea', 'level']: 2.0, ['rain', 'melting']: 1.970703125, ['melting', 'greenland']: 1.75, ['winter', 'falls']: 1.75, ['ice', 'rain']: 1.72265625, ['rain', 'falls']: 1.625] as Map<Tuple2<String, String>, Double>
+
+        WordPairsToJSON wptj = new WordPairsToJSON()
+        def jsonText = wptj.getJSONtree(wordPairMap)
+
+        JsonSlurper slurper = new JsonSlurper()
+
+        when:
+
+        def json = slurper.parseText(jsonText)
+
+        then:
+
+        wordPairMap['ice', 'sheet'] == 8.029296875
+       // json.name == 'ice'
+
+
+    }
 }

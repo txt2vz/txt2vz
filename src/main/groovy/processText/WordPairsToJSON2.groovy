@@ -45,7 +45,7 @@ class WordPairsToJSON2 {
             if (mapElement.value in List) {
                 mapElement.value.each {childListElement ->
                     assert childListElement in Map
-                    addPairToMap(childListElement as Map, w0, w1)  //should not need as Map?
+                    addPairToMap(childListElement as Map, w0, w1)
                 }
             } else {
 

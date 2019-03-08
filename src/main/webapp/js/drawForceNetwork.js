@@ -1,21 +1,14 @@
 function drawForceNetwork(jsonlinks) {
 
 	d3.select("svg").remove();
-	var linksobj;
+	var linksobj = jsonlinks;
 
-	if (jsonlinks == null || typeof jsonlinks == 'object') {
-		linksobj = jsonlinks;
-	} else
-		linksobj = JSON.parse(jsonlinks);
-
-	// var linksobj = jsonlinks; // JSON.parse(jsonlinks);
 	var links = linksobj.links;
 	var nodes = {};
 
 	var w = 960,
 		h = 800;
-	var svg = d3.select("#vis").append("svg")//.attr("width", w).attr("height",
-		//h);
+	var svg = d3.select("#vis").append("svg")
 
 	// Compute the distinct nodes from the links.
 	links.forEach(function(link) {

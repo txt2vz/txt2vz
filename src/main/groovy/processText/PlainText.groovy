@@ -29,9 +29,9 @@ public class PlainText extends GroovyServlet {
 
         println "in plain text wordpairandcooc " + wordPairAndCooc.take(20)
 
-        //WordPairsToJSON2 wptj = new WordPairsToJSON2()
+        //WordPairsToJSON2 wptj2 = new WordPairsToJSON2()
+        //String json = wptj2.getJSONtree(wordPairs)
         WordPairsToJSON wptj = new WordPairsToJSON()
-        //String json = wptj.getJSONtree(wordPairs)
 
         String json = (networkType == 'forceNet') ? wptj.getJSONgraph(wordPairAndCooc) :   wptj.getJSONtree(wordPairAndCooc)
         println "json: $json"
