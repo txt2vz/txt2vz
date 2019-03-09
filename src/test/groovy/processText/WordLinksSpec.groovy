@@ -16,10 +16,10 @@ class WordLinksSpec extends spock.lang.Specification {
 		def json = slurper.parseText(jsonText)
 
 		then:
-		//jsonText == '''{"name":"one1","cooc":1.0,"children":[{"name":"two2","cooc":1.0,"children":[{"name":"three3"}]}]}'''
-		jsonText == '''{"name":"one1","children":[{"name":"two2","children":[{"name":"three3","cooc":1.0}],"cooc":1.0}]}'''
-		json.name == "one1"
-		json.children[0].name == "two2"
+
+		json.name == 'one1'
+		json.children[0].name == 'two2'
+		json.children[0].children[0].name =='three3'
 	}
 
 	def "Muhammad Ali text wordlinks test"(){
@@ -37,7 +37,6 @@ Barack Obama Obama said he kept a pair of Ali’s gloves on display in his priva
 The three-time world heavyweight champion died late on Friday evening, a day after he was admitted to a Phoenix-area hospital with a respiratory ailment. His family were gathered around him.
 Ali had long battled Parkinson’s disease, which impaired his speech and made the irrepressible athlete – known for saying he could float like a butterfly and sting like a bee – something of a prisoner in his own body.
 On Saturday, family spokesman Bob Gunnell said Ali died from septic shock due to unspecified natural causes. He did not suffer, Gunnell said. A White House statement said Obama had called Lonnie Ali, the champion’s fourth wife, “to offer his family’s deepest condolences for the passing of her husband”.
-
 '''
 		def wpe = new WordPairsExtractor()
 		JsonSlurper slurper = new JsonSlurper()

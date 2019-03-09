@@ -20,7 +20,6 @@ class WordPairsExtractor {
 
     Map<Tuple2<String, String>, Double> wordPairCooc(String s) {
 
-        // println "s is $s"
         s = s ?: "empty text"
 
         List<String> words = s.replaceAll(/\W/, "  ").toLowerCase().tokenize().minus(StopSet.stopSet)
@@ -28,10 +27,11 @@ class WordPairsExtractor {
 
         println " words size: " + words.size() + " unique words " + words.unique(false).size()
 
+        //stemmed word is key, value is map of original word forms and their frequencies
         Map<String, Map<String, Integer>> stemInfo = [:]
-        //stemmed word is key and value is a map of a particular word form and its frequency
+
+       //stemmed word is key and value is a list of positions where any of the words occur
         Map<String, List<Integer>> stemmedWordPositionsMap = [:]
-        //stemmed word is key and value is a list of positions where any of the words occur
 
         //min word size 1 or 2?
         words.findAll { it.size() >= 2 }
@@ -50,9 +50,9 @@ class WordPairsExtractor {
 
         Map<Tuple2<String, String>, Double> tuple2CoocMap = [:]  //word pair tuple is key - value is sum of cooc
 
-//check every possible stemmed word pair
         Set<String> stemmedWords = stemmedWordPositionsMap.sort { -it.value.size() }.take(highFreqWords).keySet()
 
+        //check every possible stemmed word pair
         for (int i = 0; i < stemmedWords.size(); i++) {
             for (int j = i + 1; j < stemmedWords.size(); j++) {
 
@@ -61,12 +61,12 @@ class WordPairsExtractor {
 
                 String mostFrequentForm0 = stemInfo[stemmedWord0].max { it.value }.key
                 String mostFrequentForm1 = stemInfo[stemmedWord1].max { it.value }.key
-
                 Tuple2<String, String> wordPair = new Tuple2(mostFrequentForm0, mostFrequentForm1)
 
                 double coocDocValue = getCooc(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[])
                 double coocTotalValue = tuple2CoocMap[(wordPair)] ?: 0
                 coocTotalValue = coocTotalValue + coocDocValue
+
                 tuple2CoocMap.put(wordPair, coocTotalValue)
             }
         }

@@ -43,7 +43,7 @@ class WordPairsToJSON {
                 childMapElements << [name: word1, cooc: coocValue]
                 listOfChildren.add(childMapElements)
 
-                tree << [name: word0, children: listOfChildren]//.asSynchronized()
+                tree << [name: word0, cooc:coocValue, children: listOfChildren]//.asSynchronized()
 
                 internalNodes.add(word0)
                 allNodes.add(word0)
@@ -77,6 +77,7 @@ class WordPairsToJSON {
                 if (v == w0 && allNodes.add(w1)) {
 
                     //the node has children.  Check the other word is not also an internal node
+                    //do not add if both words are internal nodes to avoid network rather than tree
                     if (m.children && !internalNodes.contains(w1)) {
 
                         List childrenList = m.children as List

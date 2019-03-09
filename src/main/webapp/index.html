@@ -274,13 +274,16 @@
             .chart("tree.radial")
 
             //.diameter(500)
-            .radius(4)
-            //     function (d) {
-            //     var x = 5;
-            //     if (d.cooc > 2) {  //scale d.cooc - increase top 3?
-            //
-            //         return 20;
-            //     }
+            .radius(//4)
+                function (d) {
+                    //     var x = 5;
+                    if (d.cooc > 2) {  //scale d.cooc - increase top 3?
+
+                        return 8;
+                    } else {
+                        return 4
+                    }
+                })
             //     return x;
             //    // return 5;
             // })
@@ -314,11 +317,8 @@
     }
 
     function draw(jsonData) {
-        //jsonDataTemp = jsonData;
-        //console.log("json d " + jsonDataTemp);
-        var j = JSON.parse(jsonData);
-        //console.log("j.name " + j.name);
 
+        var j = JSON.parse(jsonData);
         var visType = $("#networkType").val();
 
         switch (visType) {
@@ -341,25 +341,8 @@
             case 'dendro':
                 drawDendrogram(j)
                 break;
-
         }
-
-
-        //
-        // if ($( //if word0 is the map value and word1 is not already a node
-        //     //could be mapElement.name? == "forceNet")
-        //     drawForceNetwork(jsonData);
-        // else if ($("#networkType").val() == "forceTree")
-        //     drawForceTree(jsonData);
-        // else if ($("#networkType").val() == "radial")
-        //     radial(jsonData);
-        //     //drawRadial(jsonData);
-        // else
-        //  radial()
-        //    partitionD(jsonData)
-        //  drawRadial(jsonData)
-        //   drawDendrogram(jsonData)
-    };
+    }
 
     $(document)
         .ready(
@@ -409,7 +392,8 @@
 
     function textToJSON(text) {
         text = text.replace(/%/g, '');
-        console.log("in texttojson net.val " + $("#networkType").val());
+        var networkType = $("#networkType").val()
+        console.log("in texttojson net.val " + networkType);
         openModal();
 
         jQuery.ajax({
@@ -418,7 +402,7 @@
             cache: false,
             data: {
                 text: text,
-                networkType: $("#networkType").val(),
+                networkType: networkType,
                 cooc: cooc,
                 maxLinks: maxLinks,
                 maxWords: maxWords
