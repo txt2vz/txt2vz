@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="https://d3js.org/d3-hierarchy.v1.min.js"></script>
+
+    <script>
+
+        var ar = new Array();
+
+        var promise0 = new Promise(function (resolve, reject) {
+            d3.json("js/treeDataValues.json", function (error, treeData) {
+                if (error) throw error;
+
+
+                d3.hierarchy(treeData, function (d) {
+                    ar.push(d.cooc);
+                    return d.children;
+                });
+
+                resolve(d3.extent(ar));
+
+            })
+        });
+
+        promise0.then(function (value) {
+
+            console.log("in then value is " + value);
+
+            var linearScale = d3.scale.linear()
+                .domain(value)
+                .range([4, 8]);
+
+            console.log("lins scale 0 " + linearScale(0));
+            console.log("lins scale 2 " + linearScale(2));
+            console.log("lins scale 10 " + linearScale(10));
+            console.log("lins scale 7.7 " + linearScale(7.7));
+
+        });
+
+        //  console.log("hh " + hh);
+
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>

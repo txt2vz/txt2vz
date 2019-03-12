@@ -26,7 +26,7 @@ function drawRadial(json) {
 			"height", height).append("g").attr("transform",
 			"translate(" + diameter / 2 + "," + diameter / 2 + ")");
 
-	root = JSON.parse(json);
+	root = json; //JSON.parse(json);
 
 	root.x0 = height / 2;
 	root.y0 = 0;

@@ -25,7 +25,7 @@ public class PlainText extends GroovyServlet {
         WordPairsExtractor wpe = new WordPairsExtractor(powerValue, maxWordPairs, highFreqWords)
 
         Map<Tuple2<String,String>,Double> wordPairAndCooc = wpe.wordPairCooc( text)
-        Set<Tuple2<String,String>>wordPairs = wordPairAndCooc.keySet()
+      //  Set<Tuple2<String,String>>wordPairs = wordPairAndCooc.keySet()
 
         println "in plain text wordpairandcooc " + wordPairAndCooc.take(20)
 

@@ -1,0 +1,14 @@
+{
+  "name": "Top Level", "cooc": 0.54,
+  "children": [
+    {
+      "name": "Level 2: A", "cooc": 3,
+      "children": [
+        { "name": "Son of A", "cooc": 7 },
+        { "name": "Daughter of A", "cooc": 7.7,
+        "children":  [{"name":"om", "cooc": 4.8}]}
+      ]
+    },
+    { "name": "Level 2: B", "cooc": 7.8 }
+  ]
+}

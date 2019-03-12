@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+    <script>
+        //    var json2 =
+        //     '{"name": "british", "cooc": 1.0, "children": [{"name": "online", "cooc": 2.0, "children": [{"name": "archives", "cooc": 3.2}]}]}';
+
+
+        //  var jsond = JSON.parse("js/TreeData.json");
+
+        // var z = d3.json("js/treeDataValues.json", function (error, data) {
+
+
+        var root;
+        var hh = 0;
+        var ar = new Array();
+
+        var promise0 = new Promise(function (resolve, reject) {
+            d3.json("js/treeDataValues.json", function (error, treeData) {
+                if (error) throw error;
+
+// Assigns parent, children, height, depth
+                var b = d3.extent(
+                    d3.hierarchy(treeData, function (d) {
+                        console.log("hhhh " + d.cooc);
+
+                        hh = hh + d.cooc;
+                        ar.push(d.cooc);
+                        return d.children;
+                    })
+                );
+                console.log("b " + b);
+
+
+                console.log(" hhd " + hh + " ar " + ar);
+
+                var gg = d3.extent(ar);
+                resolve(gg);
+                console.log(" ext " + gg);
+
+                //   console.log( "pp " + pp + "  0 " + d3.max(pp));
+                //root.x0 = height / 2;
+                // root.y0 = 0;
+
+// Collapse after the second level
+                // root.children.forEach(collapse);
+
+                // update(root);
+
+            })
+        });
+
+        promise0.then(function (value) {
+
+            console.log("in then value is " + value);
+        })
+
+        console.log("hh " + hh);
+
+
+        //  root = d3.hierarchy(treeData, function(d) { return d.children; });
+        //
+        //            d3.json("js/treeDataValues.json", function (error, datav) {
+        //              //  console.log("DDD " + datav.children[0].name);
+        //               // datav.entries().forEach(function (d) {
+        //                 //   console.log("hh");
+        //              //});
+        //                datav[0].forEach(function (d) {
+        //                    // d.date = parseDate(d.date);
+        //                    // d.close = +d.close;
+        //                    console.log("hh");
+        //                    }
+        //                )
+        //            })      ;
+
+
+        //     console.log("data " + data);
+        // //   data.forEach() {console.log ("y")}
+        //        data.forEach(function (d){
+        //         console.log(" d " + d);
+        //     })
+        //
+        //     // console.log("data " + data3.name + " val " + data3.cooc);
+        //    // console.log(" min " + d3.min(data3.cooc));
+        // });
+
+
+        // var mins = d3.values(z);
+        // console.log("mis " + mins);
+        //
+        // var cc = d3.min(z, function d(data5){
+        //     console.log("h");
+        //     d.cooc
+        // })
+
+        //console.log ("cc " +  cc);
+
+
+    </script>
+</head>
+<body>
+
+</body>
+</html>
