@@ -14,7 +14,6 @@
             margin: auto;
         }
 
-
         line.link {
             fill: none;
             stroke: #9ecae1;
@@ -285,7 +284,8 @@
 
             var linearScale = d3.scale.linear()
                 .domain(value)
-                .range([4, 8]);
+             //   .range([2, 8]);
+                .range([3,7]);
 
             console.log("lins scale 2 " + linearScale(2));
 
@@ -331,7 +331,7 @@
             .chart("partition.rectangle")
 
             .value("cooc")
-            //.zoomable([1, 5])
+            .zoomable([0.5, 5])
             .collapsible()
             //.duration(200)
             .sortable("_DESC_")
