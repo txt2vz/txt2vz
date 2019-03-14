@@ -285,7 +285,7 @@
             var linearScale = d3.scale.linear()
                 .domain(value)
              //   .range([2, 8]);
-                .range([3,7]);
+                .range([2,7]);
 
             console.log("lins scale 2 " + linearScale(2));
 
@@ -299,6 +299,7 @@
                     function (d) {
                         //     var x = 5;
                         var nodeSize = linearScale(d.cooc);
+                        console.log("node size " + nodeSize + " cooc " + d.cooc);
                         return nodeSize;
                         // if (d.cooc > 2) {  //scale d.cooc - increase top 3?
                         //

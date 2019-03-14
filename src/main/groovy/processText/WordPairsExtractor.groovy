@@ -34,7 +34,7 @@ class WordPairsExtractor {
         Map<String, List<Integer>> stemmedWordPositionsMap = [:]
 
         //min word size 1 or 2?
-        words.findAll { it.size() >= 2 }
+        words.findAll { it.size() >= 3  && it.charAt(0).isLetter() && it.charAt(1).isLetter()}
                 .eachWithIndex { word, wordPositionIndex ->
 
             String stemmedWord = new PorterStemmer().stem(word)
