@@ -1,6 +1,7 @@
 package processText
 
 import groovy.transform.CompileStatic
+import jdk.nashorn.internal.ir.annotations.Immutable
 
 @CompileStatic
 class WordPairsExtractor {
@@ -33,11 +34,13 @@ class WordPairsExtractor {
        //stemmed word is key and value is a list of positions where any of the words occur
         Map<String, List<Integer>> stemmedWordPositionsMap = [:]
 
+        PorterStemmer stemmer = new PorterStemmer()
+
         //min word size 1 or 2?
         words.findAll { it.size() >= 3  && it.charAt(0).isLetter() && it.charAt(1).isLetter()}
                 .eachWithIndex { word, wordPositionIndex ->
 
-            String stemmedWord = new PorterStemmer().stem(word)
+            String stemmedWord = stemmer.stem(word)
             stemmedWordPositionsMap[stemmedWord] = stemmedWordPositionsMap.get(stemmedWord, []) << wordPositionIndex
 
             Map<String, Integer> forms = stemInfo.get((stemmedWord), [(word): 0])
@@ -58,7 +61,7 @@ class WordPairsExtractor {
         println "Take 10 steminfo: " + stemInfo.take(20)
         println "Take 10 tuple2coocMap " + tuple2CoocMap.take(20)
 
-        return tuple2CoocMap.sort { -it.value }.take(maxWordPairs)
+        return tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
     }
 
     private LinkedHashMap<Tuple2<String, String>, Double> compareWordPairs(Set<String> stemmedWords, LinkedHashMap<String, Map<String, Integer>> stemInfo, LinkedHashMap<String, List<Integer>> stemmedWordPositionsMap) {
