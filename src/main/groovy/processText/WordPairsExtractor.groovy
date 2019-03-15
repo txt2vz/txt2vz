@@ -52,9 +52,8 @@ class WordPairsExtractor {
 
 
         Set<String> stemmedWords = stemmedWordPositionsMap.sort { -it.value.size() }.take(highFreqWords).keySet()
-        Map<Tuple2<String, String>, Double> tuple2CoocMap =
 
-        compareWordPairs(stemmedWords, stemInfo, stemmedWordPositionsMap)
+        Map<Tuple2<String, String>, Double> tuple2CoocMap =  compareWordPairs(stemmedWords, stemInfo, stemmedWordPositionsMap)
 
         println "Take 10 steminfo: " + stemInfo.take(20)
         println "Take 10 tuple2coocMap " + tuple2CoocMap.take(20)
