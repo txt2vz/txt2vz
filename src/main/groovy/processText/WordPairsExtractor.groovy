@@ -48,11 +48,24 @@ class WordPairsExtractor {
             stemInfo[(stemmedWord)] = forms
         }
 
-        Map<Tuple2<String, String>, Double> tuple2CoocMap = [:]  //word pair tuple is key - value is sum of cooc
+      //  Map<Tuple2<String, String>, Double> tuple2CoocMap = [:]  //word pair tuple is key - value is sum of cooc
+
 
         Set<String> stemmedWords = stemmedWordPositionsMap.sort { -it.value.size() }.take(highFreqWords).keySet()
+        Map<Tuple2<String, String>, Double> tuple2CoocMap =
 
-        //check every possible stemmed word pair
+        compareWordPairs(stemmedWords, stemInfo, stemmedWordPositionsMap)
+
+        println "Take 10 steminfo: " + stemInfo.take(20)
+        println "Take 10 tuple2coocMap " + tuple2CoocMap.take(20)
+
+        return tuple2CoocMap.sort { -it.value }.take(maxWordPairs)
+    }
+
+    private LinkedHashMap<Tuple2<String, String>, Double> compareWordPairs(Set<String> stemmedWords, LinkedHashMap<String, Map<String, Integer>> stemInfo, LinkedHashMap<String, List<Integer>> stemmedWordPositionsMap) {
+
+        Map<Tuple2<String, String>, Double> tuple2CoocMap = [:]
+//check every possible stemmed word pair
         for (int i = 0; i < stemmedWords.size(); i++) {
             for (int j = i + 1; j < stemmedWords.size(); j++) {
 
@@ -63,21 +76,17 @@ class WordPairsExtractor {
                 String mostFrequentForm1 = stemInfo[stemmedWord1].max { it.value }.key
                 Tuple2<String, String> wordPair = new Tuple2(mostFrequentForm0, mostFrequentForm1)
 
-                double coocDocValue = getCooc(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[])
+                final double coocDocValue = getCooc(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[])
                 double coocTotalValue = tuple2CoocMap[(wordPair)] ?: 0
                 coocTotalValue = coocTotalValue + coocDocValue
 
                 tuple2CoocMap.put(wordPair, coocTotalValue)
             }
         }
-
-        println "Take 10 steminfo: " + stemInfo.take(20)
-        println "Take 10 tuple2coocMap " + tuple2CoocMap.take(20)
-
-        return tuple2CoocMap.sort { -it.value }.take(maxWordPairs)
+        return tuple2CoocMap
     }
 
-    double getCooc(int[] w0Positions, int[] w1Positions) {
+    private double getCooc(int[] w0Positions, int[] w1Positions) {
         final int MAX_DISTANCE = 10;
         double coocValue = 0
 
