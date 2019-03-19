@@ -299,7 +299,8 @@ function drawDendrogram(json) {
 
 	console.log("oneLevel: " + oneLevel);
 
-	oneLevel=true;
+	//oneLevel=true;
+	oneLevel=false;
 	// Collapse all children of roots children before rendering.
 	if (oneLevel)
 		root.children.forEach(function(child) {
