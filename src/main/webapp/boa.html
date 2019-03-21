@@ -133,13 +133,12 @@
                 <option value="radial">Radial</option>
                 <option value="dendro">Dendrogram</option>
                 <option value="forceTree">Force(tree)</option>
-
                 <option value="partition">Partition</option>
             </select> <br/> <br/>
 
 
                 <div id="hint">
-                    Mouse wheel to zoom (radial). <br/> Hold click and move mouse to move
+                    Mouse wheel to zoom. <br/> Hold click and move mouse to move
                     tree
                 </div>
             </div>
@@ -294,14 +293,13 @@
             .zoomable([0.5, 5])
             .collapsible()
             //.duration(200)
-            .sortable("_DESC_")
-        ;
+            .sortable("_DESC_");
 
         partition.draw(json);
     }
 
     function draw(jsonData) {
-       // console.log(" in draw " + jsonData);
+        // console.log(" in draw " + jsonData);
 
         var p = jsonData.target.result;
 
@@ -332,25 +330,19 @@
         }
     }
 
-    $(document)
-        .ready(
-            function () {
-                $("#hint").show();
+    $(document).ready(function () {
+        $("#hint").show();
 
-                $("select#networkType")
-                    .on(
-                        'change',
-                        function () {
+        $("select#networkType")
+            .on('change', function () {
 
-                            if (($("#networkType").val() == "radial")
-                                || ($("#networkType")
-                                    .val() == "dendro")) {
-                                $("#hint").show();
-                            } else {
-                                $("#hint").hide();
-                            }
-                        });
+                if (($("#networkType").val() == "forceTree")) {
+                    $("#hint").hide();
+                } else {
+                    $("#hint").show();
+                }
             });
+    });
 
 </script>
 
