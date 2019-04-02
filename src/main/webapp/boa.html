@@ -131,8 +131,7 @@
 
                 <br> Network Type: <select id="networkType">
                 <option value="radial">Radial</option>
-                <option value="dendro">Dendrogram</option>
-                <option value="forceTree">Force(tree)</option>
+
                 <option value="partition">Partition</option>
             </select> <br/> <br/>
 
@@ -335,6 +334,7 @@
 
         $("select#networkType")
             .on('change', function () {
+                reload(realFileBtn.value)
 
                 if (($("#networkType").val() == "forceTree")) {
                     $("#hint").hide();
