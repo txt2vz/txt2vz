@@ -17,8 +17,8 @@ class TextDirToJSON {
 
         String networkType = 'radial'
         def testDir = /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\testDir/
-      //  def allFiles = /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\War Crimes Text Files_Combined/
-int numberOfFiles = 0
+        //  def allFiles = /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\War Crimes Text Files_Combined/
+        int numberOfFiles = 0
         def dir = new File(testDir)
         m.each { k, v ->
 

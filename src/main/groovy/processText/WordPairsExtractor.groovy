@@ -1,5 +1,6 @@
 package processText
 
+import groovy.io.FileType
 import groovy.transform.CompileStatic
 
 @CompileStatic
@@ -10,6 +11,8 @@ class WordPairsExtractor {
     private float powerValue = 0.5
     private PorterStemmer stemmer = new PorterStemmer()
 
+    private Map<String, Map<String, Integer>> stemInfo = [:]
+
     WordPairsExtractor(Float powerIn, int maxL, int hfq) {
         this.powerValue = powerIn
         this.maxWordPairs = maxL
@@ -18,6 +21,18 @@ class WordPairsExtractor {
 
     WordPairsExtractor() {
     }
+
+    Map<Tuple2<String, String>, Double> wordPairCooc(File dir) {
+        dir.eachFileRecurse(FileType.FILES) { file ->
+
+
+
+        }
+        Map<Tuple2<String, String>, Double> tuple2CoocMap
+        return tuple2CoocMap
+    }
+
+
 
     Map<Tuple2<String, String>, Double> wordPairCooc(String s) {
 
@@ -31,9 +46,10 @@ class WordPairsExtractor {
         println " words size: " + words.size() + " unique words " + words.unique(false).size()
 
 
-        Tuple2<Map<String, List<Integer>>, Map<String, Map<String, Integer>>> stemMaps = buildStemMaps(words)
-        Map<String, List<Integer>> stemmedWordPositionsMap = stemMaps.first
-        Map<String, Map<String, Integer>> stemInfo = stemMaps.second
+     //   Tuple2<Map<String, List<Integer>>, Map<String, Map<String, Integer>>> stemMaps = buildStemMaps(words)
+        Map<String, List<Integer>> stemmedWordPositionsMap = buildStemMaps(words)
+                //stemMaps.first
+      //  Map<String, Map<String, Integer>> stemInfo = stemMaps.second
 
         Set<String> stemmedWords = stemmedWordPositionsMap.sort { -it.value.size() }.take(highFreqWords).keySet()
 
@@ -45,19 +61,19 @@ class WordPairsExtractor {
         return tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
     }
 
-    private Tuple2<Map<String, List<Integer>>, Map<String, Map<String, Integer>>> buildStemMaps(List<String> words) {
+    private Map <String, List<Integer>> buildStemMaps(List<String> words) {
 
 //stemmed word is key, value is map of original word forms and their frequencies
-        Map<String, Map<String, Integer>> stemInfo = [:]
+
 
         //stemmed word is key and value is a list of positions where any of the words occur
         Map<String, List<Integer>> stemmedWordPositionsMap = [:]
 
-        for (int i = 0; i < words.size(); i++) {
+        for (int wordPosition = 0; wordPosition < words.size(); wordPosition++) {
 
-            String word = words[i]
+            String word = words[wordPosition]
             String stemmedWord = stemmer.stem(word)
-            stemmedWordPositionsMap[stemmedWord] = stemmedWordPositionsMap.get(stemmedWord, []) << i
+            stemmedWordPositionsMap[stemmedWord] = stemmedWordPositionsMap.get(stemmedWord, []) << wordPosition
 
             Map<String, Integer> forms = stemInfo.get((stemmedWord), [(word): 0])
 
@@ -66,7 +82,7 @@ class WordPairsExtractor {
 
             stemInfo[(stemmedWord)] = forms
         }
-        return new Tuple2(stemmedWordPositionsMap, stemInfo)
+        return stemmedWordPositionsMap
     }
 
     private LinkedHashMap<Tuple2<String, String>, Double> compareWordPairs(Set<String> stemmedWords, Map<String, Map<String, Integer>> stemInfo, Map<String, List<Integer>> stemmedWordPositionsMap) {
