@@ -10,8 +10,13 @@ import java.util.concurrent.ConcurrentHashMap
 @CompileStatic
 class WordPairsToJSON {
 
-    Set<String> internalNodes = []
-    Set<String> allNodes = []
+    private Set<String> internalNodes = []
+    private Set<String> allNodes = []
+    private Map<String, Map<String, Integer>> stemInfo = [:]
+
+    WordPairsToJSON(Map<String, Map<String, Integer>> stInf){
+        stemInfo = stInf
+    }
 
     String getJSONgraph(Map<Tuple2<String, String>, Double> wordPairCooc) {
 
@@ -33,8 +38,10 @@ class WordPairsToJSON {
         Map tree = new ConcurrentHashMap()
 
         wordPairWithCooc.each { k, v ->
-            String word0 = k.first
-            String word1 = k.second
+          //  String word0 = k.first
+          //  String word1 = k.second
+            String word0 = stemInfo[k.first].max { it.value }.key
+            String word1 = stemInfo[k.second].max { it.value }.key
             double coocValue = v
 
             if (tree.isEmpty()) {

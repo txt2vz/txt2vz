@@ -24,15 +24,15 @@ public class PlainText extends GroovyServlet {
 
         WordPairsExtractor wpe = new WordPairsExtractor(powerValue, maxWordPairs, highFreqWords)
 
-        Map<Tuple2<String,String>,Double> wordPairAndCooc = wpe.wordPairCooc( text)
-
-        println "in plain text wordpairandcooc " + wordPairAndCooc.take(20)
-
-        WordPairsToJSON wptj = new WordPairsToJSON()
-
-        String json = (networkType == 'forceNet') ? wptj.getJSONgraph(wordPairAndCooc) :   wptj.getJSONtree(wordPairAndCooc)
-        println "json: $json"
-
-        response.getWriter().println(json)
+//        Map<Tuple2<String,String>,Double> wordPairAndCooc = wpe.wordPairCooc( text)
+//
+//        println "in plain text wordpairandcooc " + wordPairAndCooc.take(20)
+//
+//        WordPairsToJSON wptj = new WordPairsToJSON()
+//
+//        String json = (networkType == 'forceNet') ? wptj.getJSONgraph(wordPairAndCooc) :   wptj.getJSONtree(wordPairAndCooc)
+//        println "json: $json"
+//
+//        response.getWriter().println(json)
     }
 }
