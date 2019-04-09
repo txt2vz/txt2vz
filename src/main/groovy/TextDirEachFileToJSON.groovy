@@ -1,14 +1,12 @@
 import groovy.io.FileType
-import groovy.json.JsonSlurper
 import groovy.time.TimeCategory
 import groovy.time.TimeDuration
-import net.sf.ehcache.pool.Size
 import org.apache.tika.Tika
 import processText.WordPairsExtractor
 import processText.WordPairsToJSON
 
 
-class TextDirToJSON {
+class TextDirEachFileToJSON {
 
     static void main(String[] args) {
         final Date startRun = new Date()
@@ -16,9 +14,11 @@ class TextDirToJSON {
         final float powerValue = 0.5f
 
         String networkType = 'radial'
-        def testDir = /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\testDir/
+        def testDir = /D:\boa\C/
+                ///C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\testDir/
         //  def allFiles = /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\War Crimes Text Files_Combined/
         int numberOfFiles = 0
+
         def dir = new File(testDir)
         m.each { k, v ->
 
@@ -29,15 +29,15 @@ class TextDirToJSON {
 
                 println "reading file $file"
 
-                Tika t = new Tika();
-                def fileText = t.parseToString(file)
+                Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData = wpe.fileSelect(dir)
+                            def wordPairAndCooc = wpData.first
+                def stemInfo = wpData.second
 
-                Map<Tuple2<String, String>, Double> wordPairAndCooc = wpe.wordPairCooc(fileText)
-                WordPairsToJSON wptj = new WordPairsToJSON()
+                WordPairsToJSON wptj = new WordPairsToJSON(stemInfo)
 
                 String json = wptj.getJSONtree(wordPairAndCooc)
                 def jsonOutFileName = file.getName().replace('.txt', '.json')
-                def fnameWithDir = 'jsonOut/' + k + '/' + jsonOutFileName
+                def fnameWithDir = 'jsout2/' + k + '/' + jsonOutFileName
 
                 def outFile = new File(fnameWithDir)
                 outFile.write(json)
