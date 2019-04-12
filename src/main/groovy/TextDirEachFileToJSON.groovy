@@ -14,8 +14,8 @@ class TextDirEachFileToJSON {
         final float powerValue = 0.5f
 
         String networkType = 'radial'
-        def testDir = /D:\boa\C/
-                ///C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\testDir/
+        def testDir =// /D:\boa\C/
+                /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\testDir/
         //  def allFiles = /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\War Crimes Text Files_Combined/
         int numberOfFiles = 0
 

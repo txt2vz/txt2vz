@@ -11,9 +11,9 @@ class WordPairsExtractor {
     private int maxWordPairs = 80
     private float powerValue = 0.5
     private PorterStemmer stemmer = new PorterStemmer()
-    private Tika t = new Tika();
+  //  private Tika t = new Tika();
 
-    private Map<String, Map<String, Integer>> stemInfo
+    private Map<String, Map<String, Integer>> stemInfo = [:]
     private Map<Tuple2<String, String>, Double> tuple2CoocMap = [:]
 
     WordPairsExtractor(Float powerIn, int maxL, int hfq) {
@@ -26,28 +26,34 @@ class WordPairsExtractor {
     }
 
     Tuple2< Map<Tuple2<String, String>, Double>,Map<String, Map<String, Integer>> > fileSelect(File f) {
-
+        Tika t = new Tika();
         //should be based on all files for combined files case
         stemInfo = [:]
 
         if (f.isDirectory()) {
 
             f.eachFileRecurse(FileType.FILES) { file ->
-                wordPairCooc(file)
+                wordPairCooc(t.parseToString(file))
 
             }
         } else
         {
-            wordPairCooc(f)
+            wordPairCooc(t.parseToString(f))
         }
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
         return new Tuple2 (t2Cooc, stemInfo)
     }
 
-    private void wordPairCooc(File file) {
-        def fileText = t.parseToString(file)
+    Tuple2< Map<Tuple2<String, String>, Double>,Map<String, Map<String, Integer>> > textSelect(String s) {
+        wordPairCooc(s)
+        Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
+        return new Tuple2 (t2Cooc, stemInfo)
+    }
 
-        List<String> words = fileText.replaceAll(/\W/, "  ").toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
+    private void wordPairCooc(String s) {
+       // def fileText = t.parseToString(file)
+
+        List<String> words = s.replaceAll(/\W/, "  ").toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
             it.size() >= 2 && it.charAt(0).isLetter() && it.charAt(1).isLetter()
         }
         println " words size: " + words.size() + " unique words " + words.unique(false).size()

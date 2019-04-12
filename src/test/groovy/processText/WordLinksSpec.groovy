@@ -10,10 +10,17 @@ class WordLinksSpec extends spock.lang.Specification {
 		JsonSlurper slurper = new JsonSlurper()
 
 		when:
-		def stemT2 = wpe.fileSelect("one1 two2 three3")
-		def jsonText = new WordPairsToJSON().getJSONtree(stemT2)
-
+		def wpTuple = wpe.textSelect("one1 two2 three3")
+		def wpCooc = wpTuple.first
+		def stemInfo = wpTuple.second
+		def wpj = new WordPairsToJSON(stemInfo)
+		def jsonText = wpj.getJSONtree(wpCooc)
 		def json = slurper.parseText(jsonText)
+
+	//	def stemT2 = wpe.fileSelect("one1 two2 three3")
+	//	def jsonText = new WordPairsToJSON().getJSONtree(stemT2)
+
+		//def json = slurper.parseText(jsonText)
 
 		then:
 
@@ -42,8 +49,11 @@ On Saturday, family spokesman Bob Gunnell said Ali died from septic shock due to
 		JsonSlurper slurper = new JsonSlurper()
 
 		when:
-		def wpCooc = wpe.fileSelect(mAli)
-		def jsonText = new WordPairsToJSON().getJSONtree(wpCooc)
+		def wpTuple = wpe.textSelect(mAli)
+		def wpCooc = wpTuple.first
+		def stemInfo = wpTuple.second
+		def wpj = new WordPairsToJSON(stemInfo)
+		def jsonText = wpj.getJSONtree(wpCooc)
 		def json = slurper.parseText(jsonText)
 
 		then:	

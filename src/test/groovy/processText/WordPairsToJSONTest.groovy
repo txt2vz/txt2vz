@@ -15,7 +15,7 @@ class WordPairsToJSONTest extends Specification {
             [(new Tuple2(k[0], k[1])): v]
 
         }
-        WordPairsToJSON wptj = new WordPairsToJSON()
+        WordPairsToJSON wptj = new WordPairsToJSON([:])
         JsonSlurper slurper = new JsonSlurper()
 
         when:

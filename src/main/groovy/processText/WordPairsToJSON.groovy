@@ -38,10 +38,16 @@ class WordPairsToJSON {
         Map tree = new ConcurrentHashMap()
 
         wordPairWithCooc.each { k, v ->
-          //  String word0 = k.first
-          //  String word1 = k.second
-            String word0 = stemInfo[k.first].max { it.value }.key
-            String word1 = stemInfo[k.second].max { it.value }.key
+            String word0
+            String word1
+
+            if (stemInfo.isEmpty()){
+                word0 = k.first
+                word1 = k.second
+            } else {
+                word0 = stemInfo[k.first].max { it.value }.key
+                word1 = stemInfo[k.second].max { it.value }.key
+            }
             double coocValue = v
 
             if (tree.isEmpty()) {
