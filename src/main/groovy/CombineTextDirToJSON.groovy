@@ -8,13 +8,23 @@ class CombineTextDirToJSON {
     static void main(String[] args) {
 
         final Date startRun = new Date()
-        def m = ['small': [30, 80], 'medium': [100, 200], 'large': [200, 400], 'huge': [400, 800]]
+    //    def m = ['small': [30, 80], 'medium': [100, 200], 'large': [200, 400], 'huge': [400, 800]]
+      //  def m = ['large': [200, 400], 'huge': [400, 800]]
+        def m = ['huge': [400, 800]]
         final float powerValue = 0.5f
 
         String networkType = 'radial'
-        def testDir = /D:\boa\C/
-       // def testDir =
-             //   /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\testDir/
+     //   def testDir = /D:\boa\C/
+        def testDir =
+             //   /C:\Users\aceslh\Dataset\boa\space/
+        //        /C:\Users\aceslh\Dataset\boa\hockey/
+     //   /C:\Users\aceslh\Dataset\boa\christian/
+        //        /C:\Users\aceslh\Dataset\spaceHockeyChristianBOA/
+    //     /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\War Crimes Text Files_Combined/
+
+                /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\G/
+         //       /C:\Users\aceslh\Dataset\space100/
+             // //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\testDir/
 
         int numberOfFiles = 0
         def dir = new File(testDir)
@@ -30,7 +40,7 @@ class CombineTextDirToJSON {
 
             WordPairsToJSON wptj = new WordPairsToJSON(stemInfo)
             String json = wptj.getJSONtree(wordPairAndCooc)
-            println "json $json"
+            println "Size: $k json $json"
 
             def fnameWithDir = 'jsout2/' + k + '/' + dir.getName() + 'DIR.json'
 
