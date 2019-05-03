@@ -24,12 +24,17 @@ class WordPairsToJSON {
 
                 links: wordPairCooc.collect {
 
-                    [source: it.key.first,
-                     target: it.key.second,
+                    [
+                    //        source: it.key.first,
+                    //        target: it.key.second,
+                     source: stemInfo[it.key.first].max { it.value }.key,
+                     target: stemInfo[it.key.second].max { it.value }.key,
                      cooc  : it.value,
                     ]
                 }
         ]
+
+        println "data $data"
         return new JsonBuilder(data)
     }
 

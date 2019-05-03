@@ -58,12 +58,8 @@ class WordPairsExtractor {
 
         compareWordPairs(stemmedWords, stemmedWordPositionsMap,)
 
-        println "StemInfo size: " + stemInfo.size() + " Take 10 steminfo: " + stemInfo.sort {
-            -it.value.size()
-        }.take(20)
-        println "Tuple2Cooc size: " + tuple2CoocMap.size() + " Take 20 Sorted:" + tuple2CoocMap.sort {
-            -it.value
-        }.take(20)
+        println "StemInfo size: " + stemInfo.size() + " Take 10 steminfo: " + stemInfo.sort {-it.value.size()}.take(20)
+        println "Tuple2Cooc size: " + tuple2CoocMap.size() + " Take 20 Sorted:" + tuple2CoocMap.sort {-it.value}.take(20)
         println ""
     }
 
