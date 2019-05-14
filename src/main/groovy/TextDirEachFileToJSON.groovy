@@ -1,7 +1,6 @@
 import groovy.io.FileType
 import groovy.time.TimeCategory
 import groovy.time.TimeDuration
-import org.apache.tika.Tika
 import processText.WordPairsExtractor
 import processText.WordPairsToJSON
 
@@ -29,7 +28,7 @@ class TextDirEachFileToJSON {
 
                 println "reading file $file"
 
-                Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData = wpe.fileSelect(dir)
+                Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData = wpe.processDirectory(dir)
                             def wordPairAndCooc = wpData.first
                 def stemInfo = wpData.second
 

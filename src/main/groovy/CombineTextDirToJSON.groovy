@@ -8,49 +8,64 @@ class CombineTextDirToJSON {
     static void main(String[] args) {
 
         final Date startRun = new Date()
-    //    def m = ['small': [30, 80], 'medium': [100, 200], 'large': [200, 400], 'huge': [400, 800]]
-      //  def m = ['large': [200, 400], 'huge': [400, 800]]
-     //   def m = ['huge': [400, 800]]
-        def m = ['huge': [100, 100]]
+        //    def m = ['small': [30, 80], 'medium': [100, 200], 'large': [200, 400], 'huge': [400, 800]]
+        //  def m = ['large': [200, 400], 'huge': [400, 800]]
+        //   def m = ['huge': [400, 800]]
+        def m = ['huge': [30, 100]]
         final float powerValue = 0.5f
 
         String networkType = 'radial'
-     //   def testDir = /D:\boa\C/
+        //   def testDir = /D:\boa\C/
         def testDir =
 
-                /C:\Users\aceslh\Dataset\space100/
-                //      /C:\Users\aceslh\Dataset\boa\space/
+                //        /C:\Users\aceslh\Dataset\space100/
+                ///C:\Users\aceslh\Dataset\space100/
+                /C:\Users\aceslh\Dataset\space100\59871/
         //        /C:\Users\aceslh\Dataset\boa\hockey/
-     //   /C:\Users\aceslh\Dataset\boa\christian/
+        //   /C:\Users\aceslh\Dataset\boa\christian/
         //        /C:\Users\aceslh\Dataset\spaceHockeyChristianBOA/
-    //     /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\War Crimes Text Files_Combined/
+        //   /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\War Crimes Text Files_Combined/
 
         //        /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\B/
-         //       /C:\Users\aceslh\Dataset\space100/
-             // //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\testDir/
+
+        //       /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\G/
+        //       /C:\Users\aceslh\Dataset\space100/
+        // //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\testDir/
 
         int numberOfFiles = 0
-        def dir = new File(testDir)
+        def file = new File(testDir)
 
         m.each { k, v ->
 
             WordPairsExtractor wpe = new WordPairsExtractor(powerValue, v[0], v[1])
+            Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData
 
-            Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData = wpe.fileSelect(dir)
+            if (file.isDirectory()) {
+
+                 wpData = wpe.processDirectory(file)
+            } else if (file.isFile()) {
+
+                wpData = wpe.processText(file.text)
+            }
 
             def wordPairAndCooc = wpData.first
             def stemInfo = wpData.second
 
             WordPairsToJSON wptj = new WordPairsToJSON(stemInfo)
-            String json = wptj.getJSONtree(wordPairAndCooc)
-         //   String json = wptj.getJSONgraph(wordPairAndCooc)
-            println "Size: $k json $json"
+            String jsonTree = wptj.getJSONtree(wordPairAndCooc)
+            String jsonGraph = wptj.getJSONgraph(wordPairAndCooc)
 
-       //     def fnameWithDir = 'jsout2/' + k + '/' + dir.getName() + 'graphDIR.json'
-            def fnameWithDir = 'jsout2/' + k + '/' + dir.getName() + 'treeDIR.json'
+            //     String json = wptj.getJSONgraph(wordPairAndCooc)
+            println "Size: $k jsonGraph $jsonGraph  "
+            println "Size: $k jsonTree $jsonTree  "
 
-            def outFile = new File(fnameWithDir)
-            outFile.write(json)
+            def fnameGraphWithDir = 'jsout2/' + k + '/' + file.getName() + 'graphDIR.json'
+            def fnameTreeWithDir = 'jsout2/' + k + '/' + file.getName() + 'treeDIR.json'
+
+            def outFileGraph = new File(fnameGraphWithDir)
+            def outFileTree = new File(fnameTreeWithDir)
+            outFileGraph.write(jsonGraph)
+            outFileTree.write(jsonTree)
 
         }
 

@@ -1,0 +1,154 @@
+{
+  "links": [
+    {
+      "source": "nasa",
+      "target": "gov",
+      "cooc": 69.232421875
+    },
+    {
+      "source": "space",
+      "target": "shuttle",
+      "cooc": 40.953125
+    },
+    {
+      "source": "space",
+      "target": "sci",
+      "cooc": 33.1640625
+    },
+    {
+      "source": "space",
+      "target": "center",
+      "cooc": 26.443359375
+    },
+    {
+      "source": "ftp",
+      "target": "anonymous",
+      "cooc": 25.330078125
+    },
+    {
+      "source": "space",
+      "target": "station",
+      "cooc": 23.857421875
+    },
+    {
+      "source": "orbital",
+      "target": "earth",
+      "cooc": 23.466796875
+    },
+    {
+      "source": "space",
+      "target": "archive",
+      "cooc": 20.326171875
+    },
+    {
+      "source": "astronauts",
+      "target": "candidates",
+      "cooc": 20.009765625
+    },
+    {
+      "source": "dseg",
+      "target": "ti",
+      "cooc": 19.875
+    },
+    {
+      "source": "space",
+      "target": "science",
+      "cooc": 19.35546875
+    },
+    {
+      "source": "space",
+      "target": "nasa",
+      "cooc": 18.53125
+    },
+    {
+      "source": "thu",
+      "target": "apr",
+      "cooc": 18.5
+    },
+    {
+      "source": "space",
+      "target": "national",
+      "cooc": 18.4140625
+    },
+    {
+      "source": "nasa",
+      "target": "ames",
+      "cooc": 18.25390625
+    },
+    {
+      "source": "sci",
+      "target": "astro",
+      "cooc": 17.7734375
+    },
+    {
+      "source": "access",
+      "target": "digex",
+      "cooc": 16.875
+    },
+    {
+      "source": "nasa",
+      "target": "center",
+      "cooc": 15.9765625
+    },
+    {
+      "source": "space",
+      "target": "groups",
+      "cooc": 15.474609375
+    },
+    {
+      "source": "space",
+      "target": "program",
+      "cooc": 15.2734375
+    },
+    {
+      "source": "space",
+      "target": "pub",
+      "cooc": 15.203125
+    },
+    {
+      "source": "space",
+      "target": "news",
+      "cooc": 15.10546875
+    },
+    {
+      "source": "de",
+      "target": "van",
+      "cooc": 15.091796875
+    },
+    {
+      "source": "henry",
+      "target": "toronto",
+      "cooc": 15.0
+    },
+    {
+      "source": "orbital",
+      "target": "mars",
+      "cooc": 14.3203125
+    },
+    {
+      "source": "space",
+      "target": "faq",
+      "cooc": 14.208984375
+    },
+    {
+      "source": "orbital",
+      "target": "lunar",
+      "cooc": 14.20703125
+    },
+    {
+      "source": "space",
+      "target": "relations",
+      "cooc": 13.73828125
+    },
+    {
+      "source": "probes",
+      "target": "missions",
+      "cooc": 13.634765625
+    },
+    {
+      "source": "baalke",
+      "target": "ron",
+      "cooc": 12.8125
+    }
+  ]
+}

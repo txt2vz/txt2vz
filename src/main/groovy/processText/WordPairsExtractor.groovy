@@ -2,13 +2,15 @@ package processText
 
 import groovy.io.FileType
 import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+import groovy.transform.TypeCheckingMode
 import org.apache.tika.Tika
 
 @CompileStatic
 class WordPairsExtractor {
 
-    private int highFreqWords = 40
-    private int maxWordPairs = 80
+    private int highFreqWords = 80
+    private int maxWordPairs = 40
     private float powerValue = 0.5
 
     private PorterStemmer stemmer = new PorterStemmer()
@@ -26,40 +28,81 @@ class WordPairsExtractor {
     WordPairsExtractor() {
     }
 
-    Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> fileSelect(File f) {
+
+    Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> processDirectory(File f) {
 
         int fileCount = 0
         f.eachFileRecurse(FileType.FILES) { file ->
-
-            println "File $fileCount: " + file.getAbsoluteFile()
-            wordPairCooc(t.parseToString(file))
-            fileCount++
+            //     println file.name.charAt(6)
+            //     if (file.name.charAt(6) == 'B' ) {
+                println "File $fileCount: " + file.getAbsoluteFile()
+                analyseDocument(t.parseToString(file))
+                fileCount++
         }
         println "Total fileCount: $fileCount"
+
+        Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost(tuple2CoocMap).take(maxWordPairs).asImmutable()
+
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
-        return new Tuple2(t2Cooc, stemInfo)
+
+        println "t2Freq $t2Freq"
+        println "t2cooc $t2Cooc"
+
+        //        return new Tuple2(t2Cooc, stemInfo)
+        return new Tuple2(t2Freq, stemInfo)
     }
 
-    Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> textSelect(String s) {
-        wordPairCooc(s)
-        Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
-        return new Tuple2(t2Cooc, stemInfo)
+    @TypeChecked(TypeCheckingMode.SKIP)
+    //give a boost to cooc value based of frequency of an item in the list
+    Map<Tuple2<String, String>, Double> t2CoocMapLinkBoost(Map<Tuple2<String, String>, Double> t2cocOrig) {
+
+        Map<String, Integer> wordLinkCount = t2cocOrig.keySet().collectMany { [it.first, it.second] }.countBy {
+            it
+        }.sort { -it.value }
+
+        println "wordLinkCount: $wordLinkCount"
+        println ""
+
+        Map t2bFreq = t2cocOrig.collectEntries { k,  v ->
+
+            int frst = (Integer) wordLinkCount[k.first] ?: 0
+            int scnd = (Integer) wordLinkCount[k.second] ?: 0
+            int total = frst + scnd
+
+            [(k): v * (total + 1)]
+        }
+
+        return t2bFreq.sort { -it.value }
     }
 
-    private void wordPairCooc(String s) {
+    Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> processText(String s) {
+        analyseDocument(s)
+        Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
+        Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost(tuple2CoocMap).take(maxWordPairs).asImmutable()
+
+       // return new Tuple2(t2Cooc, stemInfo)
+        return new Tuple2(t2Freq, stemInfo)
+    }
+
+
+    private void analyseDocument(String s) {
 
         List<String> words = s.replaceAll(/\W/, "  ").toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
-            it.size() >= 2 && it.charAt(0).isLetter() && it.charAt(1).isLetter()
+            it.size() > 2 && it.charAt(0).isLetter() && it.charAt(1).isLetter()
         }
         println "Words size: " + words.size() + " Unique words " + words.unique(false).size()
 
         Map<String, List<Integer>> stemmedWordPositionsMap = buildStemMaps(words)
-        Set<String> stemmedWords = stemmedWordPositionsMap.sort { -it.value.size() }.take(highFreqWords).keySet()
 
-        compareWordPairs(stemmedWords, stemmedWordPositionsMap,)
+        compareWordPairs(stemmedWordPositionsMap.sort { -it.value.size() }.take(highFreqWords))
 
-        println "StemInfo size: " + stemInfo.size() + " Take 10 steminfo: " + stemInfo.sort {-it.value.size()}.take(20)
-        println "Tuple2Cooc size: " + tuple2CoocMap.size() + " Take 20 Sorted:" + tuple2CoocMap.sort {-it.value}.take(20)
+        println "StemInfo size: " + stemInfo.size() + " Take 10 steminfo: " + stemInfo.sort {
+            -it.value.size()
+        }.take(20)
+        println "Tuple2Cooc size: " + tuple2CoocMap.size() + " Take 20 Sorted:" + tuple2CoocMap.sort {
+            -it.value
+        }.take(20)
+
         println ""
     }
 
@@ -74,17 +117,19 @@ class WordPairsExtractor {
             String stemmedWord = stemmer.stem(word)
             stemmedWordPositionsMap[stemmedWord] = stemmedWordPositionsMap.get(stemmedWord, []) << wordPosition
 
-            Map<String, Integer> forms = stemInfo.get((stemmedWord), [(word): 0])
+            Map<String, Integer> wordForms = stemInfo.get((stemmedWord), [(word): 0])
 
-            int n = forms.get((word)) ?: 0
-            forms.put((word), n + 1)
+            final int n = wordForms.get((word)) ?: 0
+            wordForms.put((word), n + 1)
 
-            stemInfo[(stemmedWord)] = forms
+            stemInfo[(stemmedWord)] = wordForms
         }
         return stemmedWordPositionsMap
     }
 
-    private void compareWordPairs(Set<String> stemmedWords, Map<String, List<Integer>> stemmedWordPositionsMap) {
+    private void compareWordPairs(Map<String, List<Integer>> stemmedWordPositionsMap) {
+
+        Set<String> stemmedWords = stemmedWordPositionsMap.keySet()
 
 //check every possible stemmed word pair
         for (int i = 0; i < stemmedWords.size(); i++) {
@@ -93,20 +138,18 @@ class WordPairsExtractor {
                 String stemmedWord0 = stemmedWords[i]
                 String stemmedWord1 = stemmedWords[j]
                 Tuple2<String, String> wordPair = new Tuple2(stemmedWord0, stemmedWord1)
-                // String mostFrequentForm0 = stemInfo[stemmedWord0].max { it.value }.key
-                // String mostFrequentForm1 = stemInfo[stemmedWord1].max { it.value }.key
-                // Tuple2<String, String> wordPair = new Tuple2(mostFrequentForm0, mostFrequentForm1)
 
                 final double coocDocValue = getCooc(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[])
-              //  final double logCoocDocValue = Math.log(coocDocValue)
+                final double logCoocDocValue = Math.log(coocDocValue)
 
-
-                double coocTotalValue = tuple2CoocMap[(wordPair)] ?: 0
-                coocTotalValue = coocTotalValue + coocDocValue
-                tuple2CoocMap.put(wordPair, coocTotalValue)
+                if (coocDocValue > 0) {
+                    double coocTotalValue = tuple2CoocMap[(wordPair)] ?: 0
+                    //    coocTotalValue = coocTotalValue + logCoocDocValue  //coocDocValue
+                    coocTotalValue = coocTotalValue + coocDocValue
+                    tuple2CoocMap.put(wordPair, coocTotalValue)
+                }
             }
         }
-        // return tuple2CoocMap
     }
 
     private double getCooc(int[] w0Positions, int[] w1Positions) {

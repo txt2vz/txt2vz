@@ -22,14 +22,14 @@ class WordPairsToJSON {
 
         def data = [
 
-                links: wordPairCooc.collect {
+                links: wordPairCooc.collect {k, v ->
 
                     [
                     //        source: it.key.first,
                     //        target: it.key.second,
-                     source: stemInfo[it.key.first].max { it.value }.key,
-                     target: stemInfo[it.key.second].max { it.value }.key,
-                     cooc  : it.value,
+                     source: stemInfo[k.first].max { v }.key,
+                     target: stemInfo[k.second].max { v }.key,
+                     cooc  : v
                     ]
                 }
         ]
