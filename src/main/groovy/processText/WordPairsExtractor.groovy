@@ -9,6 +9,8 @@ import org.apache.tika.Tika
 @CompileStatic
 class WordPairsExtractor {
 
+    public static final boolean USE_LOG = false
+
     private int highFreqWords = 80
     private int maxWordPairs = 40
     private float powerValue = 0.5
@@ -29,7 +31,7 @@ class WordPairsExtractor {
     }
 
 
-    Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> processDirectory(File f) {
+    Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>,  Map<String, Map<String, Integer>>> processDirectory(File f) {
 
         int fileCount = 0
         f.eachFileRecurse(FileType.FILES) { file ->
@@ -49,7 +51,7 @@ class WordPairsExtractor {
         println "t2cooc $t2Cooc"
 
         //        return new Tuple2(t2Cooc, stemInfo)
-        return new Tuple2(t2Freq, stemInfo)
+        return new Tuple3(t2Cooc, t2Freq, stemInfo)
     }
 
     @TypeChecked(TypeCheckingMode.SKIP)
@@ -140,12 +142,15 @@ class WordPairsExtractor {
                 Tuple2<String, String> wordPair = new Tuple2(stemmedWord0, stemmedWord1)
 
                 final double coocDocValue = getCooc(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[])
-                final double logCoocDocValue = Math.log(coocDocValue)
+               // final double logCoocDocValue = Math.log(coocDocValue)
 
                 if (coocDocValue > 0) {
                     double coocTotalValue = tuple2CoocMap[(wordPair)] ?: 0
-                    //    coocTotalValue = coocTotalValue + logCoocDocValue  //coocDocValue
-                    coocTotalValue = coocTotalValue + coocDocValue
+                    if (USE_LOG) {
+                        coocTotalValue = coocTotalValue + Math.log(coocDocValue)
+                    } else {
+                        coocTotalValue = coocTotalValue + coocDocValue
+                    }
                     tuple2CoocMap.put(wordPair, coocTotalValue)
                 }
             }

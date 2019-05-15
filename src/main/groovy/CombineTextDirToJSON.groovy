@@ -18,9 +18,10 @@ class CombineTextDirToJSON {
         //   def testDir = /D:\boa\C/
         def testDir =
 
+                /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sci.crypt/
                 //        /C:\Users\aceslh\Dataset\space100/
                 ///C:\Users\aceslh\Dataset\space100/
-                /C:\Users\aceslh\Dataset\space100\59871/
+         //      /C:\Users\aceslh\Dataset\space100\59871/
         //        /C:\Users\aceslh\Dataset\boa\hockey/
         //   /C:\Users\aceslh\Dataset\boa\christian/
         //        /C:\Users\aceslh\Dataset\spaceHockeyChristianBOA/
@@ -38,7 +39,8 @@ class CombineTextDirToJSON {
         m.each { k, v ->
 
             WordPairsExtractor wpe = new WordPairsExtractor(powerValue, v[0], v[1])
-            Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData
+          //  Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData
+            Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>,  Map<String, Map<String, Integer>>> wpData
 
             if (file.isDirectory()) {
 
@@ -49,23 +51,39 @@ class CombineTextDirToJSON {
             }
 
             def wordPairAndCooc = wpData.first
-            def stemInfo = wpData.second
+            def wordPairAndCoocFreqBoost = wpData.second
+            def stemInfo = wpData.third
 
             WordPairsToJSON wptj = new WordPairsToJSON(stemInfo)
             String jsonTree = wptj.getJSONtree(wordPairAndCooc)
             String jsonGraph = wptj.getJSONgraph(wordPairAndCooc)
 
+            String jsonTreeF = wptj.getJSONtree(wordPairAndCoocFreqBoost)
+            String jsonGraphF = wptj.getJSONgraph(wordPairAndCoocFreqBoost)
+
             //     String json = wptj.getJSONgraph(wordPairAndCooc)
             println "Size: $k jsonGraph $jsonGraph  "
             println "Size: $k jsonTree $jsonTree  "
 
-            def fnameGraphWithDir = 'jsout2/' + k + '/' + file.getName() + 'graphDIR.json'
-            def fnameTreeWithDir = 'jsout2/' + k + '/' + file.getName() + 'treeDIR.json'
+//            def fnameGraphWithDir = 'jsout2/' + k + '/' + file.getName() + 'graphDIR.json'
+//            def fnameTreeWithDir = 'jsout2/' + k + '/' + file.getName() + 'treeDIR.json'
+
+            def fnameGraphWithDir = 'jsonOut3/' +  file.getName() + 'graphDIR.json'
+            def fnameTreeWithDir = 'jsonOut3/' +  file.getName() + 'treeDIR.json'
+            def fnameGraphWithDirF = 'jsonOut3/'  + file.getName() + 'graphDIRF.json'
+            def fnameTreeWithDirF = 'jsonOut3/'  + file.getName() + 'treeDIRF.json'
+
 
             def outFileGraph = new File(fnameGraphWithDir)
             def outFileTree = new File(fnameTreeWithDir)
+            def outFileGraphF = new File(fnameGraphWithDirF)
+            def outFileTreeF = new File(fnameTreeWithDirF)
+
+
             outFileGraph.write(jsonGraph)
             outFileTree.write(jsonTree)
+            outFileGraphF.write(jsonGraphF)
+            outFileTreeF.write(jsonTreeF)
 
         }
 
