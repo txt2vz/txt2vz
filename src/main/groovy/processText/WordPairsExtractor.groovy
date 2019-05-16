@@ -71,7 +71,7 @@ class WordPairsExtractor {
             int scnd = (Integer) wordLinkCount[k.second] ?: 0
             int total = frst + scnd
 
-            [(k): v * (total + 1)]
+            [(k): v * (total + 1) * scnd]
         }
 
         return t2bFreq.sort { -it.value }
@@ -142,15 +142,11 @@ class WordPairsExtractor {
                 Tuple2<String, String> wordPair = new Tuple2(stemmedWord0, stemmedWord1)
 
                 final double coocDocValue = getCooc(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[])
-               // final double logCoocDocValue = Math.log(coocDocValue)
 
                 if (coocDocValue > 0) {
                     double coocTotalValue = tuple2CoocMap[(wordPair)] ?: 0
-                    if (USE_LOG) {
-                        coocTotalValue = coocTotalValue + Math.log(coocDocValue)
-                    } else {
-                        coocTotalValue = coocTotalValue + coocDocValue
-                    }
+
+                    coocTotalValue = USE_LOG ? coocTotalValue + Math.log(coocDocValue) : coocTotalValue + coocDocValue
                     tuple2CoocMap.put(wordPair, coocTotalValue)
                 }
             }
