@@ -11,15 +11,17 @@ class CombineTextDirToJSON {
         //    def m = ['small': [30, 80], 'medium': [100, 200], 'large': [200, 400], 'huge': [400, 800]]
         //  def m = ['large': [200, 400], 'huge': [400, 800]]
         //   def m = ['huge': [400, 800]]
-        def m = ['huge': [40, 100]]
+        def m = ['huge': [80, 200]]
         final float powerValue = 0.5f
 
         String networkType = 'radial'
         //   def testDir = /D:\boa\C/
         def testDir =
 
+         //       /D:\boa\TestData\rec.sport.hockey/
+        /D:\boa\TestData\sci.space/
                 // /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sci.crypt/
-        /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\rec.sport.hockey/
+        // /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\rec.sport.hockey/
      //   /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sci.space/
                 //        /C:\Users\aceslh\Dataset\space100/
                 ///C:\Users\aceslh\Dataset\space100/
