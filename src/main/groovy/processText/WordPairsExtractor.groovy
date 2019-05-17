@@ -45,9 +45,11 @@ class WordPairsExtractor {
 
       //  Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( tuple2CoocMap.take(maxWordPairs).asImmutable() )
 
-        Map<Tuple2<String, String>, Tuple3<Double, Integer, Integer>> t2Freq = t2CoocMapLinkBoost( tuple2CoocMap.take(maxWordPairs).asImmutable() )
+
 
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
+      //  Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc )
+        Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc)//tuple2CoocMap.take(maxWordPairs) )
 
         println "t2Freq $t2Freq"
         println "t2cooc $t2Cooc"
@@ -59,7 +61,7 @@ class WordPairsExtractor {
     @TypeChecked(TypeCheckingMode.SKIP)
     //give a boost to cooc value based of frequency of an item in the list
  //   Map<Tuple2<String, String>, Double> t2CoocMapLinkBoost(Map<Tuple2<String, String>, Double> t2cocOrig) {
-    Map<Tuple2<String, String>, Tuple3<Double, Integer, Integer>> t2CoocMapLinkBoost(Map<Tuple2<String, String>, Double> t2cocOrig) {
+    Map<Tuple2<String, String>, Double> t2CoocMapLinkBoost(Map<Tuple2<String, String>, Double> t2cocOrig) {
         println "t2coocOrig.size " + t2cocOrig.size()
 
         Map<String, Integer> wordLinkCount = t2cocOrig.keySet().collectMany { [it.first, it.second] }.countBy {
@@ -75,16 +77,18 @@ class WordPairsExtractor {
             final int scnd = (Integer) wordLinkCount[k.second] ?: 0
 
             assert frst>0 && scnd >0
-            final int total = frst + scnd
+            final int total = frst + scnd - 1
             final int minLins = Math.min(frst,scnd)
             final int srtValue = Math.min(frst, scnd)  * v * total
-            [(k): new Tuple3(v, frst, scnd)]
+           // [(k): new Tuple3(v, frst, scnd)]
 
-           // [(k): v * (total + 1) * scnd]
+            [(k): v * total * minLins ]
         }
-        def ordby = new OrderBy([ {it.value.second }, {it.value.first}])
+      //  def ordby = new OrderBy([ {it.value.second }, {it.value.first}])
         // Map m2 =  t2bFreq.sort { - Math.min(it.value.second, it.value.third) }
-        Map m2 =  t2bFreq.sort ( ordby )
+     //   Map m2 =  t2bFreq.sort ( ordby )
+
+        Map m2 = t2bFreq.sort {-it.value }
 
         println "m2 $m2"
 
@@ -94,7 +98,7 @@ class WordPairsExtractor {
     Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> processText(String s) {
         analyseDocument(s)
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
-        Map<Tuple2<String, String>, Tuple3<Double, Integer, Integer>>  t2Freq = t2CoocMapLinkBoost(tuple2CoocMap).take(maxWordPairs).asImmutable()
+        Map<Tuple2<String, String>, Double>  t2Freq = t2CoocMapLinkBoost(tuple2CoocMap).take(maxWordPairs).asImmutable()
 
        // return new Tuple2(t2Cooc, stemInfo)
         return new Tuple2(t2Freq, stemInfo)

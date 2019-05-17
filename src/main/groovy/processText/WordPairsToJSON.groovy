@@ -16,6 +16,8 @@ class WordPairsToJSON {
 
     WordPairsToJSON(Map<String, Map<String, Integer>> stInf){
         stemInfo = stInf
+        allNodes = []
+        internalNodes = []
     }
 
     String getJSONgraph(Map<Tuple2<String, String>, Double> wordPairCooc) {

@@ -11,7 +11,7 @@ class CombineTextDirToJSON {
         //    def m = ['small': [30, 80], 'medium': [100, 200], 'large': [200, 400], 'huge': [400, 800]]
         //  def m = ['large': [200, 400], 'huge': [400, 800]]
         //   def m = ['huge': [400, 800]]
-        def m = ['huge': [80, 200]]
+        def m = ['huge': [150, 30]]
         final float powerValue = 0.5f
 
         String networkType = 'radial'
@@ -19,21 +19,26 @@ class CombineTextDirToJSON {
         def testDir =
 
          //       /D:\boa\TestData\rec.sport.hockey/
-        /D:\boa\TestData\sci.space/
-                // /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sci.crypt/
-        // /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\rec.sport.hockey/
-     //   /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sci.space/
+   //     /D:\boa\TestData\sci.space/
+            //     /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sci.crypt/
+
+    //           /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\crude/
+
+//                /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\coffee/
+        //        /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sugar/
+         /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\rec.sport.hockey/
+ //       /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sci.space/
                 //        /C:\Users\aceslh\Dataset\space100/
                 ///C:\Users\aceslh\Dataset\space100/
          //      /C:\Users\aceslh\Dataset\space100\59871/
         //        /C:\Users\aceslh\Dataset\boa\hockey/
         //   /C:\Users\aceslh\Dataset\boa\christian/
         //        /C:\Users\aceslh\Dataset\spaceHockeyChristianBOA/
-        //   /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\War Crimes Text Files_Combined/
+     //      /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\War Crimes Text Files_Combined/
 
-        //        /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\B/
+          //      /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\B/
 
-        //       /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\G/
+          //     /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\G/
         //       /C:\Users\aceslh\Dataset\space100/
         // //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\testDir/
 
@@ -61,6 +66,8 @@ class CombineTextDirToJSON {
             WordPairsToJSON wptj = new WordPairsToJSON(stemInfo)
             String jsonTree = wptj.getJSONtree(wordPairAndCooc)
             String jsonGraph = wptj.getJSONgraph(wordPairAndCooc)
+
+            wptj = new WordPairsToJSON(stemInfo)
 
             String jsonTreeF = wptj.getJSONtree(wordPairAndCoocFreqBoost)
             String jsonGraphF = wptj.getJSONgraph(wordPairAndCoocFreqBoost)
