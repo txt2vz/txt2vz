@@ -36,7 +36,7 @@ class WordPairsToJSON {
                 }
         ]
 
-        println "data $data"
+        println "Graph data: $data"
         return new JsonBuilder(data)
     }
 
@@ -73,7 +73,7 @@ class WordPairsToJSON {
                 addPairToMap(tree, word1, word0, coocValue)
             }
         }
-        println "tree: $tree"
+        println "Tree data: $tree"
 
         def json = new JsonBuilder(tree)
         return json

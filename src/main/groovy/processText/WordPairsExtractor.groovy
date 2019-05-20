@@ -30,6 +30,19 @@ class WordPairsExtractor {
     WordPairsExtractor() {
     }
 
+    Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>,  Map<String, Map<String, Integer>>> processText(String s) {
+
+        analyseDocument(s)
+
+        Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
+        Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc).asImmutable()
+
+        println "t2Freq $t2Freq"
+        println "t2cooc $t2Cooc"
+
+        return new Tuple3(t2Cooc, t2Freq, stemInfo)
+    }
+
 
     Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>,  Map<String, Map<String, Integer>>> processDirectory(File f) {
 
@@ -43,24 +56,17 @@ class WordPairsExtractor {
         }
         println "Total fileCount: $fileCount"
 
-      //  Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( tuple2CoocMap.take(maxWordPairs).asImmutable() )
-
-
-
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
-      //  Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc )
-        Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc)//tuple2CoocMap.take(maxWordPairs) )
+        Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc).asImmutable()
 
         println "t2Freq $t2Freq"
         println "t2cooc $t2Cooc"
 
-        //        return new Tuple2(t2Cooc, stemInfo)
         return new Tuple3(t2Cooc, t2Freq, stemInfo)
     }
 
     @TypeChecked(TypeCheckingMode.SKIP)
     //give a boost to cooc value based of frequency of an item in the list
- //   Map<Tuple2<String, String>, Double> t2CoocMapLinkBoost(Map<Tuple2<String, String>, Double> t2cocOrig) {
     Map<Tuple2<String, String>, Double> t2CoocMapLinkBoost(Map<Tuple2<String, String>, Double> t2cocOrig) {
         println "t2coocOrig.size " + t2cocOrig.size()
 
@@ -78,31 +84,23 @@ class WordPairsExtractor {
 
             assert frst>0 && scnd >0
             final int total = frst + scnd - 1
-            final int minLins = Math.min(frst,scnd)
-            final int srtValue = Math.min(frst, scnd)  * v * total
+           // final int minLins = Math.min(frst,scnd)
+           // final int srtValue = Math.min(frst, scnd)  * v * total
            // [(k): new Tuple3(v, frst, scnd)]
 
-            [(k): v * total * minLins ]
+         //   [(k): v * total * minLins ]
+            [(k): v * total]
         }
-      //  def ordby = new OrderBy([ {it.value.second }, {it.value.first}])
-        // Map m2 =  t2bFreq.sort { - Math.min(it.value.second, it.value.third) }
-     //   Map m2 =  t2bFreq.sort ( ordby )
 
-        Map m2 = t2bFreq.sort {-it.value }
+        Map t2bFreqSorted = t2bFreq.sort {-it.value }
 
-        println "m2 $m2"
+        println "t2bFreqSorted $t2bFreqSorted"
+        println ""
 
-        return  m2//t2bFreq.sort { - Math.min(it.value.second, it.value.first) }
+        return  t2bFreqSorted
     }
 
-    Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> processText(String s) {
-        analyseDocument(s)
-        Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
-        Map<Tuple2<String, String>, Double>  t2Freq = t2CoocMapLinkBoost(tuple2CoocMap).take(maxWordPairs).asImmutable()
 
-       // return new Tuple2(t2Cooc, stemInfo)
-        return new Tuple2(t2Freq, stemInfo)
-    }
 
 
     private void analyseDocument(String s) {

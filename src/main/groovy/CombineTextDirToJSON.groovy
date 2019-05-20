@@ -11,7 +11,9 @@ class CombineTextDirToJSON {
         //    def m = ['small': [30, 80], 'medium': [100, 200], 'large': [200, 400], 'huge': [400, 800]]
         //  def m = ['large': [200, 400], 'huge': [400, 800]]
         //   def m = ['huge': [400, 800]]
+
         def m = ['huge': [200, 20]]
+        //def m = ['huge': [100, 100]]
         final float powerValue = 0.5f
 
         String networkType = 'radial'
@@ -19,12 +21,12 @@ class CombineTextDirToJSON {
         def testDir =
 
                 // /D:\boa\TestData\rec.sport.hockey/
-                /D:\boa\TestData\sci.crypt/
+        //        /D:\boa\TestData\sci.crypt/
      //   /D:\boa\TestData\sci.space/
     //    /D:\boa\War Crimes Text Files_Combined/
             //     /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sci.crypt/
 
-    //           /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\crude/
+  //             /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\crude/
 
 //                /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\coffee/
         //        /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sugar/
@@ -40,9 +42,16 @@ class CombineTextDirToJSON {
 
           //      /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\B/
 
+    //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\A/
+
           //     /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\G/
         //       /C:\Users\aceslh\Dataset\space100/
         // //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\testDir/
+
+         /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\Japan11037.txt/
+         // /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\QuarterlyIntel8338.txt/
+
+       // /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\4363.txt/
 
         int numberOfFiles = 0
         def file = new File(testDir)
@@ -66,15 +75,20 @@ class CombineTextDirToJSON {
             def stemInfo = wpData.third
 
             WordPairsToJSON wptj = new WordPairsToJSON(stemInfo)
+            println " "
+            println "Cooc based:"
             String jsonTree = wptj.getJSONtree(wordPairAndCooc)
             String jsonGraph = wptj.getJSONgraph(wordPairAndCooc)
 
+            println ""
+            println "Freq boost based: "
             wptj = new WordPairsToJSON(stemInfo)
 
             String jsonTreeF = wptj.getJSONtree(wordPairAndCoocFreqBoost)
             String jsonGraphF = wptj.getJSONgraph(wordPairAndCoocFreqBoost)
 
-            //     String json = wptj.getJSONgraph(wordPairAndCooc)
+            println ""
+            println "Final:"
             println "Size: $k jsonGraph $jsonGraph  "
             println "Size: $k jsonTree $jsonTree  "
 
@@ -86,18 +100,15 @@ class CombineTextDirToJSON {
             def fnameGraphWithDirF = 'jsonOut3/'  + file.getName() + 'graphDIRF.json'
             def fnameTreeWithDirF = 'jsonOut3/'  + file.getName() + 'treeDIRF.json'
 
-
             def outFileGraph = new File(fnameGraphWithDir)
             def outFileTree = new File(fnameTreeWithDir)
             def outFileGraphF = new File(fnameGraphWithDirF)
             def outFileTreeF = new File(fnameTreeWithDirF)
 
-
             outFileGraph.write(jsonGraph)
             outFileTree.write(jsonTree)
             outFileGraphF.write(jsonGraphF)
             outFileTreeF.write(jsonTreeF)
-
         }
 
         final Date endRun = new Date()
