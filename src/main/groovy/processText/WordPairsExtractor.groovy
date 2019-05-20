@@ -30,9 +30,9 @@ class WordPairsExtractor {
     WordPairsExtractor() {
     }
 
-    Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>,  Map<String, Map<String, Integer>>> processText(String s) {
+    Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>,  Map<String, Map<String, Integer>>> processText(File f) {
 
-        analyseDocument(s)
+        analyseDocument(t.parseToString(f))
 
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
         Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc).asImmutable()
@@ -84,12 +84,10 @@ class WordPairsExtractor {
 
             assert frst>0 && scnd >0
             final int total = frst + scnd - 1
-           // final int minLins = Math.min(frst,scnd)
-           // final int srtValue = Math.min(frst, scnd)  * v * total
-           // [(k): new Tuple3(v, frst, scnd)]
+            final int minLins = Math.min(frst,scnd)
 
-         //   [(k): v * total * minLins ]
-            [(k): v * total]
+            [(k): v * total * minLins ]
+        //    [(k): v * total]
         }
 
         Map t2bFreqSorted = t2bFreq.sort {-it.value }

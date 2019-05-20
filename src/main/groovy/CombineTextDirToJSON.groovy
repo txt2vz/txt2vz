@@ -20,10 +20,10 @@ class CombineTextDirToJSON {
         //   def testDir = /D:\boa\C/
         def testDir =
 
-                // /D:\boa\TestData\rec.sport.hockey/
-        //        /D:\boa\TestData\sci.crypt/
-     //   /D:\boa\TestData\sci.space/
-    //    /D:\boa\War Crimes Text Files_Combined/
+      //          /D:\boa\TestData\rec.sport.hockey/
+         //       /D:\boa\TestData\sci.crypt/
+    //    /D:\boa\TestData\sci.space/
+   //     /D:\boa\War Crimes Text Files_Combined/
             //     /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sci.crypt/
 
   //             /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\crude/
@@ -48,7 +48,11 @@ class CombineTextDirToJSON {
         //       /C:\Users\aceslh\Dataset\space100/
         // //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\testDir/
 
-         /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\Japan11037.txt/
+    //     /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\Japan11037.txt/
+
+      //   /D:\boa\TestData\QuarterlyIntel8338.txt/
+       // /D:\boa\TestData\Japan11037.txt/
+                /D:\boa\C/
          // /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\QuarterlyIntel8338.txt/
 
        // /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\4363.txt/
@@ -63,11 +67,12 @@ class CombineTextDirToJSON {
             Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>,  Map<String, Map<String, Integer>>> wpData
 
             if (file.isDirectory()) {
+                wpe = new WordPairsExtractor(powerValue, 200, 20)
 
                  wpData = wpe.processDirectory(file)
             } else if (file.isFile()) {
-
-                wpData = wpe.processText(file.text)
+                wpe = new WordPairsExtractor(powerValue, 200, 40)
+                wpData = wpe.processText(file)
             }
 
             def wordPairAndCooc = wpData.first
