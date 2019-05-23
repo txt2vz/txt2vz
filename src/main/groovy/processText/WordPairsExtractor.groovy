@@ -21,10 +21,10 @@ class WordPairsExtractor {
     private Map<String, Map<String, Integer>> stemInfo = [:]
     private Map<Tuple2<String, String>, Double> tuple2CoocMap = [:]
 
-    WordPairsExtractor(Float powerIn, int maxL, int hfq) {
+    WordPairsExtractor(Float powerIn, int maxL, int hfqWords) {
         this.powerValue = powerIn
         this.maxWordPairs = maxL
-        this.highFreqWords = hfq
+        this.highFreqWords = hfqWords
     }
 
     WordPairsExtractor() {
@@ -48,9 +48,7 @@ class WordPairsExtractor {
 
         int fileCount = 0
         f.eachFileRecurse(FileType.FILES) { file ->
-            //     println file.name.charAt(6)
-            //     if (file.name.charAt(6) == 'B' ) {
-                println "File $fileCount: " + file.getAbsoluteFile()
+                println "Analysiing file $fileCount: " + file.getAbsoluteFile()
                 analyseDocument(t.parseToString(file))
                 fileCount++
         }
@@ -70,24 +68,24 @@ class WordPairsExtractor {
     Map<Tuple2<String, String>, Double> t2CoocMapLinkBoost(Map<Tuple2<String, String>, Double> t2cocOrig) {
         println "t2coocOrig.size " + t2cocOrig.size()
 
-        Map<String, Integer> wordLinkCount = t2cocOrig.keySet().collectMany { [it.first, it.second] }.countBy {
+//get frequency of each word
+        Map<String, Integer> wordFrequencyCountMap = t2cocOrig.keySet().collectMany {t2-> [t2.first, t2.second] }.countBy {
             it
-        }.sort { -it.value }
+        }.sort { -it.value }.asImmutable()
 
-        println "wordLinkCount: $wordLinkCount"
+        println "wordFrequencyCountMap: $wordFrequencyCountMap"
         println ""
 
         Map t2bFreq = t2cocOrig.collectEntries { k,  v ->
 
-            final int frst = (Integer) wordLinkCount[k.first] ?: 0
-            final int scnd = (Integer) wordLinkCount[k.second] ?: 0
-
-            assert frst>0 && scnd >0
+            final int frst = (Integer) wordFrequencyCountMap[k.first] ?: 0
+            final int scnd = (Integer) wordFrequencyCountMap[k.second] ?: 0
             final int total = frst + scnd - 1
-            final int minLins = Math.min(frst,scnd)
 
-            [(k): v * total * minLins ]
-        //    [(k): v * total]
+            final int minCount = Math.min(frst,scnd)
+            assert total > 0  && minCount > 0
+
+            [(k): v * total * minCount ]         //[(k): v * total]
         }
 
         Map t2bFreqSorted = t2bFreq.sort {-it.value }
@@ -95,16 +93,14 @@ class WordPairsExtractor {
         println "t2bFreqSorted $t2bFreqSorted"
         println ""
 
-        return  t2bFreqSorted
+        return  t2bFreqSorted.asImmutable()
     }
-
-
 
 
     private void analyseDocument(String s) {
 
         List<String> words = s.replaceAll(/\W/, "  ").toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
-            it.size() > 2 && it.charAt(0).isLetter() && it.charAt(1).isLetter()
+            it.size() > 1 && it.charAt(0).isLetter() //&& it.charAt(1).isLetter()
         }
         println "Words size: " + words.size() + " Unique words " + words.unique(false).size()
 
