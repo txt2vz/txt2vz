@@ -32,9 +32,12 @@ class CombineTextDirToJSON {
                 //       /C:\Users\aceslh\Dataset\boa\hockey/
                 //    /C:\Users\aceslh\Dataset\boa\christian/
                 //        /C:\Users\aceslh\Dataset\spaceHockeyChristianBOA/
-                    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\War Crimes Text Files_Combined/
+          //          /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\War Crimes Text Files_Combined/
 
          //       /C:\Users\aceslh\lngit\txt2vz\src\main\groovy\boa\testMulti2.txt/
+              //  /C:\Users\aceslh\lngit\txt2vz\src\main\groovy\boa\eb21.txt/
+
+                /C:\Users\aceslh\lngit\txt2vz\src\main\groovy\boa\secrecy\600/
 
           //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\B/
 //
@@ -84,7 +87,6 @@ class CombineTextDirToJSON {
 
         String jsonTreeF = wptj.getJSONtree(wordPairAndCoocFreqBoost)
         String jsonGraphF = wptj.getJSONgraph(wordPairAndCoocFreqBoost)
-
 
         String jsonTreeFs = wptj.getJSONtree(wordPairAndCoocFreqBoost.take(80))
         String jsonGraphFs = wptj.getJSONgraph(wordPairAndCoocFreqBoost.take(20))

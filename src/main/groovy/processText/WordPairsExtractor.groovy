@@ -43,6 +43,19 @@ class WordPairsExtractor {
         return new Tuple3(t2Cooc, t2Freq, stemInfo)
     }
 
+    Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>,  Map<String, Map<String, Integer>>> processText(String s) {
+
+        analyseDocument(s)
+
+        Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
+        Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc).asImmutable()
+
+        println "t2Freq $t2Freq"
+        println "t2cooc $t2Cooc"
+
+        return new Tuple3(t2Cooc, t2Freq, stemInfo)
+    }
+
 
     Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>,  Map<String, Map<String, Integer>>> processDirectory(File f) {
 

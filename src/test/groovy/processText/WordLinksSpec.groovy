@@ -12,7 +12,8 @@ class WordLinksSpec extends spock.lang.Specification {
 		when:
 		def wpTuple = wpe.processText("one1 two2 three3")
 		def wpCooc = wpTuple.first
-		def stemInfo = wpTuple.second
+		def wpCoocFreq = wpTuple.second
+		def stemInfo = wpTuple.third
 		def wpj = new WordPairsToJSON(stemInfo)
 		def jsonText = wpj.getJSONtree(wpCooc)
 		def json = slurper.parseText(jsonText)
@@ -51,7 +52,7 @@ On Saturday, family spokesman Bob Gunnell said Ali died from septic shock due to
 		when:
 		def wpTuple = wpe.processText(mAli)
 		def wpCooc = wpTuple.first
-		def stemInfo = wpTuple.second
+		def stemInfo = wpTuple.third
 		def wpj = new WordPairsToJSON(stemInfo)
 		def jsonText = wpj.getJSONtree(wpCooc)
 		def json = slurper.parseText(jsonText)
