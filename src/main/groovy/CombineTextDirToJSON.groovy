@@ -12,36 +12,35 @@ class CombineTextDirToJSON {
         final int maxLinks = 200
         final int maxWords = 20
 
-        def testDir =
+        def textLocation =
 
                 //          /D:\boa\TestData\rec.sport.hockey/
                 //       /D:\boa\TestData\sci.crypt/
-              //      /D:\boa\TestData\sci.space/
+
                 //     /D:\boa\War Crimes Text Files_Combined/
-              //           /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sci.crypt/
+                //           /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sci.crypt/
 
-               //       /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\crude/
+                //       /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\crude/
 
-               //          /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\coffee/
+                //          /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\coffee/
                 //        /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sugar/
-              //        /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\rec.sport.hockey/
-             //          /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sci.space/
+                //        /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\rec.sport.hockey/
+                //          /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sci.space/
                 //        /C:\Users\aceslh\Dataset\space100/
                 ///C:\Users\aceslh\Dataset\space100/
-                //      /C:\Users\aceslh\Dataset\space100\59871/
                 //       /C:\Users\aceslh\Dataset\boa\hockey/
                 //    /C:\Users\aceslh\Dataset\boa\christian/
                 //        /C:\Users\aceslh\Dataset\spaceHockeyChristianBOA/
-          //          /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\War Crimes Text Files_Combined/
+                //          /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\War Crimes Text Files_Combined/
 
-         //       /C:\Users\aceslh\lngit\txt2vz\src\main\groovy\boa\testMulti2.txt/
-              //  /C:\Users\aceslh\lngit\txt2vz\src\main\groovy\boa\eb21.txt/
 
-                /C:\Users\aceslh\lngit\txt2vz\src\main\groovy\boa\secrecy\600/
+                //       /C:\Users\aceslh\lngit\txt2vz\src\main\groovy\boa\secrecy\599/
 
-          //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\B/
+                /boaData\text\secrecy\591/
+
+        //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\B/
 //
-    //        /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\A/
+
 
         //     /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\G/
         //       /C:\Users\aceslh\Dataset\space100/
@@ -49,26 +48,25 @@ class CombineTextDirToJSON {
 
         //     /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\Japan11037.txt/
 
-        //   /D:\boa\TestData\QuarterlyIntel8338.txt/
+
         // /D:\boa\TestData\Japan11037.txt/
         //       /D:\boa\C/
-      //   /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\QuarterlyIntel8338.txt/
+        //   /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\QuarterlyIntel8338.txt/
 
-     //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\4363.txt/
+        //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\4363.txt/
 
 
-        File file = new File(testDir)
+        File textFile_s = new File(textLocation)
         WordPairsExtractor wpe
         Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData
 
-
-        if (file.isDirectory()) {
+        if (textFile_s.isDirectory()) {
             wpe = new WordPairsExtractor(powerValue, 200, 20)
-            wpData = wpe.processDirectory(file)
+            wpData = wpe.processDirectory(textFile_s)
 
-        } else if (file.isFile()) {
+        } else if (textFile_s.isFile()) {
             wpe = new WordPairsExtractor(powerValue, 200, 40)
-            wpData = wpe.processText(file)
+            wpData = wpe.processText(textFile_s)
         }
 
         def wordPairAndCooc = wpData.first
@@ -95,15 +93,15 @@ class CombineTextDirToJSON {
         println "Final:"
         println "jsonGraph $jsonGraph  "
         println "jsonTree $jsonTree  "
+        String outDir = 'boaData/json/'
 
-        def fnameGraphWithDir = 'jsonOut3/' + file.getName() + 'graphDIR.json'
-        def fnameTreeWithDir = 'jsonOut3/' + file.getName() + 'treeDIR.json'
-        def fnameGraphWithDirF = 'jsonOut3/' + file.getName() + 'graphDIRF.json'
-        def fnameTreeWithDirF = 'jsonOut3/' + file.getName() + 'treeDIRF.json'
+        def fnameGraphWithDir = outDir + textFile_s.getName() + 'graph.json'
+        def fnameTreeWithDir = outDir + textFile_s.getName() + 'tree.json'
+        def fnameGraphWithDirF = outDir + textFile_s.getName() + 'graphF.json'
+        def fnameTreeWithDirF = outDir + textFile_s.getName() + 'treeF.json'
 
-        def fnameGraphWithDirFs = 'jsonOut3/' + file.getName() + 'graphDIRFs.json'
-        def fnameTreeWithDirFs = 'jsonOut3/' + file.getName() + 'treeDIRFs.json'
-
+        def fnameGraphWithDirFs = outDir + textFile_s.getName() + 'graphFs.json'
+        def fnameTreeWithDirFs = outDir + textFile_s.getName() + 'treeFs.json'
 
         def outFileGraph = new File(fnameGraphWithDir)
         def outFileTree = new File(fnameTreeWithDir)
@@ -120,7 +118,6 @@ class CombineTextDirToJSON {
 
         outFileGraphFs.write(jsonGraphFs)
         outFileTreeFs.write(jsonTreeFs)
-
 
         final Date endRun = new Date()
         TimeDuration duration = TimeCategory.minus(endRun, startRun)

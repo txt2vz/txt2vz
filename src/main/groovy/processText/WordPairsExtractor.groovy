@@ -61,9 +61,9 @@ class WordPairsExtractor {
 
         int fileCount = 0
         f.eachFileRecurse(FileType.FILES) { file ->
-                println "Analysiing file $fileCount: " + file.getAbsoluteFile()
-                analyseDocument(t.parseToString(file))
-                fileCount++
+            println "Analysiing file $fileCount: " + file.getAbsoluteFile()
+            analyseDocument(t.parseToString(file))
+            fileCount++
         }
         println "Total fileCount: $fileCount"
 
@@ -76,12 +76,12 @@ class WordPairsExtractor {
         return new Tuple3(t2Cooc, t2Freq, stemInfo)
     }
 
-    @TypeChecked(TypeCheckingMode.SKIP)
+    //   @TypeChecked(TypeCheckingMode.SKIP)
     //give a boost to cooc value based of frequency of an item in the list
     Map<Tuple2<String, String>, Double> t2CoocMapLinkBoost(Map<Tuple2<String, String>, Double> t2cocOrig) {
         println "t2coocOrig.size " + t2cocOrig.size()
 
-//get frequency of each word
+//get frequency of each word in word pair list
         Map<String, Integer> wordFrequencyCountMap = t2cocOrig.keySet().collectMany {t2-> [t2.first, t2.second] }.countBy {
             it
         }.sort { -it.value }.asImmutable()
@@ -89,7 +89,7 @@ class WordPairsExtractor {
         println "wordFrequencyCountMap: $wordFrequencyCountMap"
         println ""
 
-        Map t2bFreq = t2cocOrig.collectEntries { k,  v ->
+        Map <Tuple2<String, String>, Double> t2bFreq = t2cocOrig.collectEntries { k, v ->
 
             final int frst = (Integer) wordFrequencyCountMap[k.first] ?: 0
             final int scnd = (Integer) wordFrequencyCountMap[k.second] ?: 0
@@ -99,7 +99,7 @@ class WordPairsExtractor {
             assert total > 0  && minCount > 0
 
             [(k): v * total * minCount ]         //[(k): v * total]
-        }
+        } as Map<Tuple2<String, String>, Double>
 
         Map t2bFreqSorted = t2bFreq.sort {-it.value }
 

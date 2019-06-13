@@ -1,0 +1,52 @@
+{
+  "children": [
+    {
+      "name": "proclaimed",
+      "cooc": 155.90234375
+    },
+    {
+      "name": "firms",
+      "children": [
+        {
+          "name": "personal",
+          "cooc": 23.47265625
+        }
+      ],
+      "cooc": 53.916015625
+    },
+    {
+      "name": "committee",
+      "children": [
+        {
+          "name": "case",
+          "cooc": 16.48046875
+        },
+        {
+          "name": "washington",
+          "children": [
+            {
+              "name": "london",
+              "cooc": 13.109375
+            },
+            {
+              "name": "telegram",
+              "cooc": 12.283203125
+            }
+          ],
+          "cooc": 13.77734375
+        }
+      ],
+      "cooc": 44.23046875
+    },
+    {
+      "name": "department",
+      "cooc": 14.896484375
+    },
+    {
+      "name": "states",
+      "cooc": 13.50390625
+    }
+  ],
+  "name": "list",
+  "cooc": 155.90234375
+}
