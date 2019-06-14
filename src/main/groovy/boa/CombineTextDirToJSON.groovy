@@ -1,3 +1,5 @@
+package boa
+
 import groovy.time.TimeCategory
 import groovy.time.TimeDuration
 import processText.WordPairsExtractor
@@ -5,14 +7,17 @@ import processText.WordPairsToJSON
 
 class CombineTextDirToJSON {
 
-    static void main(String[] args) {
+
 
         final Date startRun = new Date()
         final float powerValue = 0.5f
         final int maxLinks = 200
         final int maxWords = 20
+    final static String outDir =// 'boaData/json/'
 
-        def textLocation =
+            /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\j2\ /
+
+        def static textLocation =
 
                 //          /D:\boa\TestData\rec.sport.hockey/
                 //       /D:\boa\TestData\sci.crypt/
@@ -56,15 +61,24 @@ class CombineTextDirToJSON {
         //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\4363.txt/
 
 
+
+    static void main(String[] args) {
         File textFile_s = new File(textLocation)
+        def ctdtj = new CombineTextDirToJSON(textFile_s, outDir)
+    }
+
+    void combineDir(File textFile_s, String outDir){
+
         WordPairsExtractor wpe
         Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData
 
         if (textFile_s.isDirectory()) {
+            println "DIR found"
             wpe = new WordPairsExtractor(powerValue, 200, 20)
             wpData = wpe.processDirectory(textFile_s)
 
         } else if (textFile_s.isFile()) {
+            println "FIle found"
             wpe = new WordPairsExtractor(powerValue, 200, 40)
             wpData = wpe.processText(textFile_s)
         }
@@ -93,7 +107,9 @@ class CombineTextDirToJSON {
         println "Final:"
         println "jsonGraph $jsonGraph  "
         println "jsonTree $jsonTree  "
-        String outDir = 'boaData/json/'
+    //    String outDir =// 'boaData/json/'
+
+  //      /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\j2\ /
 
         def fnameGraphWithDir = outDir + textFile_s.getName() + 'graph.json'
         def fnameTreeWithDir = outDir + textFile_s.getName() + 'tree.json'

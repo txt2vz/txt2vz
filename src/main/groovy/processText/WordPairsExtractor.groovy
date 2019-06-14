@@ -32,7 +32,12 @@ class WordPairsExtractor {
 
     Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>,  Map<String, Map<String, Integer>>> processText(File f) {
 
-        analyseDocument(t.parseToString(f))
+        println "file is $f sizeis  " + f.size()
+
+        String p =  f.text// t.parseToString(f)
+      //  println "p $p"
+
+        analyseDocument(p)//t.parseToString(f))
 
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
         Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc).asImmutable()

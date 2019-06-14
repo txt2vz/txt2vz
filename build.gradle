@@ -2,14 +2,14 @@ group 'txt2vz'
 version '1.0'
 
 repositories {
-
     jcenter()
     mavenCentral()
 }
 
 apply from: 'https://raw.github.com/akhikhl/gretty/master/pluginScripts/gretty.plugin'
 apply plugin: 'groovy'
-apply plugin: 'war'             
+apply plugin: 'war'    
+apply plugin: 'application'
 
 dependencies {
     providedCompile group: 'javax.servlet', name: 'servlet-api', version:'2.5'
@@ -37,6 +37,27 @@ dependencies {
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.1'
+}
+
+jar {
+    zip64 = true
+    //dependsOn 'test'
+    archiveName = "boa.jar"
+    from {
+        configurations.runtime.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+
+    manifest {
+        attributes 'Main-Class': 'boa.SwingMain'
+    }
+
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
 }
 
 gretty {

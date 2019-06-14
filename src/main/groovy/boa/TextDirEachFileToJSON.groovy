@@ -1,3 +1,5 @@
+package boa
+
 import groovy.io.FileType
 import groovy.time.TimeCategory
 import groovy.time.TimeDuration
