@@ -1,5 +1,6 @@
 package fileUpload;
 
+/*
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -50,3 +51,5 @@ public class UpFile extends HttpServlet {
 		response.getWriter().println( s)
 	}
 }
+
+*/

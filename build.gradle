@@ -51,7 +51,7 @@ jar {
         configurations.compile.collect {
             it.isDirectory() ? it : zipTree(it)
         }
-    }
+    } 
 
     manifest {
         attributes 'Main-Class': 'boa.SwingMain'
@@ -59,6 +59,17 @@ jar {
 
     exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
 }
+
+//create a single Jar with all dependencies
+//task fatJar(type: Jar) {
+//    zip64 = true
+//    manifest {
+//        attributes 'Main-Class': 'boa.SwingMain'
+//    }
+//    baseName = project.name + '-all'
+//    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+//    with jar
+//}
 
 gretty {
     contextPath="/"

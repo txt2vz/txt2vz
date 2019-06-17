@@ -41,7 +41,7 @@ class CombineTextDirToJSON {
 
                 //       /C:\Users\aceslh\lngit\txt2vz\src\main\groovy\boa\secrecy\599/
 
-                /boaData\text\secrecy\591/
+          //      /boaData\text\secrecy\595/
 
         //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\B/
 //
@@ -56,7 +56,7 @@ class CombineTextDirToJSON {
 
         // /D:\boa\TestData\Japan11037.txt/
         //       /D:\boa\C/
-        //   /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\QuarterlyIntel8338.txt/
+           /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\QuarterlyIntel8338.txt/
 
         //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\4363.txt/
 
@@ -64,7 +64,8 @@ class CombineTextDirToJSON {
 
     static void main(String[] args) {
         File textFile_s = new File(textLocation)
-        def ctdtj = new CombineTextDirToJSON(textFile_s, outDir)
+        def ctdtj =  new CombineTextDirToJSON()
+             ctdtj.combineDir(textFile_s, outDir)
     }
 
     void combineDir(File textFile_s, String outDir){

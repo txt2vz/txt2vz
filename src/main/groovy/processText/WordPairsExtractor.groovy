@@ -6,6 +6,10 @@ import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
 import org.apache.tika.Tika
 
+
+import java.nio.file.Path
+import java.nio.file.Paths
+
 @CompileStatic
 class WordPairsExtractor {
 
@@ -67,7 +71,23 @@ class WordPairsExtractor {
         int fileCount = 0
         f.eachFileRecurse(FileType.FILES) { file ->
             println "Analysiing file $fileCount: " + file.getAbsoluteFile()
-            analyseDocument(t.parseToString(file))
+//            println "tika class " + t
+//
+//            Path path = Paths.get(file.getPath())
+//
+//           // InputStream targetStream = new FileInputStream(file);
+//            println "paht $path"
+//            String tikaText = t.parseToString(file)
+//            println "tikatext 250: " + tikaText.take(50)
+//
+//
+//            String ftext = file.text
+//
+//          //  assert ftext == tikaText
+//          //  t.parseToString(ftext.)
+//            println "ftext 250:    " + ftext.take(50)
+          //  analyseDocument(t.parseToString(file))
+            analyseDocument(file.text)
             fileCount++
         }
         println "Total fileCount: $fileCount"
@@ -117,7 +137,7 @@ class WordPairsExtractor {
 
     private void analyseDocument(String s) {
 
-        List<String> words = s.replaceAll(/\W/, "  ").toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
+        List<String> words = s.replaceAll('[^a-zA-Z0-9 -]', '').toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
             it.size() > 1 && it.charAt(0).isLetter() //&& it.charAt(1).isLetter()
         }
         println "Words size: " + words.size() + " Unique words " + words.unique(false).size()
