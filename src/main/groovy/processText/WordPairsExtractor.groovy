@@ -4,7 +4,7 @@ import groovy.io.FileType
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
-import org.apache.tika.Tika
+//import org.apache.tika.Tika
 
 
 import java.nio.file.Path
@@ -20,7 +20,7 @@ class WordPairsExtractor {
     private float powerValue = 0.5
 
     private PorterStemmer stemmer = new PorterStemmer()
-    private Tika t = new Tika();
+  //  private Tika t = new Tika();
 
     private Map<String, Map<String, Integer>> stemInfo = [:]
     private Map<Tuple2<String, String>, Double> tuple2CoocMap = [:]
@@ -71,22 +71,6 @@ class WordPairsExtractor {
         int fileCount = 0
         f.eachFileRecurse(FileType.FILES) { file ->
             println "Analysiing file $fileCount: " + file.getAbsoluteFile()
-//            println "tika class " + t
-//
-//            Path path = Paths.get(file.getPath())
-//
-//           // InputStream targetStream = new FileInputStream(file);
-//            println "paht $path"
-//            String tikaText = t.parseToString(file)
-//            println "tikatext 250: " + tikaText.take(50)
-//
-//
-//            String ftext = file.text
-//
-//          //  assert ftext == tikaText
-//          //  t.parseToString(ftext.)
-//            println "ftext 250:    " + ftext.take(50)
-          //  analyseDocument(t.parseToString(file))
             analyseDocument(file.text)
             fileCount++
         }

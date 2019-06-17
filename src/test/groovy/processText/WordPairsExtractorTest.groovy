@@ -1,43 +1,10 @@
 package processText
 
-import jdk.nashorn.internal.runtime.regexp.joni.Regex
-import org.apache.tika.Tika
 import spock.lang.Specification
 
 class WordPairsExtractorTest extends Specification
 
 {
-
-    def tikaTest() {
-
-        Tika t = new Tika()
-
-        when:
-        File sec1 = new File(/boaData\text\secrecy\590\ev590doc10903.txt/)
-        File sec2 = new File(/boaData\text\secrecy\590\ev590doc10933.txt/)
-        File sec3 = new File(/boaData\text\secrecy\590\ev590doc10930.txt/)
-
-        File test = new File(/boaData\text\test.txt/)
-        File coffee26 = new File(/boaData\text\coffee\0000026/)
-
-        then:
-
-        test.text + '\n' == t.parseToString(test)
-        coffee26.text + '\n' == t.parseToString(coffee26)
-        sec2.text + '\n' == t.parseToString(sec2)
-
-        sec1.text.take(20) == t.parseToString(sec1).take(20)
-        sec2.text.take(70) == t.parseToString(sec2).take(70)
-        sec3.text.take(20) == t.parseToString(sec3).take(20)
-
-        def sec3plusN = sec3.text + '\n'
-        sec3plusN.reverse().take(20) == t.parseToString(sec3).reverse().take(20)
-
-        def wordsF = sec2.text.replaceAll('[^a-zA-Z0-9 -]', '')
-        def wordsT = t.parseToString(sec2).replaceAll('[^a-zA-Z0-9 -]', '')
-        wordsF.size() == wordsT.size()
-    }
-
 
     def "tuple2 freq test "() {
 //        given:

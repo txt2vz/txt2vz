@@ -52,13 +52,16 @@ On Saturday, family spokesman Bob Gunnell said Ali died from septic shock due to
 		when:
 		def wpTuple = wpe.processText(mAli)
 		def wpCooc = wpTuple.first
+		def t2Freq = wpTuple.second
+
 		def stemInfo = wpTuple.third
 		def wpj = new WordPairsToJSON(stemInfo)
-		def jsonText = wpj.getJSONtree(wpCooc)
+		def jsonText = wpj.getJSONtree(t2Freq)
 		def json = slurper.parseText(jsonText)
 
-		then:	
+		then:
+		println "json: $json"
 		json.name == "ali"
-		json.children[0].name == "muhammad"
+		json.children[0].name == "obama"
 	}
 }
