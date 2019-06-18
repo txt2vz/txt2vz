@@ -6,19 +6,15 @@ repositories {
     mavenCentral()
 }
 
-apply plugin: 'groovy'   
+apply plugin: 'groovy'
 apply plugin: 'application'
 
 dependencies {
-   
-    compile group: 'org.codehaus.groovy', name: 'groovy', version: '2.5.6'
-    compile group: 'org.codehaus.groovy', name: 'groovy-json', version: '2.5.6' 
 
-    // https://mvnrepository.com/artifact/org.codehaus.groovy/groovy-swing
+    compile group: 'org.codehaus.groovy', name: 'groovy', version: '2.5.6'
+    compile group: 'org.codehaus.groovy', name: 'groovy-json', version: '2.5.6'
     compile group: 'org.codehaus.groovy', name: 'groovy-swing', version: '2.5.6'
 
-    // compile 'org.codehaus.groovy:groovy-all:2.4.13'
-    
     testCompile group: 'org.spockframework', name: 'spock-core', version: '1.1-groovy-2.4'
 }
 
@@ -26,8 +22,7 @@ task wrapper(type: Wrapper) {
     gradleVersion = '4.1'
 }
 
-    mainClassName = 'boa.SwingMain'
-
+mainClassName = 'boa.SwingMain'
 
 jar {
     zip64 = true
@@ -41,13 +36,13 @@ jar {
         configurations.compile.collect {
             it.isDirectory() ? it : zipTree(it)
         }
-    } 
+    }
 
     manifest {
         attributes 'Main-Class': 'boa.SwingMain'
     }
 
-    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
 }
 
 //create a single Jar with all dependencies

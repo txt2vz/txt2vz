@@ -1,0 +1,178 @@
+{
+  "children": [
+    {
+      "name": "schools",
+      "children": [
+        {
+          "name": "commandant",
+          "cooc": 11522.3203125
+        },
+        {
+          "name": "holding",
+          "cooc": 9627.31640625
+        }
+      ],
+      "cooc": 223942.265625
+    },
+    {
+      "name": "section",
+      "children": [
+        {
+          "name": "country",
+          "cooc": 21641.25
+        }
+      ],
+      "cooc": 209921.25
+    },
+    {
+      "name": "sts",
+      "cooc": 58448.671875
+    },
+    {
+      "name": "students",
+      "children": [
+        {
+          "name": "number",
+          "cooc": 4135.728515625
+        },
+        {
+          "name": "days",
+          "cooc": 206.90625
+        }
+      ],
+      "cooc": 53318.267578125
+    },
+    {
+      "name": "officers",
+      "children": [
+        {
+          "name": "total",
+          "children": [
+            {
+              "name": "rank",
+              "cooc": 8885.720703125
+            }
+          ],
+          "cooc": 10852.1875
+        },
+        {
+          "name": "mess",
+          "cooc": 10759.39453125
+        },
+        {
+          "name": "serjeants",
+          "cooc": 2895.0390625
+        }
+      ],
+      "cooc": 37773.3125
+    },
+    {
+      "name": "carried",
+      "cooc": 31213.875
+    },
+    {
+      "name": "group",
+      "cooc": 30256.25
+    },
+    {
+      "name": "special",
+      "cooc": 25160.625
+    },
+    {
+      "name": "operational",
+      "cooc": 16908.28125
+    },
+    {
+      "name": "establishment",
+      "children": [
+        {
+          "name": "personnel",
+          "cooc": 2479.84375
+        }
+      ],
+      "cooc": 13560.65625
+    },
+    {
+      "name": "soe",
+      "cooc": 11993.9765625
+    },
+    {
+      "name": "organisation",
+      "cooc": 9597.65625
+    },
+    {
+      "name": "instructors",
+      "children": [
+        {
+          "name": "major",
+          "cooc": 6871.552734375
+        }
+      ],
+      "cooc": 8781.931640625
+    },
+    {
+      "name": "syllabus",
+      "cooc": 7236.5625
+    },
+    {
+      "name": "general",
+      "cooc": 6421.025390625
+    },
+    {
+      "name": "work",
+      "cooc": 6324.140625
+    },
+    {
+      "name": "agents",
+      "cooc": 6303.349609375
+    },
+    {
+      "name": "staff",
+      "cooc": 4541.25
+    },
+    {
+      "name": "made",
+      "cooc": 3747.81640625
+    },
+    {
+      "name": "time",
+      "cooc": 3694.564453125
+    },
+    {
+      "name": "appendix",
+      "cooc": 3328.7109375
+    },
+    {
+      "name": "instruction",
+      "cooc": 3056.1015625
+    },
+    {
+      "name": "includes",
+      "cooc": 2364.375
+    },
+    {
+      "name": "practice",
+      "cooc": 1321.962890625
+    },
+    {
+      "name": "methods",
+      "cooc": 895.078125
+    },
+    {
+      "name": "tion",
+      "cooc": 834.1875
+    },
+    {
+      "name": "exercise",
+      "children": [
+        {
+          "name": "lecture",
+          "cooc": 162.421875
+        }
+      ],
+      "cooc": 822.34375
+    }
+  ],
+  "name": "training",
+  "cooc": 223942.265625
+}

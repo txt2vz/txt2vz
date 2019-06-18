@@ -4,11 +4,7 @@ import groovy.io.FileType
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
-//import org.apache.tika.Tika
 
-
-import java.nio.file.Path
-import java.nio.file.Paths
 
 @CompileStatic
 class WordPairsExtractor {
@@ -20,7 +16,6 @@ class WordPairsExtractor {
     private float powerValue = 0.5
 
     private PorterStemmer stemmer = new PorterStemmer()
-  //  private Tika t = new Tika();
 
     private Map<String, Map<String, Integer>> stemInfo = [:]
     private Map<Tuple2<String, String>, Double> tuple2CoocMap = [:]
@@ -38,10 +33,7 @@ class WordPairsExtractor {
 
         println "file is $f sizeis  " + f.size()
 
-        String p =  f.text// t.parseToString(f)
-      //  println "p $p"
-
-        analyseDocument(p)//t.parseToString(f))
+        analyseDocument(f.text)
 
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
         Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc).asImmutable()
@@ -85,7 +77,6 @@ class WordPairsExtractor {
         return new Tuple3(t2Cooc, t2Freq, stemInfo)
     }
 
-    //   @TypeChecked(TypeCheckingMode.SKIP)
     //give a boost to cooc value based of frequency of an item in the list
     Map<Tuple2<String, String>, Double> t2CoocMapLinkBoost(Map<Tuple2<String, String>, Double> t2cocOrig) {
         println "t2coocOrig.size " + t2cocOrig.size()

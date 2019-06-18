@@ -42,6 +42,12 @@ class CombineTextDirToJSON {
                 //       /C:\Users\aceslh\lngit\txt2vz\src\main\groovy\boa\secrecy\599/
 
           //      /boaData\text\secrecy\595/
+                //   /boaData\text\secrecy\598\ev598doc11098.txt/
+
+//    /boaData\text\secrecy\590\ev590doc10903.txt/
+
+                /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\secrecy\599\ev599doc11102.txt/
+
 
         //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\B/
 //
@@ -56,7 +62,7 @@ class CombineTextDirToJSON {
 
         // /D:\boa\TestData\Japan11037.txt/
         //       /D:\boa\C/
-           /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\QuarterlyIntel8338.txt/
+     //      /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\QuarterlyIntel8338.txt/
 
         //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\4363.txt/
 
