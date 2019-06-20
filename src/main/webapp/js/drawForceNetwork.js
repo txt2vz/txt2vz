@@ -6,8 +6,8 @@ function drawForceNetwork(jsonlinks) {
 	var links = linksobj.links;
 	var nodes = {};
 
-	var w = 960,
-		h = 800;
+//	var w = 300,
+//		h = 400;
 	var svg = d3.select("#vis").append("svg")
 
 	// Compute the distinct nodes from the links.
@@ -139,9 +139,11 @@ function drawForceNetwork(jsonlinks) {
 		});
 	});
 
-    function resize() {
-        width = window.innerWidth, height = window.innerHeight;
-        svg.attr("width", width).attr("height", height);
-        force.size([width, height]).resume();
-    }
+     function resize() {
+        // width = window.innerWidth, height = window.innerHeight;
+		var width = 1200;
+		var  height = 750;
+         svg.attr("width", width).attr("height", height);
+         force.size([width, height]).resume();
+     }
 }
