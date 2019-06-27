@@ -13,9 +13,9 @@ class CombineTextDirToJSON {
         final float powerValue = 0.5f
         final int maxLinks = 200
         final int maxWords = 20
-    final static String outDir =// 'boaData/json/'
+        final static String outDir = 'boaData/json/'
 
-            /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\j2\ /
+      //      /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\j2\ /
 
         def static textLocation =
 
@@ -41,12 +41,12 @@ class CombineTextDirToJSON {
 
                 //       /C:\Users\aceslh\lngit\txt2vz\src\main\groovy\boa\secrecy\599/
 
-          //      /boaData\text\secrecy\595/
+                /boaData\text\secrecy\593/
                 //   /boaData\text\secrecy\598\ev598doc11098.txt/
 
 //    /boaData\text\secrecy\590\ev590doc10903.txt/
 
-                /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\secrecy\599\ev599doc11102.txt/
+     //           /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\secrecy\599\ev599doc11102.txt/
 
 
         //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\B/
@@ -56,13 +56,13 @@ class CombineTextDirToJSON {
         //     /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\G/
         //       /C:\Users\aceslh\Dataset\space100/
         // //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\testDir/
-
-        //     /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\Japan11037.txt/
+//
+    //         /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOAexamples\rawText\Japan11037.txt/
 
 
         // /D:\boa\TestData\Japan11037.txt/
         //       /D:\boa\C/
-     //      /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\QuarterlyIntel8338.txt/
+     //      /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOAexamples\rawText\QuarterlyIntel8338.txt/
 
         //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOA\rawText\4363.txt/
 
@@ -86,7 +86,7 @@ class CombineTextDirToJSON {
 
         } else if (textFile_s.isFile()) {
             println "FIle found"
-            wpe = new WordPairsExtractor(powerValue, 200, 40)
+            wpe = new WordPairsExtractor(powerValue, 900, 80)
             wpData = wpe.processText(textFile_s)
         }
 
