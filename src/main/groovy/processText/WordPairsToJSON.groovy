@@ -48,13 +48,15 @@ class WordPairsToJSON {
             String word0
             String word1
 
-            if (stemInfo.isEmpty()){
-                word0 = k.first
-                word1 = k.second
-            } else {
+            // should not happen?
+            assert stemInfo
+//            if (stemInfo.isEmpty()){
+//                word0 = k.first
+//                word1 = k.second
+//            } else {
                 word0 = stemInfo[k.first].max { it.value }.key
                 word1 = stemInfo[k.second].max { it.value }.key
-            }
+       //     }
             double coocValue = v
 
             if (tree.isEmpty()) {

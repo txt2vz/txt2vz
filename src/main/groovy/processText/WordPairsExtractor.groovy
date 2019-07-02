@@ -31,12 +31,13 @@ class WordPairsExtractor {
 
     Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>,  Map<String, Map<String, Integer>>> processText(File f) {
 
-        println "file is $f sizeis  " + f.size()
+        println "file is $f size : " + f.size()
 
         analyseDocument(f.text)
 
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
-        Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc).asImmutable()
+     //   Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc).asImmutable()
+        Map<Tuple2<String, String>, Double> t2Freq = LinkBoost.linkBoost( t2Cooc).asImmutable()
 
         println "t2Freq $t2Freq"
         println "t2cooc $t2Cooc"
@@ -49,14 +50,14 @@ class WordPairsExtractor {
         analyseDocument(s)
 
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
-        Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc).asImmutable()
+       // Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc).asImmutable()
+        Map<Tuple2<String, String>, Double> t2Freq = LinkBoost.linkBoost( t2Cooc).asImmutable()
 
         println "t2Freq $t2Freq"
         println "t2cooc $t2Cooc"
 
         return new Tuple3(t2Cooc, t2Freq, stemInfo)
     }
-
 
     Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>,  Map<String, Map<String, Integer>>> processDirectory(File f) {
 
@@ -69,8 +70,9 @@ class WordPairsExtractor {
         println "Total fileCount: $fileCount"
 
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
-        Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc).asImmutable()
+      //  Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc).asImmutable()
 
+        Map<Tuple2<String, String>, Double> t2Freq = LinkBoost.linkBoost( t2Cooc).asImmutable()
         println "t2Freq $t2Freq"
         println "t2cooc $t2Cooc"
 
@@ -78,43 +80,54 @@ class WordPairsExtractor {
     }
 
     //give a boost to cooc value based of frequency of an item in the list
-    Map<Tuple2<String, String>, Double> t2CoocMapLinkBoost(Map<Tuple2<String, String>, Double> t2cocOrig) {
-        println "t2coocOrig.size " + t2cocOrig.size()
-
-//get frequency of each word in word pair list
-        Map<String, Integer> wordFrequencyCountMap = t2cocOrig.keySet().collectMany {t2-> [t2.first, t2.second] }.countBy {
-            it
-        }.sort { -it.value }.asImmutable()
-
-        println "wordFrequencyCountMap: $wordFrequencyCountMap"
-        println ""
-
-        Map <Tuple2<String, String>, Double> t2bFreq = t2cocOrig.collectEntries { k, v ->
-
-            final int frst = (Integer) wordFrequencyCountMap[k.first] ?: 0
-            final int scnd = (Integer) wordFrequencyCountMap[k.second] ?: 0
-            final int total = frst + scnd - 1
-
-            final int minCount = Math.min(frst,scnd)
-            assert total > 0  && minCount > 0
-
-            [(k): v * total * minCount ]         //[(k): v * total]
-        } as Map<Tuple2<String, String>, Double>
-
-        Map t2bFreqSorted = t2bFreq.sort {-it.value }
-
-        println "t2bFreqSorted $t2bFreqSorted"
-        println ""
-
-        return  t2bFreqSorted.asImmutable()
-    }
-
+//    Map<Tuple2<String, String>, Double> t2CoocMapLinkBoost(Map<Tuple2<String, String>, Double> t2cocOrig) {
+//        println "t2coocOrig.size " + t2cocOrig.size()
+//
+////get frequency of each word in word pair list
+//        Map<String, Integer> wordFrequencyCountMap = t2cocOrig.keySet().collectMany {t2-> [t2.first, t2.second] }.countBy {
+//            it
+//        }.sort { -it.value }.asImmutable()
+//
+//        println "wordFrequencyCountMap: $wordFrequencyCountMap"
+//        println ""
+//
+//        Map <Tuple2<String, String>, Double> t2bFreq = t2cocOrig.collectEntries { k, v ->
+//
+//            final int frst = (Integer) wordFrequencyCountMap[k.first] ?: 0
+//            final int scnd = (Integer) wordFrequencyCountMap[k.second] ?: 0
+//            final int total = frst + scnd - 1
+//
+//            final int minCount = Math.min(frst,scnd)
+//            assert total > 0  && minCount > 0
+//
+//            def x = 1
+//            if (k.first == 'parti' || k.second == 'parti')
+//                x=10
+//
+//            [(k): v * x * total * minCount ]         //[(k): v * total]
+//        } as Map<Tuple2<String, String>, Double>
+//
+//        Map t2bFreqSorted = t2bFreq.sort {-it.value }
+//
+//        println "t2bFreqSorted $t2bFreqSorted"
+//        println ""
+//
+//        return  t2bFreqSorted.asImmutable()
+//    }
 
     private void analyseDocument(String s) {
 
-        List<String> words = s.replaceAll('[^a-zA-Z0-9 -]', '').toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
+      //  println " s 10 " + s.take(1000)
+
+        List<String> words = s.replaceAll(~/^\W/, '').toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
+//       // List<String> words = s.replaceAll('[^a-zA-Z0-9_-]', '').toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
             it.size() > 1 && it.charAt(0).isLetter() //&& it.charAt(1).isLetter()
         }
+
+
+//        List<String> words = s.replaceAll('[^a-zA-Z0-9 -]', '').toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
+//            it.size() > 1 && it.charAt(0).isLetter() //&& it.charAt(1).isLetter()
+//        }
         println "Words size: " + words.size() + " Unique words " + words.unique(false).size()
 
         Map<String, List<Integer>> stemmedWordPositionsMap = buildStemMaps(words)
