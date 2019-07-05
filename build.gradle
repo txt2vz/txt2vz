@@ -11,9 +11,9 @@ apply plugin: 'application'
 
 dependencies {
 
-    compile group: 'org.codehaus.groovy', name: 'groovy', version: '2.5.6'
-    compile group: 'org.codehaus.groovy', name: 'groovy-json', version: '2.5.6'
-    compile group: 'org.codehaus.groovy', name: 'groovy-swing', version: '2.5.6'
+    compile group: 'org.codehaus.groovy', name: 'groovy', version: '2.5.7'
+    compile group: 'org.codehaus.groovy', name: 'groovy-json', version: '2.5.7'
+    compile group: 'org.codehaus.groovy', name: 'groovy-swing', version: '2.5.7'
 
     testCompile group: 'org.spockframework', name: 'spock-core', version: '1.1-groovy-2.4'
 }

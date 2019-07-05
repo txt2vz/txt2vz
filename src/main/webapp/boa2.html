@@ -246,14 +246,14 @@
 
         promise0.then(function (value) {
 
-            console.log("in then value is " + value);
+            //console.log("in then value is " + value);
 
             var linearScale = d3.scale.linear()
                 .domain(value)
                 //   .range([2, 8]);
                 .range([2, 7]);
 
-            console.log("lins scale 2 " + linearScale(2));
+      //      console.log("lins scale 2 " + linearScale(2));
 
             d3.select("svg").remove();
             var tree = d3.select("#vis").append("svg")
@@ -265,7 +265,7 @@
                     function (d) {
                         //     var x = 5;
                         var nodeSize = linearScale(d.cooc);
-                        console.log("node size " + nodeSize + " cooc " + d.cooc);
+                       // console.log("node size " + nodeSize + " cooc " + d.cooc);
                         return nodeSize;
 
                     })

@@ -403,6 +403,7 @@ d3.chart("hierarchy").extend("cluster-tree", {
 
 
     chart.off("click:node").on("click:node", function(d) {
+      console.log("d is " + d.name);
       d = toggle(d);
       chart.trigger("transform:stash");
 

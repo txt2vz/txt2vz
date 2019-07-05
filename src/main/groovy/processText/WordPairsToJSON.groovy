@@ -7,7 +7,7 @@ import jdk.nashorn.internal.ir.annotations.Immutable
 
 import java.util.concurrent.ConcurrentHashMap
 
-@CompileStatic
+//@CompileStatic
 class WordPairsToJSON {
 
     private Set<String> internalNodes = []
@@ -25,12 +25,16 @@ class WordPairsToJSON {
         def data = [
 
                 links: wordPairCooc.collect {k, v ->
-
+                    def (String k0, String k1) = LinkBoost.checkStringTuple(k)
                     [
                     //        source: it.key.first,
                     //        target: it.key.second,
-                     source: stemInfo[k.first].max { v }.key,
-                     target: stemInfo[k.second].max { v }.key,
+
+                    source: stemInfo[k0].max { v }.key,
+                    target: stemInfo[k1].max { v }.key,
+
+//                     source: stemInfo[k.first].max { v }.key,
+//                     target: stemInfo[k.second].max { v }.key,
                      cooc  : v
                     ]
                 }
@@ -54,8 +58,13 @@ class WordPairsToJSON {
 //                word0 = k.first
 //                word1 = k.second
 //            } else {
-                word0 = stemInfo[k.first].max { it.value }.key
-                word1 = stemInfo[k.second].max { it.value }.key
+            def (String k0, String k1) = LinkBoost.checkStringTuple(k)
+
+
+            word0 = stemInfo[k0].max { it.value }.key
+            word1 = stemInfo[k1].max { it.value }.key
+//                word0 = stemInfo[k.first].max { it.value }.key
+//                word1 = stemInfo[k.second].max { it.value }.key
        //     }
             double coocValue = v
 

@@ -2,8 +2,10 @@ package boa
 
 import groovy.time.TimeCategory
 import groovy.time.TimeDuration
+import processText.LinkBoost
 import processText.WordPairsExtractor
 import processText.WordPairsToJSON
+import groovy.json.*
 
 class UserControl {
 
@@ -67,7 +69,7 @@ class UserControl {
     void combineDir(File textFile_s, String outDir) {
 
         WordPairsExtractor wpe
-        Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData
+        Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData
 
         if (textFile_s.isDirectory()) {
             println "DIR found"
@@ -76,20 +78,34 @@ class UserControl {
 
         } else if (textFile_s.isFile()) {
             println "FIle found"
-            wpe = new WordPairsExtractor(powerValue, 900, 80)
+            wpe = new WordPairsExtractor(powerValue, 200, 80)
             wpData = wpe.processText(textFile_s)
         }
 
-        def wordPairAndCoocFreqBoost = wpData.second
-        def stemInfo = wpData.third
+        //def wordPairAndCooc = wpData.first
+        def json = JsonOutput.toJson(wpData)
 
+        File f = new File('wpData.json')
+        f.write(json)
+        //    new File('wpData.json').write(json)
+
+        def jsonSlurper = new JsonSlurper()
+       // Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData2 = jsonSlurper.parse(f)
+        Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData2 = wpData
+
+        Map<Tuple2<String, String>, Double> t2Cooc = wpData2.first
+
+        def stemInfo = wpData2.second
+        def wordPairAndCoocFreqBoost = LinkBoost.linkBoost(t2Cooc
+        )
+                  //      ',japanes')
+              //  ',british')
 
         println "Freq boost based: "
         def wptj = new WordPairsToJSON(stemInfo)
 
         String jsonTreeF = wptj.getJSONtree(wordPairAndCoocFreqBoost)
         String jsonGraphF = wptj.getJSONgraph(wordPairAndCoocFreqBoost)
-
 
         println ""
         println "Final:"
