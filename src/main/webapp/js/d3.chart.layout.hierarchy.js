@@ -404,8 +404,12 @@ d3.chart("hierarchy").extend("cluster-tree", {
 
     chart.off("click:node").on("click:node", function(d) {
       console.log("d is " + d.name);
+      om = d.name;
+
+      recentreNode(om);
       d = toggle(d);
       chart.trigger("transform:stash");
+
 
       // Set _internalUpdate, so chart will know that certain actions shouldn't
       // be performed during update.
