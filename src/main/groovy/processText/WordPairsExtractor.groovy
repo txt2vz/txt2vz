@@ -12,7 +12,7 @@ class WordPairsExtractor {
     public static final boolean USE_LOG = false
 
     private int highFreqWords = 80
-    private int maxWordPairs = 40
+    private int maxWordPairs = 200
     private float powerValue = 0.5
 
     private PorterStemmer stemmer = new PorterStemmer()
@@ -45,18 +45,20 @@ class WordPairsExtractor {
         return new Tuple2(t2Cooc, stemInfo)
     }
 
-    Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>,  Map<String, Map<String, Integer>>> processText(String s) {
-
+ //   Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>,  Map<String, Map<String, Integer>>> processText(String s) {
+    Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> processText(String s, String boosttWord='~') {
         analyseDocument(s)
 
+        String stemmedBoostWord = stemmer.stem(boosttWord)
+        println "stemmedBoostWord: $stemmedBoostWord"
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
        // Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc).asImmutable()
-        Map<Tuple2<String, String>, Double> t2Freq = LinkBoost.linkBoost( t2Cooc).asImmutable()
+        Map<Tuple2<String, String>, Double> t2Freq = LinkBoost.linkBoost( t2Cooc, stemmedBoostWord).asImmutable()
 
         println "t2Freq $t2Freq"
         println "t2cooc $t2Cooc"
 
-        return new Tuple3(t2Cooc, t2Freq, stemInfo)
+        return new Tuple2( t2Freq, stemInfo)
     }
 
     Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>,  Map<String, Map<String, Integer>>> processDirectory(File f) {
@@ -82,11 +84,17 @@ class WordPairsExtractor {
 
     private void analyseDocument(String s) {
 
-        List<String> words = s.replaceAll(~/^\W/, '').toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
+     //   List<String> words = s.replaceAll(~/^\W/, '').toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
+        println "s " + s.take(200)
+
+       // s.replaceAll(/\W/, "  ")
+
+        List<String> words = s.replaceAll(/\W/, ' ').toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
             it.size() > 1 && it.charAt(0).isLetter() //&& it.charAt(1).isLetter()
         }
 
         println "Words size: " + words.size() + " Unique words " + words.unique(false).size()
+        println "words 20 " + words.take(20)
 
         Map<String, List<Integer>> stemmedWordPositionsMap = buildStemMaps(words)
 

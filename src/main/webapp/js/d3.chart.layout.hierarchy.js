@@ -404,9 +404,9 @@ d3.chart("hierarchy").extend("cluster-tree", {
 
     chart.off("click:node").on("click:node", function(d) {
       console.log("d is " + d.name);
-      om = d.name;
+      var nodeName = d.name;
 
-      recentreNode(om);
+      recentreNode(nodeName);
       d = toggle(d);
       chart.trigger("transform:stash");
 

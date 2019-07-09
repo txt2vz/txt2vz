@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+    <style type="text/css">
+
+        #custom-button {
+            padding: 10px;
+            color: white;
+            background-color: #009578;
+            border: 1px solid #000;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #custom-button:hover {
+            background-color: #00b28f;
+        }
+
+        #custom-text {
+            margin-left: 10px;
+            font-family: sans-serif;
+            color: #aaa;
+        }
+
+        html {
+
+            margin: auto;
+        }
+
+        line.link {
+            fill: none;
+            stroke: #9ecae1;
+            stroke-width: 1.5px;
+        }
+
+
+        output {
+            font-size: 90%;
+
+        }
+
+        .well {
+            background-color: #f0f0f0;
+        }
+
+        #vis {
+            width: 1260px;
+            height: 1000px;
+        }
+
+        .node {
+            cursor: pointer;
+        }
+
+        .node.leaf {
+            cursor: default;
+        }
+
+        .btn-info {
+            background-color: #66a3ff;
+        }
+
+        .node circle {
+            fill: mediumslateblue;
+            stroke: steelblue;
+            stroke-width: 1.5px;
+        }
+
+        .node.leaf circle {
+            fill: #fff;
+        }
+
+        .node text {
+            font-size: 12px;
+            font-family: sans-serif;
+        }
+
+        .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 1.5px;
+        }
+
+        .message {
+            white-space: nowrap;
+            color: blue;
+        }
+
+        #hint {
+            color: #a94dff;
+            font-size: 11px;
+            font-style: italic;
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        .partition rect {
+            cursor: pointer;
+            fill: steelblue;
+            stroke: #fff;
+        }
+
+        .partition text {
+            pointer-events: none;
+        }
+
+        .partition.leaf rect {
+            stroke: #eee;
+            fill: #aaa;
+        }
+
+
+    </style>
+</head>
+<title>txt2vz</title>
+
+<body>
+<div class="container  col-md-12">
+
+    <button type="button" class="btn btn-info" data-toggle="collapse"
+            data-target="#control2">Show/Hide controls/selections
+    </button>
+    <div id="control2" class="collapse in well">
+
+        <div class="row">
+
+            <div class="col-md-3">
+
+                <br> Network Type: <select id="networkType">
+                <option value="radial">Radial</option>
+
+                <option value="partition">Partition</option>
+                <option value="forceNetwork">Graph</option>
+            </select> <br/> <br/>
+
+
+                <div id="hint">
+                    Mouse wheel to zoom. <br/> Hold click and move mouse to move
+                    tree
+                </div>
+            </div>
+            <div>
+                <p> Select a valid JSON file:</p>
+
+                <input type="file" id="real-file" hidden="hidden" style="display:none;" onclick="this.value=null;"/>
+                <button type="button" id="custom-button">CHOOSE A FILE</button>
+                <span id="custom-text">No file chosen, yet.</span>
+
+            </div>
+        </div>
+    </div>
+    <div class="row col-md-12">
+        <div class="main"></div>
+        <div id="vis"></div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<script>
+
+
+
+</script>
+
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="js/drawForceTree.js"></script>
+<script src="js/drawDendrogram.js"></script>
+<script src="js/drawForceNetwork.js"></script>
+<script src="js/drawRadial.js"></script>
+<script src="js/colorbrewer.js"></script>
+<script src="js/frontPage.js"></script>
+<script src="js/frontPage2.js"></script>
+<script src="js/artai.js"></script>
+<script src="js/partitionD.js"></script>
+
+<script src="js/d3.chart.min.js"></script>
+<script src="js/d3.chart.layout.hierarchy.js"></script>
+<script src="https://d3js.org/d3-hierarchy.v1.min.js"></script>
+
+
+<script>
+    frontPage();
+
+    function recentreNode(nodeLabel) {
+
+        console.log("nodeLabel is " + nodeLabel);
+        textToJSON(fileText, nodeLabel);
+    }
+
+    var realFileBtn = document.getElementById("real-file");
+    var customBtn = document.getElementById("custom-button");
+    var customTxt = document.getElementById("custom-text");
+
+    customBtn.addEventListener("click", function () {
+        realFileBtn.click();
+    });
+
+
+    realFileBtn.addEventListener("change", function () {
+
+        if (realFileBtn.value) {
+            customTxt.innerHTML = realFileBtn.value.match(
+                /[\/\\]([\w\d\s\.\-\(\)]+)$/
+            )[1];
+            reload(realFileBtn.value)
+        } else {
+            customTxt.innerHTML = "No file chosen.";
+        }
+    });
+
+    var fileInput = $('#real-file');
+    var fileText = '';
+
+    function reload(upload) {
+
+        var input;
+        console.log("in reload upload " + upload);
+        if (!window.FileReader) {
+            alert('Your browser is not supported')
+        }
+        input = fileInput.get(0);
+
+        // Create a reader object
+        var reader = new FileReader();
+        if (input.files.length) {
+            var textFile = input.files[0];
+            reader.readAsText(textFile);
+
+
+            reader.onload = function (e) {
+                fileText = reader.result;
+              //  var t2 = reader.result;
+               // console.log("zzzz t2 " + t2);
+                textToJSON(fileText, '~');
+            }
+        }
+    }
+
+</script>
+
+<script>
+
+    function textToJSON(text, boostWord) {
+        //console.log("tezx tis " + text);
+        text = text.replace(/%/g, '');
+        console.log("in texttojson net.val " + $("#networkType").val());
+        //  openModal();
+        jQuery.ajax({
+            type: "POST",
+            url: "texttojsonservice",
+            cache: false,
+            data: {
+                text: text,
+                boostWord: boostWord,
+                networkType: $("#networkType").val()
+                //    cooc : cooc,
+                //    maxLinks : maxLinks,
+                //  maxWords : maxWords
+            },
+            success: function (jsonData, textStatus, jqXHR) {
+                draw(jsonData);
+                //    closeModal();
+            },
+        });
+    };
+
+
+    //radial zoomable collapsible
+    function radial(json) {
+        console.log("jsonText in radial " + json);
+        var ar = new Array();
+
+        var promise0 = new Promise(function (resolve, reject) {
+
+            d3.hierarchy(json, function (d) {
+                ar.push(d.cooc);
+                return d.children;
+            });
+
+            resolve(d3.extent(ar));
+
+        });
+
+        promise0.then(function (value) {
+
+            //console.log("in then value is " + value);
+
+            var linearScale = d3.scale.linear()
+                .domain(value)
+                //   .range([2, 8]);
+                .range([2, 7]);
+
+            //      console.log("lins scale 2 " + linearScale(2));
+
+            d3.select("svg").remove();
+            var tree = d3.select("#vis").append("svg")
+
+                .chart("tree.radial")
+
+                //.diameter(500)
+                .radius(//4)
+                    function (d) {
+                        //     var x = 5;
+                        var nodeSize = linearScale(d.cooc);
+                        // console.log("node size " + nodeSize + " cooc " + d.cooc);
+                        return nodeSize;
+
+                    })
+
+                .levelGap(100).zoomable([0.1, 3]).collapsible(7);
+            //.duration(200)
+            //.sortable("_ASC_")
+
+            tree.draw(json);
+        });
+
+    }
+
+
+    function drawPartition(json) {
+
+        //var json3 = JSON.parse(json2);
+
+        d3.select("svg").remove();
+
+        var partition = d3.select("#vis").append("svg")
+
+            .chart("partition.rectangle")
+
+            .value("cooc")
+            .zoomable([0.5, 5])
+            .collapsible()
+            //.duration(200)
+            .sortable("_DESC_");
+
+        partition.draw(json);
+    }
+
+    function draw(jsonData) {
+        console.log(" in draw " + jsonData);
+
+        //   var p = jsonData.target.result;
+
+        //  var j = JSON.parse(p);
+        var j = JSON.parse(jsonData);
+        var visType = $("#networkType").val();
+
+        switch (visType) {
+            case 'forceTree':
+                drawForceTree(j);
+                break;
+
+            case 'radial':
+                radial(j);
+                // drawRadial(j);
+                break;
+
+            case 'forceNetwork':
+                drawForceNetwork(j);
+                break;
+
+            case 'partition':
+                drawPartition(j)
+                break;
+
+            case 'dendro':
+                drawDendrogram(j)
+                break;
+        }
+    }
+
+    $(document).ready(function () {
+        $("#hint").show();
+
+        $("select#networkType")
+            .on('change', function () {
+                reload(realFileBtn.value)
+
+                if (($("#networkType").val() == "forceTree")) {
+                    $("#hint").hide();
+                } else {
+                    $("#hint").show();
+                }
+            });
+    });
+
+</script>
+
+</body>
+</html>

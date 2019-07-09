@@ -15,17 +15,8 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>UploadServlet</servlet-name>
-		<servlet-class>fileUpload.UpFile</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>UploadServlet</servlet-name>
-		<url-pattern>/uploadservice</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
 		<servlet-name>TextToJsonServlet</servlet-name>
-		<servlet-class>processText.PlainText</servlet-class>
+		<servlet-class>processText.TextToJSON</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>TextToJsonServlet</servlet-name>
