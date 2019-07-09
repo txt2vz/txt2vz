@@ -23,6 +23,9 @@ class LinkBoost {
         println "wordFrequencyCountMap: $wordFrequencyCountMap"
         println ""
 
+      //  final double maxCooc = t2cocOrig.max {it.value}.value
+     //   println "maxCooc: $maxCooc"
+
         Map<Tuple2<String, String>, Double> t2bFreq = t2cocOrig.collectEntries { k, v ->
 
             Tuple2<String, String> t2b = checkStringTuple(k)
@@ -34,9 +37,9 @@ class LinkBoost {
             final int minCount = Math.min(frst, scnd)
             assert total > 0 && minCount > 0
 
-            int keyWordBoost = 1
+            double keyWordBoost = 1.0d
             if (keyWord != '~' && keyWord in [t2b.first, t2b.second])
-                keyWordBoost = 10
+                keyWordBoost = 100// maxCooc + 1
 
             [(k): v * keyWordBoost * total * minCount]         //[(k): v * total]
         } as Map<Tuple2<String, String>, Double>

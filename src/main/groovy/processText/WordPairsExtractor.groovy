@@ -85,7 +85,7 @@ class WordPairsExtractor {
     private void analyseDocument(String s) {
 
      //   List<String> words = s.replaceAll(~/^\W/, '').toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
-        println "s " + s.take(200)
+        println "s take 200 " + s.take(200)
 
        // s.replaceAll(/\W/, "  ")
 
