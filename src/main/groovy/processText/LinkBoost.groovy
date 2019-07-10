@@ -5,11 +5,9 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class LinkBoost {
 
-
     static Map<Tuple2<String, String>, Double> linkBoost(Map<Tuple2<String, String>, Double> t2cocOrig, String keyWord = '~') {
-        println "t2coocOrig.size " + t2cocOrig.size()
-        println "kyeword: $keyWord"
 
+        println "linkboost kyeword: $keyWord"
 
         Map<String, Integer> wordFrequencyCountMap = t2cocOrig.keySet().collectMany { t2 ->
 
@@ -23,8 +21,8 @@ class LinkBoost {
         println "wordFrequencyCountMap: $wordFrequencyCountMap"
         println ""
 
-      //  final double maxCooc = t2cocOrig.max {it.value}.value
-     //   println "maxCooc: $maxCooc"
+        final double maxCooc = t2cocOrig.max {it.value}.value
+        println "maxCooc: $maxCooc"
 
         Map<Tuple2<String, String>, Double> t2bFreq = t2cocOrig.collectEntries { k, v ->
 
@@ -37,11 +35,10 @@ class LinkBoost {
             final int minCount = Math.min(frst, scnd)
             assert total > 0 && minCount > 0
 
-            double keyWordBoost = 1.0d
-            if (keyWord != '~' && keyWord in [t2b.first, t2b.second])
-                keyWordBoost = 100// maxCooc + 1
+            final double returnVal = (keyWord in [t2b.first, t2b.second]) ? Double.MAX_VALUE : v * total * minCount
 
-            [(k): v * keyWordBoost * total * minCount]         //[(k): v * total]
+            [(k): returnVal]
+
         } as Map<Tuple2<String, String>, Double>
 
         Map t2bFreqSorted = t2bFreq.sort { -it.value }
@@ -52,6 +49,7 @@ class LinkBoost {
         return t2bFreqSorted.asImmutable()
     }
 
+    //when loading from JSON file we may get string instead of tuple2
     static Tuple2<String, String> checkStringTuple(def k) {
 
         String wrd0, wrd1

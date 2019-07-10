@@ -1,9 +1,6 @@
 package processText
 
-import java.io.*;
-
-//import wviz.textmining.Stemmer;
-
+import groovy.transform.CompileStatic
 
 /**
  * Stemmer, implementing the Porter Stemming Algorithm
@@ -12,9 +9,9 @@ import java.io.*;
  * word can be provided a character at time (by calling add()), or at once
  * by calling one of the various stem(something) methods.
  * <p/>
- * Laurie: had to include copy of class here as the version in Lucene is not public
  */
 
+//@CompileStatic
 class PorterStemmer  {
 	private char[] b;
 	private int i,    /* offset into b */

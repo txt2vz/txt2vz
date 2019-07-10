@@ -5,9 +5,7 @@ import groovy.time.TimeDuration
 import processText.WordPairsExtractor
 import processText.WordPairsToJSON
 
-class CombineTextDirToJSON {
-
-
+class CombineTextDirToJSON_t2_old {
 
         final Date startRun = new Date()
         final float powerValue = 0.5f
@@ -70,7 +68,7 @@ class CombineTextDirToJSON {
 
     static void main(String[] args) {
         File textFile_s = new File(textLocation)
-        def ctdtj =  new CombineTextDirToJSON()
+        def ctdtj =  new CombineTextDirToJSON_t2_old()
              ctdtj.combineDir(textFile_s, outDir)
     }
 

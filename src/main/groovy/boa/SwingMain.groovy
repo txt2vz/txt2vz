@@ -2,9 +2,6 @@ package boa
 
 import groovy.swing.SwingBuilder
 import java.awt.BorderLayout as BL
-
-import java.io.File;
-import java.io.IOException;
 import javax.swing.JFileChooser;
 
 class SwingMain {
@@ -58,7 +55,7 @@ class SwingMain {
                                     def path = fc.getCurrentDirectory().getAbsolutePath();
                                     println "path=" + path + "\nfile name=" + file.toString();
 
-                                    def ctdtj = new CombineTextDirToJSON()
+                                    def ctdtj = new CombineTextDirToJSON_t2_old()
                                     ctdtj.combineDir(file, outFolder)
 
                                     break;

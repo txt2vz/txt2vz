@@ -16,7 +16,7 @@
 
 	<servlet>
 		<servlet-name>TextToJsonServlet</servlet-name>
-		<servlet-class>processText.TextToJSON</servlet-class>
+		<servlet-class>processText.TextToJsonServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>TextToJsonServlet</servlet-name>

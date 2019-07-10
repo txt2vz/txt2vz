@@ -9,8 +9,6 @@ import groovy.transform.TypeCheckingMode
 @CompileStatic
 class WordPairsExtractor {
 
-    public static final boolean USE_LOG = false
-
     private int highFreqWords = 80
     private int maxWordPairs = 200
     private float powerValue = 0.5
@@ -36,32 +34,29 @@ class WordPairsExtractor {
         analyseDocument(f.text)
 
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
-     //   Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc).asImmutable()
-    //    Map<Tuple2<String, String>, Double> t2Freq = LinkBoost.linkBoost( t2Cooc, 'japanes').asImmutable()
+        Map<Tuple2<String, String>, Double> t2CoocLinkBoost = LinkBoost.linkBoost( t2Cooc).asImmutable()
 
-    //    println "t2Freq $t2Freq"
-        println "t2cooc $t2Cooc"
-
-        return new Tuple2(t2Cooc, stemInfo)
+        return new Tuple2(t2CoocLinkBoost, stemInfo)
     }
 
- //   Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>,  Map<String, Map<String, Integer>>> processText(String s) {
     Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> processText(String s, String boosttWord='~') {
         analyseDocument(s)
 
         String stemmedBoostWord = stemmer.stem(boosttWord)
         println "stemmedBoostWord: $stemmedBoostWord"
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
-       // Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc).asImmutable()
-        Map<Tuple2<String, String>, Double> t2Freq = LinkBoost.linkBoost( t2Cooc, stemmedBoostWord).asImmutable()
+        Map<Tuple2<String, String>, Double> t2CoocLinkBoost = LinkBoost.linkBoost( t2Cooc, stemmedBoostWord).asImmutable()
 
-        println "t2Freq $t2Freq"
-        println "t2cooc $t2Cooc"
+        println "t2Freq: $t2CoocLinkBoost"
+        println "t2cooc: $t2Cooc"
 
-        return new Tuple2( t2Freq, stemInfo)
+        return new Tuple2( t2CoocLinkBoost, stemInfo)
     }
 
-    Tuple3<Map<Tuple2<String, String>, Double>, Map<Tuple2<String, String>, Double>,  Map<String, Map<String, Integer>>> processDirectory(File f) {
+    Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> processDirectory(File f, String boosttWord='~') {
+
+        String stemmedBoostWord = stemmer.stem(boosttWord)
+        println "stemmedBoostWord: $stemmedBoostWord"
 
         int fileCount = 0
         f.eachFileRecurse(FileType.FILES) { file ->
@@ -72,37 +67,32 @@ class WordPairsExtractor {
         println "Total fileCount: $fileCount"
 
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
+        Map<Tuple2<String, String>, Double> t2CoocLinkBoost = LinkBoost.linkBoost( t2Cooc, stemmedBoostWord).asImmutable()
+
       //  Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc).asImmutable()
 
-        Map<Tuple2<String, String>, Double> t2Freq = LinkBoost.linkBoost( t2Cooc).asImmutable()
-        println "t2Freq $t2Freq"
-        println "t2cooc $t2Cooc"
+       // Map<Tuple2<String, String>, Double> t2Freq = LinkBoost.linkBoost( t2Cooc).asImmutable()
+        println "t2Freq: $t2CoocLinkBoost"
+        println "t2cooc: $t2Cooc"
 
-        return new Tuple3(t2Cooc, t2Freq, stemInfo)
+        return new Tuple2( t2CoocLinkBoost, stemInfo)
     }
 
 
     private void analyseDocument(String s) {
 
-     //   List<String> words = s.replaceAll(~/^\W/, '').toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
-        println "s take 200 " + s.take(200)
-
-       // s.replaceAll(/\W/, "  ")
-
         List<String> words = s.replaceAll(/\W/, ' ').toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
             it.size() > 1 && it.charAt(0).isLetter() //&& it.charAt(1).isLetter()
         }
 
-        println "Words size: " + words.size() + " Unique words " + words.unique(false).size()
-        println "words 20 " + words.take(20)
+        println "Words size: " + words.size() + " Unique words: " + words.unique(false).size()
+        println "words take 20: " + words.take(20)
 
         Map<String, List<Integer>> stemmedWordPositionsMap = buildStemMaps(words)
 
-       // println "stemmedWordPostionnsMap: $stemmedWordPositionsMap"
-
         compareWordPairs(stemmedWordPositionsMap.sort { -it.value.size() }.take(highFreqWords))
 
-        println "StemInfo size: " + stemInfo.size() + " Take 10 steminfo: " + stemInfo.sort {
+        println "StemInfo size: " + stemInfo.size() + " Take 20 steminfo: " + stemInfo.sort {
             -it.value.size()
         }.take(20)
         println "Tuple2Cooc size: " + tuple2CoocMap.size() + " Take 20 Sorted:" + tuple2CoocMap.sort {
@@ -150,7 +140,7 @@ class WordPairsExtractor {
                 if (coocDocValue > 0) {
                     double coocTotalValue = tuple2CoocMap[(wordPair)] ?: 0
 
-                    coocTotalValue = USE_LOG ? coocTotalValue + Math.log(coocDocValue) : coocTotalValue + coocDocValue
+                    coocTotalValue = coocTotalValue + coocDocValue
                     tuple2CoocMap.put(wordPair, coocTotalValue)
                 }
             }

@@ -136,14 +136,13 @@
                 <option value="forceNetwork">Graph</option>
             </select> <br/> <br/>
 
-
                 <div id="hint">
                     Mouse wheel to zoom. <br/> Hold click and move mouse to move
                     tree
                 </div>
             </div>
             <div>
-                <p> Select a valid JSON file:</p>
+                <p> Select a valid text file:</p>
 
                 <input type="file" id="real-file" hidden="hidden" style="display:none;" onclick="this.value=null;"/>
                 <button type="button" id="custom-button">CHOOSE A FILE</button>
@@ -162,7 +161,6 @@
         src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
 <script>
-
 
 
 </script>
@@ -188,13 +186,14 @@
 
     function recentreNode(nodeLabel) {
 
-        console.log("nodeLabel is " + nodeLabel);
+        console.log("in recentre node nodeLabel is " + nodeLabel + ' filename is ' + fileName);
         textToJSON(fileText, nodeLabel);
     }
 
     var realFileBtn = document.getElementById("real-file");
     var customBtn = document.getElementById("custom-button");
-    var customTxt = document.getElementById("custom-text");
+    var fileNameElement = document.getElementById("custom-text");
+    var fileName = '';
 
     customBtn.addEventListener("click", function () {
         realFileBtn.click();
@@ -204,17 +203,22 @@
     realFileBtn.addEventListener("change", function () {
 
         if (realFileBtn.value) {
-            customTxt.innerHTML = realFileBtn.value.match(
+            fileNameElement.innerHTML = realFileBtn.value.match(
                 /[\/\\]([\w\d\s\.\-\(\)]+)$/
             )[1];
+            fileName = fileNameElement.innerHTML;
+            console.log("filenametxt " + fileNameElement + "fileName: " + fileName);
             reload(realFileBtn.value)
         } else {
-            customTxt.innerHTML = "No file chosen.";
+            fileNameElement.innerHTML = "No file chosen.";
         }
     });
 
+
     var fileInput = $('#real-file');
     var fileText = '';
+    var dynamic_recentre = true;
+
 
     function reload(upload) {
 
@@ -231,23 +235,17 @@
             var textFile = input.files[0];
             reader.readAsText(textFile);
 
-
             reader.onload = function (e) {
                 fileText = reader.result;
-              //  var t2 = reader.result;
-               // console.log("zzzz t2 " + t2);
                 textToJSON(fileText, '~');
             }
         }
     }
 
-</script>
-
-<script>
 
     function textToJSON(text, boostWord) {
         //console.log("tezx tis " + text);
-        text = text.replace(/%/g, '');
+     //   text = text.replace(/%/g, '');
         console.log("in texttojson net.val " + $("#networkType").val());
         //  openModal();
         jQuery.ajax({
@@ -257,7 +255,8 @@
             data: {
                 text: text,
                 boostWord: boostWord,
-                networkType: $("#networkType").val()
+                networkType: $("#networkType").val(),
+                fileName: fileName
                 //    cooc : cooc,
                 //    maxLinks : maxLinks,
                 //  maxWords : maxWords
@@ -342,7 +341,7 @@
     }
 
     function draw(jsonData) {
-        console.log(" in draw " + jsonData);
+      //  console.log(" in draw " + jsonData);
 
         //   var p = jsonData.target.result;
 

@@ -7,8 +7,7 @@ import processText.WordPairsExtractor
 import processText.WordPairsToJSON
 import groovy.json.*
 
-class UserControl {
-
+class GenerateJSONfromFileOrDir {
 
     final Date startRun = new Date()
     final float powerValue = 0.5f
@@ -16,11 +15,9 @@ class UserControl {
     final int maxWords = 20
     final static String outDir = 'boaData/json/'
 
-    //      /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\j2\ /
 
     def static textLocation =
 
-            //          /D:\boa\TestData\rec.sport.hockey/
             //       /D:\boa\TestData\sci.crypt/
 
             //     /D:\boa\War Crimes Text Files_Combined/
@@ -28,20 +25,20 @@ class UserControl {
 
             //       /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\crude/
 
-            //          /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\coffee/
+        //             /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\coffee/
             //        /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sugar/
             //        /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\rec.sport.hockey/
-            //          /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sci.space/
+                      /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sci.space/
             //        /C:\Users\aceslh\Dataset\space100/
             ///C:\Users\aceslh\Dataset\space100/
-            //       /C:\Users\aceslh\Dataset\boa\hockey/
+             //      /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\rec.sport.hockey/
             //    /C:\Users\aceslh\Dataset\boa\christian/
             //        /C:\Users\aceslh\Dataset\spaceHockeyChristianBOA/
             //          /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\War Crimes Text Files_Combined/
             //       /C:\Users\aceslh\lngit\txt2vz\src\main\groovy\boa\secrecy\599/
 
             //            /boaData\text\secrecy\593/
-            //   /boaData\text\secrecy\598\ev598doc11098.txt/
+   //            /boaData\text\secrecy\598\ev598doc11098.txt/
 
 //    /boaData\text\secrecy\590\ev590doc10903.txt/
 
@@ -51,7 +48,7 @@ class UserControl {
             //       /C:\Users\aceslh\Dataset\space100/
             // //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\testDir/
 //
-            /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOAexamples\rawText\Japan11037.txt/
+      //      /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOAexamples\rawText\Japan11037.txt/
 
     // /D:\boa\TestData\Japan11037.txt/
     //       /D:\boa\C/
@@ -61,9 +58,7 @@ class UserControl {
 
 
     static void main(String[] args) {
-        File textFile_s = new File(textLocation)
-        def ctdtj = new UserControl()
-        ctdtj.combineDir(textFile_s, outDir)
+        new GenerateJSONfromFileOrDir().combineDir(new File(textLocation), outDir)
     }
 
     void combineDir(File textFile_s, String outDir) {
@@ -85,13 +80,13 @@ class UserControl {
         //def wordPairAndCooc = wpData.first
         def json = JsonOutput.toJson(wpData)
 
-        File f = new File('wpData.json')
+        File f = new File('boaData/json/wpTreeData.json')
         f.write(json)
         //    new File('wpData.json').write(json)
 
         def jsonSlurper = new JsonSlurper()
-       // Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData2 = jsonSlurper.parse(f)
-        Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData2 = wpData
+        Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData2 = jsonSlurper.parse(f)
+        //Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData2 = wpData
 
         Map<Tuple2<String, String>, Double> t2Cooc = wpData2.first
 
