@@ -28,8 +28,8 @@ class LinkBoost {
 
             Tuple2<String, String> t2b = checkStringTuple(k)
 
-            final int frst = (Integer) wordFrequencyCountMap[t2b.first] ?: 0
-            final int scnd = (Integer) wordFrequencyCountMap[t2b.second] ?: 0
+            final int frst = (Integer) wordFrequencyCountMap[t2b.first] //?: 0
+            final int scnd = (Integer) wordFrequencyCountMap[t2b.second] //?: 0
             final int total = frst + scnd - 1
 
             final int minCount = Math.min(frst, scnd)
