@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse
 
 public class TextToJsonServlet extends GroovyServlet {
 
-    Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData
+    Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wordPairData
 
     void init(ServletConfig config) {
         System.out.println "TextToJsonServlet Servlet initialized"
@@ -20,8 +20,6 @@ public class TextToJsonServlet extends GroovyServlet {
         String boostWord = request.getParameter("boostWord")
         String fileName = request.getParameter('fileName')
 
-        println "In Servlet boostWord:  $boostWord fileName: $fileName"
-
         WordPairsExtractor wpe = new WordPairsExtractor()
 
         boolean jsonFile = fileName.endsWith('.json')
@@ -29,20 +27,19 @@ public class TextToJsonServlet extends GroovyServlet {
 
         if (jsonFile) {
             def jsonSlurper = new JsonSlurper()
-            wpData = jsonSlurper.parseText(text)
-            Map<Tuple2<String, String>, Double> t2Cooc = wpData.first
+            wordPairData = jsonSlurper.parseText(text)
+            Map<Tuple2<String, String>, Double> t2Cooc = wordPairData.first
 
-            // def stemInfo = wpData.second
             wordPairAndCoocFreqBoost = LinkBoost.linkBoost(t2Cooc, boostWord)
         } else {
 
-            wpData = wpe.processText(text, boostWord)
+            wordPairData = wpe.processText(text, boostWord)
         }
 
-        WordPairsToJSON wptj = new WordPairsToJSON(wpData.second)
+        WordPairsToJSON wptj = new WordPairsToJSON(wordPairData.second)
 
         String json = (jsonFile) ? wptj.getJSONtree(wordPairAndCoocFreqBoost) :
-                wptj.getJSONtree(wpData.first)
+                wptj.getJSONtree(wordPairData.first)
 
         response.getWriter().println(json)
     }

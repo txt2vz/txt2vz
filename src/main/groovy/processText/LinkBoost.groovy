@@ -5,9 +5,9 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class LinkBoost {
 
-    static Map<Tuple2<String, String>, Double> linkBoost(Map<Tuple2<String, String>, Double> t2cocOrig, String keyWord = '~') {
+    static Map<Tuple2<String, String>, Double> linkBoost(Map<Tuple2<String, String>, Double> t2cocOrig, String boostWord = '~') {
 
-        println "linkboost kyeword: $keyWord"
+        println "linkboost kyeword: $boostWord"
 
         Map<String, Integer> wordFrequencyCountMap = t2cocOrig.keySet().collectMany { t2 ->
 
@@ -35,7 +35,7 @@ class LinkBoost {
             final int minCount = Math.min(frst, scnd)
             assert total > 0 && minCount > 0
 
-            final double returnVal = (keyWord in [t2b.first, t2b.second]) ? Double.MAX_VALUE : v * total * minCount
+            final double returnVal = (boostWord in [t2b.first, t2b.second]) ? Double.MAX_VALUE : v * total * minCount
 
             [(k): returnVal]
 

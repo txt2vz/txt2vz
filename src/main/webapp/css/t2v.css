@@ -1,0 +1,107 @@
+
+#custom-button {
+    padding: 10px;
+    color: white;
+    background-color: #009578;
+    border: 1px solid #000;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#custom-button:hover {
+    background-color: #00b28f;
+}
+
+#custom-text {
+    margin-left: 10px;
+    font-family: sans-serif;
+    color: #aaa;
+}
+
+html {
+
+    margin: auto;
+}
+
+line.link {
+    fill: none;
+    stroke: #9ecae1;
+    stroke-width: 1.5px;
+}
+
+output {
+    font-size: 90%;
+
+}
+
+.well {
+    background-color: #f0f0f0;
+}
+
+#vis {
+    width: 1260px;
+    height: 1000px;
+}
+
+.node {
+    cursor: pointer;
+}
+
+.node.leaf {
+    cursor: default;
+}
+
+.btn-info {
+    background-color: #66a3ff;
+}
+
+.node circle {
+    fill: mediumslateblue;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+}
+
+.node.leaf circle {
+    fill: #fff;
+}
+
+.node text {
+    font-size: 12px;
+    font-family: sans-serif;
+}
+
+.link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 1.5px;
+}
+
+.message {
+    white-space: nowrap;
+    color: blue;
+}
+
+#hint {
+    color: #a94dff;
+    font-size: 11px;
+    font-style: italic;
+    font-weight: bold;
+    font-style: italic;
+}
+
+.partition rect {
+    cursor: pointer;
+    fill: steelblue;
+    stroke: #fff;
+}
+
+.partition text {
+    pointer-events: none;
+}
+
+.partition.leaf rect {
+    stroke: #eee;
+    fill: #aaa;
+}
+
+
