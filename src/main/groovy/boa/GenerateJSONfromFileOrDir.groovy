@@ -55,12 +55,14 @@ class GenerateJSONfromFileOrDir {
 
     void combineDir(File textLocationFile, String outDir) {
 
-        boolean loadFromFile = true
+        println "outDir $outDir"
+        boolean loadFromExistingJSONFile = false
         Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wordPairData
 
-        File f = new File('boaData/json/wpTreeData.json')
+       // File f = new File(/C:\Users\aceslh\IdeaProjects\txt2vz\boaData\json/)
+         File f = new File(outDir + 'wpTreeData.json')
 
-        if (loadFromFile){
+        if (loadFromExistingJSONFile){
             def jsonSlurper = new JsonSlurper()
             wordPairData =  jsonSlurper.parse(f)
 
@@ -76,7 +78,7 @@ class GenerateJSONfromFileOrDir {
         Map<Tuple2<String, String>, Double> t2Cooc = wordPairData.first
 
         def stemInfo = wordPairData.second
-     //   def wordPairAndCoocFreqBoost = LinkBoost.linkBoost(t2Cooc,'~')
+     //   def wordPairAndCoocFreqBoost = LinkBoost.linkBoost(t2Cooc,'japanes')
 
         def wptj = new WordPairsToJSON(stemInfo)
 
