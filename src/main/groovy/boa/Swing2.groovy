@@ -1,10 +1,8 @@
-import boa.GenerateJSONfromFileOrDir
+import boa.GenerateJSONfromText
 import groovy.swing.SwingBuilder
 
 import javax.swing.JFileChooser
 import javax.swing.JLabel
-import javax.swing.JRadioButton
-import javax.swing.JTextField
 
 import static javax.swing.JFrame.EXIT_ON_CLOSE
 import java.awt.*
@@ -107,9 +105,7 @@ swingBuilder.edt {  // edt method makes sure UI is build on Event Dispatch Threa
                     td {
                         button(text: 'Generate JSON',
                                 actionPerformed: {
-                                    def ctdtj = new GenerateJSONfromFileOrDir()
-                                    ctdtj.combineDir(textFile, outFolder)
-
+                                    new GenerateJSONfromText(textFile, outFolder)
                                 })
                     }
                 }

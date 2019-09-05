@@ -6,7 +6,7 @@ import processText.WordPairsExtractor
 import processText.WordPairsToJSON
 import groovy.json.*
 
-class GenerateJSONfromFileOrDir {
+class GenerateJSONfromText {
 
     final Date startRun = new Date()
     final float powerValue = 0.5f
@@ -50,13 +50,16 @@ class GenerateJSONfromFileOrDir {
 
     static void main(String[] args) {
 
-        new GenerateJSONfromFileOrDir().combineDir(new File(textLocation), outDir)
+        new GenerateJSONfromText(new File(textLocation), outDir)
     }
 
-    void combineDir(File textLocationFile, String outDir) {
+    GenerateJSONfromText(File textLocationFile, String outDir){
 
-        println "outDir $outDir"
+         println "outDir $outDir"
+
+        //load JSON file containing stemInfor and word pair cooccurrence information
         boolean loadFromExistingJSONFile = false
+
         Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wordPairData
 
        // File f = new File(/C:\Users\aceslh\IdeaProjects\txt2vz\boaData\json/)

@@ -57,7 +57,7 @@ class SwingMain {
                                     println "path=" + path + "\nfile name=" + file.toString();
 
                                    // def ctdtj = new CombineTextDirToJSON_t2_old()
-                                def ctdtj = new GenerateJSONfromFileOrDir()
+                                def ctdtj = new GenerateJSONfromText()
                                     ctdtj.combineDir(file, outFolder)
 
                                     break;
