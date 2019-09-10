@@ -34,27 +34,28 @@ class WordPairsExtractor {
         analyseDocument(f.text)
 
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
-        Map<Tuple2<String, String>, Double> t2CoocLinkBoost = LinkBoost.linkBoost( t2Cooc).asImmutable()
+        Map<Tuple2<String, String>, Double> t2CoocLinkBoost = LinkBoost.linkBoost(t2Cooc).asImmutable()
 
         return new Tuple2(t2CoocLinkBoost, stemInfo)
     }
 
-    Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> processText(String s, String boosttWord='~') {
+    Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> processText(String s, String boosttWord = '~') {
         analyseDocument(s)
 
         String stemmedBoostWord = stemmer.stem(boosttWord)
         println "stemmedBoostWord: $stemmedBoostWord"
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
-        Map<Tuple2<String, String>, Double> t2CoocLinkBoost = LinkBoost.linkBoost( t2Cooc, stemmedBoostWord).asImmutable()
+        Map<Tuple2<String, String>, Double> t2CoocLinkBoost = LinkBoost.linkBoost(t2Cooc, stemmedBoostWord).asImmutable()
 
         println "t2Freq: $t2CoocLinkBoost"
         println "t2cooc: $t2Cooc"
 
-        return new Tuple2( t2CoocLinkBoost, stemInfo)
+        return new Tuple2(t2CoocLinkBoost, stemInfo)
     }
 
-    Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> processDirectory(File f, String boosttWord='~') {
+    Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> processAndMergeDirectory(File f, String boosttWord = '~') {
 
+        assert f.isDirectory()
         String stemmedBoostWord = stemmer.stem(boosttWord)
         println "stemmedBoostWord: $stemmedBoostWord"
 
@@ -67,17 +68,16 @@ class WordPairsExtractor {
         println "Total fileCount: $fileCount"
 
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
-        Map<Tuple2<String, String>, Double> t2CoocLinkBoost = LinkBoost.linkBoost( t2Cooc, stemmedBoostWord).asImmutable()
+        Map<Tuple2<String, String>, Double> t2CoocLinkBoost = LinkBoost.linkBoost(t2Cooc, stemmedBoostWord).asImmutable()
 
-      //  Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc).asImmutable()
+        //  Map<Tuple2<String, String>, Double> t2Freq = t2CoocMapLinkBoost( t2Cooc).asImmutable()
 
-       // Map<Tuple2<String, String>, Double> t2Freq = LinkBoost.linkBoost( t2Cooc).asImmutable()
+        // Map<Tuple2<String, String>, Double> t2Freq = LinkBoost.linkBoost( t2Cooc).asImmutable()
         println "t2Freq: $t2CoocLinkBoost"
         println "t2cooc: $t2Cooc"
 
-        return new Tuple2( t2CoocLinkBoost, stemInfo)
+        return new Tuple2(t2CoocLinkBoost, stemInfo)
     }
-
 
     private void analyseDocument(String s) {
 

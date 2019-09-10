@@ -33,7 +33,7 @@ class TextDirEachFileToJSON {
 
                 println "reading file $file"
 
-                Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData = wpe.processDirectory(dir)
+                Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData = wpe.processAndMergeDirectory(dir)
                             def wordPairAndCooc = wpData.first
                 def stemInfo = wpData.second
 

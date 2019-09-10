@@ -80,7 +80,7 @@ class CombineTextDirToJSON_t2_old {
         if (textFile_s.isDirectory()) {
             println "DIR found"
             wpe = new WordPairsExtractor(powerValue, 200, 20)
-            wpData = wpe.processDirectory(textFile_s)
+            wpData = wpe.processAndMergeDirectory(textFile_s)
 
         } else if (textFile_s.isFile()) {
             println "FIle found"
@@ -112,7 +112,7 @@ class CombineTextDirToJSON_t2_old {
         println "Final:"
         println "jsonGraph $jsonGraph  "
         println "jsonTree $jsonTree  "
-    //    String outDir =// 'boaData/json/'
+    //    String outDirPath =// 'boaData/json/'
 
   //      /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\j2\ /
 

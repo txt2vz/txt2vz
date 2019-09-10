@@ -1,72 +1,138 @@
-package boa
+import boa.GenerateJSON
 
 import groovy.swing.SwingBuilder
-import java.awt.BorderLayout as BL
-import javax.swing.JFileChooser;
 
-class SwingMain {
+import javax.swing.JFileChooser
+import javax.swing.JLabel
 
-    public static void main(String[] args) {
+import static javax.swing.JFrame.EXIT_ON_CLOSE
+import java.awt.*
 
-        String outFolder
-        def count = 0
-        new SwingBuilder().edt {
-            lookAndFeel 'nimbus'
-            frame(title: 'Build JSON file from text', size: [300, 300], show: true) {
-                borderLayout()
-                textlabel = label(text: 'Click the button!', constraints: BL.NORTH)
-                button(text: 'select folder to save files',
-                        actionPerformed: {
-                            def initialPath = System.getProperty("user.dir");
-                            JFileChooser fc = new JFileChooser(initialPath);
-// fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                            fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-                            int result = fc.showOpenDialog(null);
-                            switch (result) {
-                                case JFileChooser.APPROVE_OPTION:
-                                    //
-                                    //    outFolder = fc.getSelectedFile();
+JLabel outFilePathL;
+JLabel textFilePathL;
+File outFile
+File textFile
 
-                                    def path = fc.getCurrentDirectory().getAbsolutePath();
-                                    def pc = fc.getSelectedFile().getCanonicalFile()
-                                    outFolder = pc.toString() + '\\'
-                                    println "pc  $pc outfolder $outFolder"
-                                    // println "outfolder path=" + path + "\noutFolder name=" + outFolder.toString();
+def initialPath = System.getProperty("user.dir");
+String outFolder
 
+def swingBuilder = new SwingBuilder()
+swingBuilder.edt {  // edt method makes sure UI is build on Event Dispatch Thread.
+    lookAndFeel 'nimbus'  // Simple change in look and feel.
+    frame(title: 'Generate JSON from text', size: [700, 250],
+            show: true, locationRelativeTo: null,
+            defaultCloseOperation: EXIT_ON_CLOSE) {
+        borderLayout(vgap: 5)
 
-                                    break;
-                                case JFileChooser.CANCEL_OPTION:
-                                case JFileChooser.ERROR_OPTION:
-                                    break;
-                            }
+        outFilePathL = new JLabel("no file selected");
+        textFilePathL = new JLabel(initialPath)
 
-                        }, constraints: BL.NORTH)
+        panel(constraints: BorderLayout.CENTER,
+                border: compoundBorder([emptyBorder(10), titledBorder('Make selections:')])) {
+            tableLayout {
 
-                button(text: 'select text files used to generate JSON files (for visualistation)',
-                        actionPerformed: {
-                            def initialPath = System.getProperty("user.dir");
-                            JFileChooser fc = new JFileChooser(initialPath);
-// fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                            fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-                            int result = fc.showOpenDialog(null);
-                            switch (result) {
-                                case JFileChooser.APPROVE_OPTION:
-                                    File file = fc.getSelectedFile();
+                tr {
+                    td {
+                        button(text: 'Select folder to save JSON files:',
+                                actionPerformed: {
 
-                                    def path = fc.getCurrentDirectory().getAbsolutePath();
-                                    println "path=" + path + "\nfile name=" + file.toString();
+                                    JFileChooser fc = new JFileChooser(initialPath);
+                                    fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                                    int result = fc.showOpenDialog(null);
+                                    switch (result) {
+                                        case JFileChooser.APPROVE_OPTION:
 
-                                   // def ctdtj = new CombineTextDirToJSON_t2_old()
-                                def ctdtj = new GenerateJSONfromText()
-                                    ctdtj.combineDir(file, outFolder)
+                                            outFile = fc.getSelectedFile()
+                                            outFolder = fc.getSelectedFile().getCanonicalFile().toString() + '\\'
+                                            outFilePathL.setText(' ' + outFolder.toString())
 
-                                    break;
-                                case JFileChooser.CANCEL_OPTION:
-                                case JFileChooser.ERROR_OPTION:
-                                    break;
-                            }
+                                            break;
+                                        case JFileChooser.CANCEL_OPTION:
+                                        case JFileChooser.ERROR_OPTION:
+                                            break;
+                                    }
+                                })
+                    }
+                    td {
 
-                        }, constraints: BL.SOUTH)
+                        outFilePathL.setText(' ' + initialPath.toString())
+                        label outFilePathL
+                    }
+                }
+
+                tr {
+                    td {
+
+                        button(text: 'Select text file/folder  ',
+                                actionPerformed: {
+
+                                    JFileChooser fc = new JFileChooser(initialPath);
+                                    fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+                                    int result = fc.showOpenDialog(null);
+
+                                    switch (result) {
+                                        case JFileChooser.APPROVE_OPTION:
+
+                                            textFile = fc.getSelectedFile()
+                                            textFilePathL.setText(' ' + textFile.toString())
+                                            break;
+                                        case JFileChooser.CANCEL_OPTION:
+                                        case JFileChooser.ERROR_OPTION:
+                                            break;
+                                    }
+                                })
+                    }
+                    td {
+
+                        textFilePathL.setText(' ' + initialPath.toString())
+                        label textFilePathL
+                    }
+                }
+                tr {
+
+                    td {
+
+                        label '    '
+                    }
+
+                }
+
+                tr {
+                    td {
+                        button(text: 'Generate single JSON file', background: Color.ORANGE,
+                                actionPerformed: {
+
+                                    def genJ = new GenerateJSON(textFile, outFolder)
+                                    genJ.generateSingle()
+
+                                })
+                    }
+
+                    td {
+                        button(text: 'Generate multi JSON files', background: Color.ORANGE, toolTipText: 'Each text generates its own JSON file',
+                                actionPerformed: {
+
+                                    def genJ = new GenerateJSON(textFile, outFolder)
+                                    genJ.generateMulti()
+                                })
+                    }
+                }
+                tr {
+                    td {
+                        label '<html>  If selected text source is folder  <br>Files will be merged to one JSON output file </html> '
+                    }
+                    td {
+                        label '<html>  JSON output file <br>Created for each file found in the source folder </html> '
+                    }
+                }
+                tr {
+                    td {
+                        label '**********************************************************'
+                    }
+                    td {
+                        label '**********************************************************'
+                    }
+                }
 
             }
         }

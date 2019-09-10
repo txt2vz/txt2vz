@@ -12,15 +12,15 @@ class WordPairsToJSON {
 
     private Set<String> internalNodes = []
     private Set<String> allNodes = []
-    private Map<String, Map<String, Integer>> stemInfo = [:]
+  //  private Map<String, Map<String, Integer>> stemInfo = [:]
 
-    WordPairsToJSON(Map<String, Map<String, Integer>> stInf){
-        stemInfo = stInf
-        allNodes = []
-        internalNodes = []
-    }
+//    WordPairsToJSON(Map<String, Map<String, Integer>> stInf){
+//        stemInfo = stInf
+//        allNodes = []
+//        internalNodes = []
+//    }
 
-    String getJSONgraph(Map<Tuple2<String, String>, Double> wordPairCooc) {
+    String getJSONgraph(Map<Tuple2<String, String>, Double> wordPairCooc, Map<String, Map<String, Integer>> stemInfo) {
 
         def data = [
 
@@ -44,11 +44,11 @@ class WordPairsToJSON {
         return new JsonBuilder(data)
     }
 
-    String getJSONtree(Map<Tuple2<String, String>, Double> wordPairWithCooc) {
+    String getJSONtree(Map<Tuple2<String, String>, Double> wordPairCooc, Map<String, Map<String, Integer>> stemInfo) {
 
         Map tree = new ConcurrentHashMap()
 
-        wordPairWithCooc.each { k, v ->
+        wordPairCooc.each { k, v ->
             String word0
             String word1
 
