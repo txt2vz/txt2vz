@@ -36,10 +36,10 @@ public class TextToJsonServlet extends GroovyServlet {
             wordPairData = wpe.processText(text, boostWord)
         }
 
-        WordPairsToJSON wptj = new WordPairsToJSON(wordPairData.second)
+        WordPairsToJSON wptj = new WordPairsToJSON()
 
-        String json = (jsonFile) ? wptj.getJSONtree(wordPairAndCoocFreqBoost) :
-                wptj.getJSONtree(wordPairData.first)
+        String json = (jsonFile) ? wptj.getJSONtree(wordPairAndCoocFreqBoost, wordPairData.second) :
+                wptj.getJSONtree(wordPairData.first, wordPairData.second)
 
         response.getWriter().println(json)
     }

@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel='icon' href='favicon.ico' type='image/x-icon'/>
     <link rel="stylesheet"
           href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/t2v.css" >
 
 </head>
-<title>txt2vz</title>
+<title>boa</title>
 
 <body>
 <div class="container  col-md-12">
@@ -148,13 +149,11 @@
             },
             success: function (jsonData, textStatus, jqXHR) {
                 draw(jsonData);
-                //    closeModal();
             },
         });
     };
 
 
-    //radial zoomable collapsible
     function radial(json) {
         console.log("jsonText in radial " + json);
         var ar = new Array();
@@ -172,14 +171,9 @@
 
         promise0.then(function (value) {
 
-            //console.log("in then value is " + value);
-
             var linearScale = d3.scale.linear()
                 .domain(value)
-                //   .range([2, 8]);
-                .range([2, 7]);
-
-            //      console.log("lins scale 2 " + linearScale(2));
+                .range([2, 6]);
 
             d3.select("svg").remove();
             var tree = d3.select("#vis").append("svg")
@@ -189,11 +183,8 @@
                 //.diameter(500)
                 .radius(//4)
                     function (d) {
-                        //     var x = 5;
                         var nodeSize = linearScale(d.cooc);
-                        // console.log("node size " + nodeSize + " cooc " + d.cooc);
                         return nodeSize;
-
                     })
 
                 .levelGap(100).zoomable([0.1, 3]).collapsible(7);
@@ -202,20 +193,15 @@
 
             tree.draw(json);
         });
-
     }
 
-
     function drawPartition(json) {
-
-        //var json3 = JSON.parse(json2);
 
         d3.select("svg").remove();
 
         var partition = d3.select("#vis").append("svg")
 
             .chart("partition.rectangle")
-
             .value("cooc")
             .zoomable([0.5, 5])
             .collapsible()
@@ -226,11 +212,7 @@
     }
 
     function draw(jsonData) {
-      //  console.log(" in draw " + jsonData);
 
-        //   var p = jsonData.target.result;
-
-        //  var j = JSON.parse(p);
         var j = JSON.parse(jsonData);
         var visType = $("#networkType").val();
 
@@ -241,7 +223,6 @@
 
             case 'radial':
                 radial(j);
-                // drawRadial(j);
                 break;
 
             case 'forceNetwork':
