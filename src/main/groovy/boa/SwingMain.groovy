@@ -21,7 +21,7 @@ class SwingMain {
         def swingBuilder = new SwingBuilder()
         swingBuilder.edt {  // edt method makes sure UI is build on Event Dispatch Thread.
             lookAndFeel 'nimbus'  // Simple change in look and feel.
-            frame(title: 'Generate JSON from text', size: [700, 300],
+            frame(title: 'Generate JSON from text', size: [1000, 300],
                     show: true, locationRelativeTo: null,
                     defaultCloseOperation: EXIT_ON_CLOSE) {
                 borderLayout(vgap: 5)

@@ -20,7 +20,7 @@ class GenerateJSON {
 
     static String textLocation =
    //         /boaData\text\secrecy\598\ev598doc11098.txt/
-    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\coffee14/
+   // /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\coffee14/
 
     //    /boaData\text\secrecy\590\ev590doc10903.txt/
 
@@ -44,7 +44,7 @@ class GenerateJSON {
     //       /C:\Users\aceslh\Dataset\space100/
     // //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\testDir/
 //
-    //      /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOAexamples\rawText\Japan11037.txt/
+          /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOAexamples\rawText\Japan11037.txt/
 
     // /D:\boa\TestData\Japan11037.txt/
     //       /D:\boa\C/
@@ -53,9 +53,10 @@ class GenerateJSON {
 
     static void main(String[] args) {
 
+        println "textLocation $textLocation"
         def genJ =   new GenerateJSON(new File(textLocation), outDirPath)
       //  genJ.generateSingle()
-        genJ.generateSingle(true)
+        genJ.generateSingle(false)
         //   genJ.generateSingle(false)
      //   genJ.generateMulti()
     }
