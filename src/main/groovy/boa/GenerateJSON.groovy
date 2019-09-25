@@ -125,6 +125,10 @@ class GenerateJSON {
         println "Final:"
         println "jsonGraph: $jsonGraph  "
         println "jsonTree: $jsonTree  "
+        println "outDir: $outDir  "
+        if (outDir == null){
+            outDir = new String()
+        }
 
         File outFileGraph = new File(outDir + textFile.getName() + '_graph.json')
         File outFileTree = new File(outDir + textFile.getName() + '_tree.json')
