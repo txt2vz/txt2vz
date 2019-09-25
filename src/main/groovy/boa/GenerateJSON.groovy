@@ -44,7 +44,8 @@ class GenerateJSON {
     //       /C:\Users\aceslh\Dataset\space100/
     // //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\testDir/
 //
-          /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOAexamples\rawText\Japan11037.txt/
+        //  /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOAexamples\rawText\Japan11037.txt/
+    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\secrecy10/
 
     // /D:\boa\TestData\Japan11037.txt/
     //       /D:\boa\C/

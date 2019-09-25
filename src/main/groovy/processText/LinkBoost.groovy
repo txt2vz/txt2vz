@@ -1,7 +1,6 @@
 package processText
 
 import groovy.transform.CompileStatic
-import processText.PorterStemmer
 
 @CompileStatic
 class LinkBoost {
