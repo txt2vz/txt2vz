@@ -20,7 +20,7 @@ class WordPairsToJSON {
 //        internalNodes = []
 //    }
 
-    String getJSONgraph(Map<Tuple2<String, String>, Double> wordPairCooc, Map<String, Map<String, Integer>> stemInfo) {
+    String getJSONnet(Map<Tuple2<String, String>, Double> wordPairCooc, Map<String, Map<String, Integer>> stemInfo) {
 
         def data = [
 

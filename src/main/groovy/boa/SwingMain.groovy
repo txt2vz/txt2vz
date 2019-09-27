@@ -138,9 +138,13 @@ class SwingMain {
                                                 JOptionPane.showMessageDialog(null, "Must select text file");
                                             } else {
 
-                                                def genJ = new GenerateJSON(textFile, outFolder)
-                                                genJ.generateSingle()
-                                                JOptionPane.showMessageDialog(null, "Complete: check output folder.");
+                                                processingLabel.setVisible(true)
+                                                doOutside {
+                                                    def genJ = new GenerateJSON(textFile, outFolder)
+                                                    genJ.generateSingle()
+                                                    JOptionPane.showMessageDialog(null, "Complete: check output folder.");
+                                                    processingLabel.setVisible(false)
+                                                }
                                             }
 
                                         })
@@ -160,13 +164,13 @@ class SwingMain {
                                                 //   edt().frame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))
 
                                                 processingLabel.setVisible(true)
-                                                JOptionPane.showMessageDialog(null, "May take some time");
+                                                doOutside {
+                                                    def genJ = new GenerateJSON(textFile, outFolder)
+                                                    genJ.generateMulti()
+                                                    JOptionPane.showMessageDialog(null, "Complete: check output folder.");
+                                                    processingLabel.setVisible(false)
 
-
-                                                def genJ = new GenerateJSON(textFile, outFolder)
-                                                genJ.generateMulti()
-                                                JOptionPane.showMessageDialog(null, "Complete: check output folder.");
-                                                processingLabel.setVisible(false)
+                                                }
 
                                             }
                                         })

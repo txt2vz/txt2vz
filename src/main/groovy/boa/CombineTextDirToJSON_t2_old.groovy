@@ -96,17 +96,17 @@ class CombineTextDirToJSON_t2_old {
         println " "
         println "Cooc based:"
         String jsonTree = wptj.getJSONtree(wordPairAndCooc)
-        String jsonGraph = wptj.getJSONgraph(wordPairAndCooc.take(20))
+        String jsonGraph = wptj.getJSONnet(wordPairAndCooc.take(20))
 
         println ""
         println "Freq boost based: "
         wptj = new WordPairsToJSON(stemInfo)
 
         String jsonTreeF = wptj.getJSONtree(wordPairAndCoocFreqBoost)
-        String jsonGraphF = wptj.getJSONgraph(wordPairAndCoocFreqBoost)
+        String jsonGraphF = wptj.getJSONnet(wordPairAndCoocFreqBoost)
 
         String jsonTreeFs = wptj.getJSONtree(wordPairAndCoocFreqBoost.take(80))
-        String jsonGraphFs = wptj.getJSONgraph(wordPairAndCoocFreqBoost.take(20))
+        String jsonGraphFs = wptj.getJSONnet(wordPairAndCoocFreqBoost.take(20))
 
         println ""
         println "Final:"
