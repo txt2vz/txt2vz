@@ -146,12 +146,12 @@
         <h4>British Online Archives. <small>Visualisation Test</small> </h4>
         <div class="btn-group">
 
-            <button type="button" class="btn btn-primary" id="visA" onclick="showViz(this.id)">Vis A</button>
-            <button type="button" class="btn btn-primary" id="visB" onclick="showViz(this.id)">Vis B</button>
-            <button type="button" class="btn btn-primary" id="visC" onclick="showViz(this.id)">Vis C</button>
-            <button type="button" class="btn btn-primary" id="visD" onclick="showViz(this.id)">Vis D</button>
-            <button type="button" class="btn btn-primary" id="visE" onclick="showViz(this.id)">Vis E</button>
-            <button type="button" class="btn btn-primary" id="visF" onclick="showViz(this.id)">Vis F</button>
+            <button type="button" class="btn btn-primary" id="vis1" onclick="showViz(this.id)">Vis 1</button>
+            <button type="button" class="btn btn-primary" id="vis2" onclick="showViz(this.id)">Vis 2</button>
+            <button type="button" class="btn btn-primary" id="vis3" onclick="showViz(this.id)">Vis 3</button>
+            <button type="button" class="btn btn-primary" id="vis4" onclick="showViz(this.id)">Vis 4</button>
+            <button type="button" class="btn btn-primary" id="vis5" onclick="showViz(this.id)">Vis 5</button>
+            <button type="button" class="btn btn-primary" id="vis6" onclick="showViz(this.id)">Vis 6</button>
         </div>
     </div>
     <div class="row col-md-12">
@@ -214,20 +214,20 @@
         vz.style.display = "block";
 
         var map1 = new Map([
-            ['visA', 'expJSON/ev599doc11101.txtgraphFs.json'],
-            ['visB', 'expJSON/ev599doc11102.txttreeF.json'],
-            ['visD', 'expJSON/ev599doc11102.txtgraphFs.json'],
-            ['visE', 'expJSON/ev599doc11101.txttreeF.json']
+            ['vis1', 'expJSON/ev599doc11101.txtgraphFs.json'],
+            ['vis2', 'expJSON/ev599doc11102.txttreeF.json'],
+            ['vis4', 'expJSON/ev599doc11102.txtgraphFs.json'],
+            ['vis5', 'expJSON/ev599doc11101.txttreeF.json']
         ]);
 
         var fname = map1.get(buttonID);
         console.log('fname: ' + fname);
 
-        if (buttonID=='visF'){
+        if (buttonID=='vis6'){
          //   showWordCloud('wordClouds/10962.JPG');
             showWordCloud('wordClouds/10962.png');
         } else
-        if (buttonID=='visC') {
+        if (buttonID=='vis3') {
             showWordCloud('wordClouds/11102.png');
         }
         else {
@@ -300,13 +300,13 @@
     function draw(jsonData, buttonId) {
 
         switch (buttonId) {
-            case 'visA':
-            case 'visD':
+            case 'vis1':
+            case 'vis4':
                 drawForceNetwork(jsonData);
                 break;
 
-            case 'visB':
-            case 'visE':
+            case 'vis2':
+            case 'vis5':
                 radial(jsonData);
                 break;
             default:
