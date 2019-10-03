@@ -44,11 +44,8 @@ class WordPairsExtractor {
 
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
 
-    //    if (boostWord != '~'){
-
-            String stemmedBoostWord = stemmer.stem(boostWord)
-            t2Cooc = LinkBoost.linkBoost(t2Cooc, stemmedBoostWord).asImmutable()
-      //  }
+        String stemmedBoostWord = stemmer.stem(boostWord)
+        t2Cooc = LinkBoost.linkBoost(t2Cooc, stemmedBoostWord).asImmutable()
 
         println "t2cooc: $t2Cooc"
 
@@ -69,10 +66,9 @@ class WordPairsExtractor {
 
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
 
-    //    if (boostWord != '~') {
-            String stemmedBoostWord = stemmer.stem(boostWord)
-            t2Cooc = LinkBoost.linkBoost(t2Cooc, stemmedBoostWord).asImmutable()
-    //    }
+        String stemmedBoostWord = stemmer.stem(boostWord)
+        t2Cooc = LinkBoost.linkBoost(t2Cooc, stemmedBoostWord).asImmutable()
+
 
         println "t2cooc: $t2Cooc"
 
