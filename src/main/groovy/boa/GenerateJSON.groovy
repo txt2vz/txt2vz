@@ -98,8 +98,9 @@ class GenerateJSON {
         WordPairsToJSON wptj = new WordPairsToJSON()
 
         String jsonTree = wptj.getJSONtree(t2Cooc, stemInfo)
-        String jsonNet = wptj.getJSONnet(t2Cooc, stemInfo)
+        String jsonNet = wptj.getJSONnet(t2Cooc.take(30), stemInfo)
 
+       // String jsonNet = wptj.getJSONnet(t2Cooc, stemInfo)
         println ""
         println "Final:"
         println "jsonNet: $jsonNet  "
