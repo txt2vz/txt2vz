@@ -12,13 +12,7 @@ class WordPairsToJSON {
 
     private Set<String> internalNodes = []
     private Set<String> allNodes = []
-  //  private Map<String, Map<String, Integer>> stemInfo = [:]
 
-//    WordPairsToJSON(Map<String, Map<String, Integer>> stInf){
-//        stemInfo = stInf
-//        allNodes = []
-//        internalNodes = []
-//    }
 
     String getJSONnet(Map<Tuple2<String, String>, Double> wordPairCooc, Map<String, Map<String, Integer>> stemInfo) {
 
@@ -27,14 +21,10 @@ class WordPairsToJSON {
                 links: wordPairCooc.collect {k, v ->
                     def (String k0, String k1) = LinkBoost.checkStringTuple(k)
                     [
-                    //        source: it.key.first,
-                    //        target: it.key.second,
 
                     source: stemInfo[k0].max { v }.key,
                     target: stemInfo[k1].max { v }.key,
 
-//                     source: stemInfo[k.first].max { v }.key,
-//                     target: stemInfo[k.second].max { v }.key,
                      cooc  : v
                     ]
                 }
@@ -52,20 +42,13 @@ class WordPairsToJSON {
             String word0
             String word1
 
-            // should not happen?
             assert stemInfo
-//            if (stemInfo.isEmpty()){
-//                word0 = k.first
-//                word1 = k.second
-//            } else {
-            def (String k0, String k1) = LinkBoost.checkStringTuple(k)
 
+            def (String k0, String k1) = LinkBoost.checkStringTuple(k)
 
             word0 = stemInfo[k0].max { it.value }.key
             word1 = stemInfo[k1].max { it.value }.key
-//                word0 = stemInfo[k.first].max { it.value }.key
-//                word1 = stemInfo[k.second].max { it.value }.key
-       //     }
+
             double coocValue = v
 
             if (tree.isEmpty()) {

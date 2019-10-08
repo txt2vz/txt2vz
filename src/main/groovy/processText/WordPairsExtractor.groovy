@@ -18,7 +18,7 @@ class WordPairsExtractor {
     private Map<String, Map<String, Integer>> stemInfo = [:]
     private Map<Tuple2<String, String>, Double> tuple2CoocMap = [:]
 
-    WordPairsExtractor(Float powerIn, int maxL, int hfqWords) {
+    WordPairsExtractor(float powerIn, int maxL, int hfqWords) {
         this.powerValue = powerIn
         this.maxWordPairs = maxL
         this.highFreqWords = hfqWords
@@ -98,7 +98,7 @@ class WordPairsExtractor {
         println ""
     }
 
-    private Map<String, List<Integer>> buildStemMaps(List<String> words) {
+     Map<String, List<Integer>> buildStemMaps(List<String> words) {
 
         //stemmed word is key and value is a list of positions where any of the words occur
         Map<String, List<Integer>> stemmedWordPositionsMap = [:]

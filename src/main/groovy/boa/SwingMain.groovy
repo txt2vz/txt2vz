@@ -4,12 +4,9 @@ import groovy.swing.SwingBuilder
 
 import javax.swing.ImageIcon
 import javax.swing.JFileChooser
-import javax.swing.JFrame
 import javax.swing.JLabel
 import javax.swing.JOptionPane
-import javax.swing.JScrollPane
 
-import static java.awt.Frame.getFrames
 import static javax.swing.JFrame.EXIT_ON_CLOSE
 import java.awt.*
 
@@ -140,7 +137,7 @@ class SwingMain {
 
                                                 processingLabel.setVisible(true)
                                                 doOutside {
-                                                    def genJ = new GenerateJSON(textFile, outFolder)
+                                                    def genJ = new TextToJSON(textFile, outFolder)
                                                     genJ.generateSingle()
                                                     JOptionPane.showMessageDialog(null, "Complete: check output folder.");
                                                     processingLabel.setVisible(false)
@@ -165,7 +162,7 @@ class SwingMain {
 
                                                 processingLabel.setVisible(true)
                                                 doOutside {
-                                                    def genJ = new GenerateJSON(textFile, outFolder)
+                                                    def genJ = new TextToJSON(textFile, outFolder)
                                                     genJ.generateMulti()
                                                     JOptionPane.showMessageDialog(null, "Complete: check output folder.");
                                                     processingLabel.setVisible(false)

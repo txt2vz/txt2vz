@@ -7,10 +7,10 @@ class LinkBoost {
 
     static Map<Tuple2<String, String>, Double> linkBoost(Map<Tuple2<String, String>, Double> t2cocOrig, String boostWord = '~') {
 
+       // PorterStemmer stemmer = new PorterStemmer()
 
-        PorterStemmer stemmer = new PorterStemmer()
-
-        String boostWordStemmed = stemmer.stem(boostWord)
+        String boostWordStemmed = new PorterStemmer().stem(boostWord)
+                //stemmer.stem(boostWord)
         println "linkboost kyeword: $boostWord boostWordStemmed $boostWordStemmed"
 
         Map<String, Integer> wordFrequencyCountMap = t2cocOrig.keySet().collectMany { t2 ->
@@ -32,8 +32,8 @@ class LinkBoost {
 
             Tuple2<String, String> t2b = checkStringTuple(k)
 
-            final int frst = (Integer) wordFrequencyCountMap[t2b.first] //?: 0
-            final int scnd = (Integer) wordFrequencyCountMap[t2b.second] //?: 0
+            final int frst = (Integer) wordFrequencyCountMap[t2b.first]
+            final int scnd = (Integer) wordFrequencyCountMap[t2b.second]
             final int total = frst + scnd - 1
 
             final int minCount = Math.min(frst, scnd)

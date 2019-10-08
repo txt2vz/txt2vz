@@ -10,18 +10,14 @@ class WordLinksSpec extends spock.lang.Specification {
 		JsonSlurper slurper = new JsonSlurper()
 
 		when:
-		def wpTuple = wpe.processText("one1 two2 three3")
-		def wpCooc = wpTuple.first
-		def wpCoocFreq = wpTuple.second
-		def stemInfo = wpTuple.third
-		def wpj = new WordPairsToJSON(stemInfo)
-		def jsonText = wpj.getJSONtree(wpCooc)
-		def json = slurper.parseText(jsonText)
+		def wordPairData = wpe.processText("one1 two2 three3")
 
-	//	def stemT2 = wpe.processAndMergeDirectory("one1 two2 three3")
-	//	def jsonText = new WordPairsToJSON().getJSONtree(stemT2)
+		Map<Tuple2<String, String>, Double> t2Cooc = wordPairData.first
+		Map<String, Map<String, Integer>> stemInfo = wordPairData.second
 
-		//def json = slurper.parseText(jsonText)
+		WordPairsToJSON wptj = new WordPairsToJSON()
+		String jsonTree = wptj.getJSONtree(t2Cooc, stemInfo)
+		def json = slurper.parseText(jsonTree)
 
 		then:
 
@@ -50,18 +46,19 @@ On Saturday, family spokesman Bob Gunnell said Ali died from septic shock due to
 		JsonSlurper slurper = new JsonSlurper()
 
 		when:
-		def wpTuple = wpe.processText(mAli)
-		def wpCooc = wpTuple.first
-		def t2Freq = wpTuple.second
+		def wordPairData = wpe.processText(mAli)
 
-		def stemInfo = wpTuple.third
-		def wpj = new WordPairsToJSON(stemInfo)
-		def jsonText = wpj.getJSONtree(t2Freq)
-		def json = slurper.parseText(jsonText)
+		Map<Tuple2<String, String>, Double> t2Cooc = wordPairData.first
+		Map<String, Map<String, Integer>> stemInfo = wordPairData.second
+
+		WordPairsToJSON wptj = new WordPairsToJSON()
+		String jsonTree = wptj.getJSONtree(t2Cooc, stemInfo)
+		def json = slurper.parseText(jsonTree)
+
 
 		then:
 		println "json: $json"
 		json.name == "ali"
-		json.children[0].name == "obama"
+		json.children[0].name == "muhammad"
 	}
 }

@@ -1,4 +1,4 @@
-package boa
+package boaElastic
 
 import groovy.json.JsonSlurper
 

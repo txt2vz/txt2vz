@@ -8,46 +8,45 @@ import groovy.time.TimeDuration
 import processText.WordPairsExtractor
 import processText.WordPairsToJSON
 
-class GenerateJSON {
+class TextToJSON {
 
     final Date startRun = new Date()
     final float powerValue = 0.5f
     final int maxLinks = 200
     final int maxWords = 20
+    final int maxNetworkLinks = 30
     static String outDirPath = 'boaData/json/'
 
     Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wordPairData
 
     static String textLocation =
+  /boaData\text\coffee10/
    //         /boaData\text\secrecy\598\ev598doc11098.txt/
    // /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\coffee14/
     //         /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sci.crypt/
     //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\B/
     //     /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\G/
-
         //  /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOAexamples\rawText\Japan11037.txt/
-    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\secrecy10/
-
+  //  /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\secrecy10/
     //      /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOAexamples\rawText\QuarterlyIntel8338.txt/
 
 
     static void main(String[] args) {
 
         println "textLocation $textLocation"
-        def genJ =   new GenerateJSON(new File(textLocation), outDirPath)
+        def genJ =   new TextToJSON(new File(textLocation), outDirPath)
 
         genJ.generateSingle(false)
         //   genJ.generateSingle(false)
      //   genJ.generateMulti()
     }
 
-    GenerateJSON(File textLocationF, String outD) {
+    TextToJSON(File textLocationF, String outD) {
         textLocation = textLocationF
         outDirPath= outD
     }
 
     void generateSingle(boolean loadFromExistingJSONfile=false){
-
 
         File wpTreeData = new File(outDirPath + 'wpTreeData.json')
 
@@ -98,9 +97,8 @@ class GenerateJSON {
         WordPairsToJSON wptj = new WordPairsToJSON()
 
         String jsonTree = wptj.getJSONtree(t2Cooc, stemInfo)
-        String jsonNet = wptj.getJSONnet(t2Cooc.take(30), stemInfo)
+        String jsonNet = wptj.getJSONnet(t2Cooc.take(maxNetworkLinks), stemInfo)
 
-       // String jsonNet = wptj.getJSONnet(t2Cooc, stemInfo)
         println ""
         println "Final:"
         println "jsonNet: $jsonNet  "
