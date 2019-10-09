@@ -14,7 +14,7 @@ class TextToJSON {
     final float powerValue = 0.5f
     final int maxLinks = 200
     final int maxWords = 20
-    final int maxNetworkLinks = 30
+    final int maxNetworkLinks = 40
     static String outDirPath = 'boaData/json/'
 
     Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wordPairData

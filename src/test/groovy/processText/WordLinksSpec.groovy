@@ -4,32 +4,32 @@ import groovy.json.JsonSlurper
 
 class WordLinksSpec extends spock.lang.Specification {
 
-	def "three word test "() {
-		given:
-		def wpe = new WordPairsExtractor()
-		JsonSlurper slurper = new JsonSlurper()
+    def "three word test "() {
+        given:
+        def wpe = new WordPairsExtractor()
+        JsonSlurper slurper = new JsonSlurper()
 
-		when:
-		def wordPairData = wpe.processText("one1 two2 three3")
+        when:
+        def wordPairData = wpe.processText("one1 two2 three3")
 
-		Map<Tuple2<String, String>, Double> t2Cooc = wordPairData.first
-		Map<String, Map<String, Integer>> stemInfo = wordPairData.second
+        Map<Tuple2<String, String>, Double> t2Cooc = wordPairData.first
+        Map<String, Map<String, Integer>> stemInfo = wordPairData.second
 
-		WordPairsToJSON wptj = new WordPairsToJSON()
-		String jsonTree = wptj.getJSONtree(t2Cooc, stemInfo)
-		def json = slurper.parseText(jsonTree)
+        WordPairsToJSON wptj = new WordPairsToJSON()
+        String jsonTree = wptj.getJSONtree(t2Cooc, stemInfo)
+        def json = slurper.parseText(jsonTree)
 
-		then:
+        then:
 
-		json.name == 'one1'
-		json.children[0].name == 'two2'
-		json.children[0].children[0].name =='three3'
-	}
+        json.name == 'one1'
+        json.children[0].name == 'two2'
+        json.children[0].children[0].name == 'three3'
+    }
 
-	def "Muhammad Ali text wordlinks test"(){
-		given:
-		def  mAli =
-				'''
+    def "Muhammad Ali text wordlinks test"() {
+        given:
+        def mAli =
+                '''
 I am America. I am the part you won’t recognise. But get used to me – black, confident, cocky; my name, not yours; my religion, not yours; my goals, my own. Get used to me.”
 Muhammad Ali: the man behind the icon Read moreMuhammad Ali loved the sound of his own voice, and so did everyone else. His words were predictably impossible to top on Saturday, as America mourned the loss of a colossus not only in the boxing ring but the arenas of politics, religion and popular culture.
 Born in the south before Rosa Parks refused to give up her seat for a white bus passenger, he died at the age of 74, having seen the first African American elected to the White House. Barack Obama led tributes to the incandescent athlete, activist, humanitarian, poet and showman with a statement that caught the mood of many.
@@ -42,23 +42,23 @@ The three-time world heavyweight champion died late on Friday evening, a day aft
 Ali had long battled Parkinson’s disease, which impaired his speech and made the irrepressible athlete – known for saying he could float like a butterfly and sting like a bee – something of a prisoner in his own body.
 On Saturday, family spokesman Bob Gunnell said Ali died from septic shock due to unspecified natural causes. He did not suffer, Gunnell said. A White House statement said Obama had called Lonnie Ali, the champion’s fourth wife, “to offer his family’s deepest condolences for the passing of her husband”.
 '''
-		def wpe = new WordPairsExtractor()
-		JsonSlurper slurper = new JsonSlurper()
+        def wpe = new WordPairsExtractor()
+        JsonSlurper slurper = new JsonSlurper()
 
-		when:
-		def wordPairData = wpe.processText(mAli)
+        when:
+        def wordPairData = wpe.processText(mAli)
 
-		Map<Tuple2<String, String>, Double> t2Cooc = wordPairData.first
-		Map<String, Map<String, Integer>> stemInfo = wordPairData.second
+        Map<Tuple2<String, String>, Double> t2Cooc = wordPairData.first
+        Map<String, Map<String, Integer>> stemInfo = wordPairData.second
 
-		WordPairsToJSON wptj = new WordPairsToJSON()
-		String jsonTree = wptj.getJSONtree(t2Cooc, stemInfo)
-		def json = slurper.parseText(jsonTree)
+        WordPairsToJSON wptj = new WordPairsToJSON()
+        String jsonTree = wptj.getJSONtree(t2Cooc, stemInfo)
+        def json = slurper.parseText(jsonTree)
 
 
-		then:
-		println "json: $json"
-		json.name == "ali"
-		json.children[0].name == "muhammad"
-	}
+        then:
+        println "json: $json"
+        json.name == "ali"
+        json.children[0].name == "muhammad"
+    }
 }
