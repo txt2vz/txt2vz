@@ -20,7 +20,8 @@ class TextToJSON {
     Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wordPairData
 
     static String textLocation =
-  /boaData\text\coffee10/
+//  /boaData\text\coffee10/
+    /boaData\text\secrecy10/
    //         /boaData\text\secrecy\598\ev598doc11098.txt/
    // /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\coffee14/
     //         /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sci.crypt/

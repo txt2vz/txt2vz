@@ -7,10 +7,8 @@ class LinkBoost {
 
     static Map<Tuple2<String, String>, Double> linkBoost(Map<Tuple2<String, String>, Double> t2cocOrig, String boostWord = '~') {
 
-       // PorterStemmer stemmer = new PorterStemmer()
 
         String boostWordStemmed = new PorterStemmer().stem(boostWord)
-                //stemmer.stem(boostWord)
         println "linkboost kyeword: $boostWord boostWordStemmed $boostWordStemmed"
 
         Map<String, Integer> wordFrequencyCountMap = t2cocOrig.keySet().collectMany { t2 ->
@@ -47,7 +45,7 @@ class LinkBoost {
 
         Map t2bFreqSorted = t2bFreq.sort { -it.value }
 
-        println "t2bFreqSorted $t2bFreqSorted"
+        println "LinkBoost t2bFreqSorted $t2bFreqSorted"
         println ""
 
         return t2bFreqSorted.asImmutable()
