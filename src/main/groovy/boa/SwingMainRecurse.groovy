@@ -2,22 +2,21 @@ package boa
 
 import groovy.swing.SwingBuilder
 
-import javax.swing.ImageIcon
-import javax.swing.JFileChooser
-import javax.swing.JLabel
-import javax.swing.JOptionPane
-
-import static javax.swing.JFrame.EXIT_ON_CLOSE
+import javax.swing.*
 import java.awt.*
 
-class SwingMain {
+import static javax.swing.JFrame.EXIT_ON_CLOSE
 
-    public static void main(String[] args) {
+class SwingMainRecurse {
+
+    static void main(String[] args) {
 
         JLabel outFilePathL;
         JLabel textFilePathL;
         File outFile
         File textFile
+        JCheckBox cbRecurse
+        JCheckBox cbSummarise
 
         def initialPath = System.getProperty("user.dir");
         String outFolder = new String()
@@ -123,12 +122,28 @@ class SwingMain {
                                 label(text: '**********************************************************', foreground: Color.BLUE)
                             }
                         }
+                        tr{
+                            td{
+
+                             cbRecurse = checkBox(id: "cb1", text: "recurse" )
+                              //  checkBox  cb
+                                //cb(label:  "recurse")
+                            }
+                            td{
+                               cbSummarise = checkBox(id: "cb2", text: "summarise" )
+                            }
+                        }
 
                         tr {
                             td {
                                 button(text: 'Generate single JSON file', background: Color.ORANGE,
                                         toolTipText: 'Single JSON file output - merge if multiple input files',
                                         actionPerformed: {
+
+                                            if (cbSummarise.isSelected())
+                                            {
+                                                println "summaris selected"
+                                            }
 
                                             if (textFile == null) {
                                                 JOptionPane.showMessageDialog(null, "Must select text file");
@@ -145,7 +160,6 @@ class SwingMain {
 
                                         })
                             }
-
                             td {
                                 button(text: 'Generate multi JSON files', background: Color.ORANGE,
                                         toolTipText: 'Each text generates its own JSON file',
