@@ -1,5 +1,6 @@
 package boa
 
+import com.sun.deploy.security.SelectableSecurityManager
 import groovy.swing.SwingBuilder
 
 import javax.swing.*
@@ -19,7 +20,7 @@ class SwingMainRecurse {
         JCheckBox cbSummarise
 
         def initialPath = System.getProperty("user.dir");
-        String outFolder = new String()
+        File outFolder //= new String()
 
         ImageIcon loading = new ImageIcon(new URL("https://raw.githubusercontent.com/txt2vz/txt2vz/master/src/main/webapp/images/ajax-loader.gif"));
 
@@ -169,7 +170,11 @@ class SwingMainRecurse {
 
                                             if (textFile == null || !textFile.isDirectory()) {
                                                 JOptionPane.showMessageDialog(null, "Must select text folder for multi option.");
-                                            } else {
+                                            } else if ( outFile.exists() && outFile.directory && (outFile.list() as List).isEmpty()){
+                                                JOptionPane.showMessageDialog(null, "Output folder must be empty");
+                                            }
+
+                                            else {
 
                                                 //   edt().frame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))
 

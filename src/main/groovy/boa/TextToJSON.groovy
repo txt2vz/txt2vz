@@ -16,13 +16,14 @@ class TextToJSON {
     final int maxWords = 20
     final int maxNetworkLinks = 40
     static String outDirPath = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\json/
-            //'boaData/json/'
+    //'boaData/json/'
 
     Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wordPairData
 
     static String textLocation =
 
             /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest/
+
 //  /boaData\text\coffee10/
     //  /boaData\text\secrecy10/
     //         /boaData\text\secrecy\598\ev598doc11098.txt/
@@ -76,26 +77,34 @@ class TextToJSON {
         println "Duration: $duration"
     }
 
-    void recurseMulti(File textFileRoot, File outPathJSON){
+    void recurseMulti(File textFileRoot, File outPathJSON) {
 
-        textFileRoot.eachFile{File f ->
+        textFileRoot.eachFile { File f ->
 
-            if (f.isDirectory()){
+            if (f.isDirectory()) {
                 println "f is $f"
-
-               // println "outP $outP"
                 println "outPathJSON " + outPathJSON.toString()
                 String outP = outPathJSON.toString() + File.separator + f.name
 
-               // File subDir = new File(outPathJSON)
-               File fd = new File(outP)
-                println "fd $fd"
-                fd.mkdir()
-                recurseMulti(f, fd)
+                File fd = new File(outP)
+                if (!fd.exists()) {
+                    println "fd $fd"
+                    fd.mkdir()
+                    recurseMulti(f, fd)
+                } else {
+                    println "File Already Exists"
+                }
+            }
+            else if (f.isFile()){
+    //            numberOfFiles++
+                wordPairData = getWordPairDataFromText(f)
+                Map<Tuple2<String, String>, Double> t2Cooc = wordPairData.first
+                Map<String, Map<String, Integer>> stemInfo = wordPairData.second
+//
+                outputJSONfiles(t2Cooc, stemInfo, outPathJSON.toString(), f)
+
             }
         }
-
-
     }
 
 
@@ -107,7 +116,7 @@ class TextToJSON {
         String outPath
         recurseMulti(froot, new File(outDirPath))
 
-     //   File outDirF = new File (outDirPath)
+        //   File outDirF = new File (outDirPath)
         // f.eachFileRecurse (FileType.FILES) { textFile ->
 //        froot.eachFileRecurse() { file ->
 //            if (file.isDirectory()) {
@@ -124,7 +133,7 @@ class TextToJSON {
 //
 //                outputJSONfiles(t2Cooc, stemInfo, outDirPath, file)
 //            }
-     //   }
+        //   }
 
         final Date endRun = new Date()
         TimeDuration duration = TimeCategory.minus(endRun, startRun)
@@ -145,10 +154,10 @@ class TextToJSON {
         println "jsonTree: $jsonTree  "
         println "outDir: $outDir  "
 
-        File outFileNet = new File(outDir + textFile.getName() + '_network.json')
-        File outFileTree = new File(outDir + textFile.getName() + '_tree.json')
+      //  File outFileNet = new File(outDir + textFile.getName() + '_network.json')
+        File outFileTree = new File(outDir + File.separator + textFile.getName() + '_tree.json')
 
-        outFileNet.write(jsonNet)
+     //   outFileNet.write(jsonNet)
         outFileTree.write(jsonTree)
     }
 
