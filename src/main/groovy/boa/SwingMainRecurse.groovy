@@ -1,7 +1,8 @@
 package boa
 
-import com.sun.deploy.security.SelectableSecurityManager
 import groovy.swing.SwingBuilder
+import groovy.time.TimeCategory
+import groovy.time.TimeDuration
 
 import javax.swing.*
 import java.awt.*
@@ -14,13 +15,13 @@ class SwingMainRecurse {
 
         JLabel outFilePathL;
         JLabel textFilePathL;
-        File outFile
-        File textFile
+        File outFolderJSON
+        File sourceTextFolder
         JCheckBox cbRecurse
         JCheckBox cbSummarise
 
         def initialPath = System.getProperty("user.dir");
-        File outFolder //= new String()
+        //  File outFolder //= new String()
 
         ImageIcon loading = new ImageIcon(new URL("https://raw.githubusercontent.com/txt2vz/txt2vz/master/src/main/webapp/images/ajax-loader.gif"));
 
@@ -59,8 +60,8 @@ class SwingMainRecurse {
                                             switch (result) {
                                                 case JFileChooser.APPROVE_OPTION:
 
-                                                    textFile = fc.getSelectedFile()
-                                                    textFilePathL.setText(' ' + textFile.toString())
+                                                    sourceTextFolder = fc.getSelectedFile()
+                                                    textFilePathL.setText(' ' + sourceTextFolder.toString())
 
                                                     break;
                                                 case JFileChooser.CANCEL_OPTION:
@@ -90,9 +91,9 @@ class SwingMainRecurse {
                                             switch (result) {
                                                 case JFileChooser.APPROVE_OPTION:
 
-                                                    outFile = fc.getSelectedFile()
-                                                    outFolder = fc.getSelectedFile().getCanonicalFile().toString() + '\\'
-                                                    outFilePathL.setText(' ' + outFolder.toString())
+                                                    outFolderJSON = fc.getSelectedFile()
+                                                   // outFolderJSON = fc.getSelectedFile().getCanonicalFile().toString() + '\\'
+                                                    outFilePathL.setText(' ' + outFolderJSON.toString())
                                                     break;
                                                 case JFileChooser.CANCEL_OPTION:
                                                 case JFileChooser.ERROR_OPTION:
@@ -115,77 +116,61 @@ class SwingMainRecurse {
                             }
 
                         }
+
                         tr {
                             td {
-                                label(text: '**********************************************************', foreground: Color.BLUE)
-                            }
-                            td {
-                                label(text: '**********************************************************', foreground: Color.BLUE)
-                            }
-                        }
-                        tr{
-                            td{
 
-                             cbRecurse = checkBox(id: "cb1", text: "recurse" )
-                              //  checkBox  cb
+                                cbRecurse = checkBox(id: "cb1", text: "recurse")
+                                //  checkBox  cb
                                 //cb(label:  "recurse")
                             }
-                            td{
-                               cbSummarise = checkBox(id: "cb2", text: "summarise" )
+                            td {
+                                cbSummarise = checkBox(id: "cb2", text: "summarise")
+                            }
+                        }
+                        tr {
+                            td(colspan: 2, align: 'center') {
+                                label(text: '**********************************************************', foreground: Color.BLUE)
                             }
                         }
 
                         tr {
-                            td {
-                                button(text: 'Generate single JSON file', background: Color.ORANGE,
-                                        toolTipText: 'Single JSON file output - merge if multiple input files',
-                                        actionPerformed: {
 
-                                            if (cbSummarise.isSelected())
-                                            {
-                                                println "summaris selected"
-                                            }
+                            td(colspan: 2, align: 'center') {
 
-                                            if (textFile == null) {
-                                                JOptionPane.showMessageDialog(null, "Must select text file");
-                                            } else {
-
-                                                processingLabel.setVisible(true)
-                                                doOutside {
-                                                    def genJ = new TextToJSON(textFile, outFolder)
-                                                    genJ.generateSingle()
-                                                    JOptionPane.showMessageDialog(null, "Complete: check output folder.");
-                                                    processingLabel.setVisible(false)
-                                                }
-                                            }
-
-                                        })
-                            }
-                            td {
                                 button(text: 'Generate multi JSON files', background: Color.ORANGE,
                                         toolTipText: 'Each text generates its own JSON file',
                                         //  cursor: Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR),
                                         actionPerformed: {
 
 
-                                            if (textFile == null || !textFile.isDirectory()) {
+                                            if (sourceTextFolder == null || !sourceTextFolder.isDirectory()) {
                                                 JOptionPane.showMessageDialog(null, "Must select text folder for multi option.");
-                                            } else if ( outFile.exists() && outFile.directory && (outFile.list() as List).isEmpty()){
+                                            } else if (outFolderJSON.listFiles()){ //(outFolderJSON.exists() && outFolderJSON.isDirectory() && (outFolderJSON.listFiles() as List).isEmpty()) {
                                                 JOptionPane.showMessageDialog(null, "Output folder must be empty");
-                                            }
+                                            } else {
 
-                                            else {
+                                                if (cbSummarise.isSelected()){
+                                                    JOptionPane.showMessageDialog(null, "summarise selected");
+                                                }
 
                                                 //   edt().frame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))
 
                                                 processingLabel.setVisible(true)
                                                 doOutside {
-                                                    def genJ = new TextToJSON(textFile, outFolder)
-                                                    genJ.generateMulti()
-                                                    JOptionPane.showMessageDialog(null, "Complete: check output folder.");
+                                                    final Date startRun = new Date()
+
+                                                    new TextToJSON().recurseMulti(sourceTextFolder, outFolderJSON)
+
+                                                    final Date endRun = new Date()
+                                                    TimeDuration duration = TimeCategory.minus(endRun, startRun)
+                                                    println "Duration: $duration"
+
+                                                    JOptionPane.showMessageDialog(null, "Complete: check output folder. Duration $duration");
                                                     processingLabel.setVisible(false)
 
                                                 }
+
 
                                             }
                                         })
