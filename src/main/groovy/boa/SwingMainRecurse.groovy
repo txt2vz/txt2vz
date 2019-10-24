@@ -92,7 +92,7 @@ class SwingMainRecurse {
                                                 case JFileChooser.APPROVE_OPTION:
 
                                                     outFolderJSON = fc.getSelectedFile()
-                                                   // outFolderJSON = fc.getSelectedFile().getCanonicalFile().toString() + '\\'
+                                                    // outFolderJSON = fc.getSelectedFile().getCanonicalFile().toString() + '\\'
                                                     outFilePathL.setText(' ' + outFolderJSON.toString())
                                                     break;
                                                 case JFileChooser.CANCEL_OPTION:
@@ -146,11 +146,12 @@ class SwingMainRecurse {
 
                                             if (sourceTextFolder == null || !sourceTextFolder.isDirectory()) {
                                                 JOptionPane.showMessageDialog(null, "Must select text folder for multi option.");
-                                            } else if (outFolderJSON.listFiles()){ //(outFolderJSON.exists() && outFolderJSON.isDirectory() && (outFolderJSON.listFiles() as List).isEmpty()) {
+                                            } else if (outFolderJSON.listFiles()) {
+                                                //(outFolderJSON.exists() && outFolderJSON.isDirectory() && (outFolderJSON.listFiles() as List).isEmpty()) {
                                                 JOptionPane.showMessageDialog(null, "Output folder must be empty");
                                             } else {
 
-                                                if (cbSummarise.isSelected()){
+                                                if (cbSummarise.isSelected()) {
                                                     JOptionPane.showMessageDialog(null, "summarise selected");
                                                 }
 
@@ -166,11 +167,10 @@ class SwingMainRecurse {
                                                     TimeDuration duration = TimeCategory.minus(endRun, startRun)
                                                     println "Duration: $duration"
 
-                                                    JOptionPane.showMessageDialog(null, "Complete: check output folder. Duration $duration");
+                                                    JOptionPane.showMessageDialog(null, "<html>Complete: check output folder <br>Duration: $duration </html>");
                                                     processingLabel.setVisible(false)
 
                                                 }
-
 
                                             }
                                         })
