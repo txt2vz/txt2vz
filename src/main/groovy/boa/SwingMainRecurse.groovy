@@ -151,9 +151,9 @@ class SwingMainRecurse {
                                                 JOptionPane.showMessageDialog(null, "Output folder must be empty");
                                             } else {
 
-                                                if (cbSummarise.isSelected()) {
-                                                    JOptionPane.showMessageDialog(null, "summarise selected");
-                                                }
+//                                                if (cbSummarise.isSelected()) {
+//                                                    JOptionPane.showMessageDialog(null, "summarise selected");
+                                                //}
 
                                                 //   edt().frame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))
 
@@ -161,7 +161,8 @@ class SwingMainRecurse {
                                                 doOutside {
                                                     final Date startRun = new Date()
 
-                                                    new TextToJSON().recurseMulti(sourceTextFolder, outFolderJSON)
+                                                        new TextToJSON().recurseMulti(sourceTextFolder, outFolderJSON, cbSummarise.isSelected())
+
 
                                                     final Date endRun = new Date()
                                                     TimeDuration duration = TimeCategory.minus(endRun, startRun)

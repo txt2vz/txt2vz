@@ -37,15 +37,45 @@ class TextToJSON {
 
     static void main(String[] args) {
 
-        println "textDirPathString $textDirPathString"
-        def genJ = new TextToJSON(new File(textDirPathString), new File (outDirPathString))
-        genJ.generateMulti()
+        final Date startRun = new Date()
+        new TextToJSON().recurseMulti(new File(textDirPathString), new File (outDirPathString), true)
+      //  new TextToJSON().summariseDir(new File(textDirPathString), new File (outDirPathString))
+
+        final Date endRun = new Date()
+        TimeDuration duration = TimeCategory.minus(endRun, startRun)
+        println "Duration: $duration"
     }
 
-   // TextToJSON(File textLocationF, File outD) {
-        //textDirPathString = textLocationF
-        //outDirPathString = outD
-  //  }
+
+    void recurseMulti(File textFileRoot, File outPathJSON, boolean summarise = false) {
+
+        textFileRoot.eachFile { File f ->
+
+            if (f.isDirectory()) {
+
+               if (summarise){
+                   wordPairData = getWordPairDataFromText(f)
+                   outputJSONfiles(wordPairData.first, wordPairData.second, outPathJSON.toString(), f)
+               }
+
+                String outSubDirPath = outPathJSON.toString() + File.separator + f.name
+
+                File subDir = new File(outSubDirPath)
+                if (!subDir.exists()) {
+                    subDir.mkdir()
+                    recurseMulti(f, subDir, summarise)
+                } else {
+                    println "File Already Exists"
+                }
+            }
+            else if (f.isFile()){
+                wordPairData = getWordPairDataFromText(f)
+             //   Map<Tuple2<String, String>, Double> t2Cooc = wordPairData.first
+              //  Map<String, Map<String, Integer>> stemInfo = wordPairData.second
+                outputJSONfiles(wordPairData.first, wordPairData.second, outPathJSON.toString(), f)
+            }
+        }
+    }
 
     void generateSingle(boolean loadFromExistingJSONfile = false) {
 
@@ -67,37 +97,7 @@ class TextToJSON {
         Map<String, Map<String, Integer>> stemInfo = wordPairData.second
 
         outputJSONfiles(t2Cooc, stemInfo, outDirPathString, new File(textDirPathString))
-
-        final Date endRun = new Date()
-        TimeDuration duration = TimeCategory.minus(endRun, startRun)
-        println "Duration: $duration"
     }
-
-    void recurseMulti(File textFileRoot, File outPathJSON) {
-
-        textFileRoot.eachFile { File f ->
-
-            if (f.isDirectory()) {
-
-                String outP = outPathJSON.toString() + File.separator + f.name
-
-                File fd = new File(outP)
-                if (!fd.exists()) {
-                    fd.mkdir()
-                    recurseMulti(f, fd)
-                } else {
-                    println "File Already Exists"
-                }
-            }
-            else if (f.isFile()){
-                wordPairData = getWordPairDataFromText(f)
-                Map<Tuple2<String, String>, Double> t2Cooc = wordPairData.first
-                Map<String, Map<String, Integer>> stemInfo = wordPairData.second
-                outputJSONfiles(t2Cooc, stemInfo, outPathJSON.toString(), f)
-            }
-        }
-    }
-
 
 
     private void outputJSONfiles(Map<Tuple2<String, String>, Double> t2Cooc, Map<String, Map<String, Integer>> stemInfo, String outDir, File textFile) {
