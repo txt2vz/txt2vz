@@ -48,7 +48,7 @@ class SwingMainRecurse {
                         tr {
                             td {
 
-                                button(text: 'Select text file/folder  ',
+                                button(text: 'Select text file/folder:',
                                         toolTipText: 'select the source text file(s)',
                                         actionPerformed: {
 
@@ -92,7 +92,6 @@ class SwingMainRecurse {
                                                 case JFileChooser.APPROVE_OPTION:
 
                                                     outFolderJSON = fc.getSelectedFile()
-                                                    // outFolderJSON = fc.getSelectedFile().getCanonicalFile().toString() + '\\'
                                                     outFilePathL.setText(' ' + outFolderJSON.toString())
                                                     break;
                                                 case JFileChooser.CANCEL_OPTION:
@@ -120,26 +119,37 @@ class SwingMainRecurse {
                         tr {
                             td {
 
-                                cbRecurse = checkBox(id: "cb1", text: "recurse")
-                                //  checkBox  cb
-                                //cb(label:  "recurse")
+                                cbRecurse = checkBox(id: "cb1", text: "Recurse")
+                                cbRecurse.setSelected(true)
                             }
                             td {
-                                cbSummarise = checkBox(id: "cb2", text: "summarise")
-                            }
-                        }
-                        tr {
-                            td(colspan: 2, align: 'center') {
-                                label(text: '**********************************************************', foreground: Color.BLUE)
+                                cbSummarise = checkBox(id: "cb2", text: "Summarise")
+                                cbSummarise.setSelected(true)
+
                             }
                         }
 
                         tr {
+                            td {
+                                label '<html>Process all sub-folders </html> '
+                            }
+                            td {
+
+                                label '<html>Create a JSON file for entire sub-folder</html> '
+                            }
+                        }
+                        tr {
+                            td(colspan: 2, align: 'center') {
+                                label(text: '**********************************************************************************************************************************', foreground: Color.BLUE)
+                            }
+                        }
+
+                        tr {
 
                             td(colspan: 2, align: 'center') {
 
-                                button(text: 'Generate multi JSON files', background: Color.ORANGE,
-                                        toolTipText: 'Each text generates its own JSON file',
+                                button(text: 'Generate JSON files', background: Color.ORANGE,
+                                        toolTipText: 'Use text files in source folder to generate JSON files ready for visualisation',
                                         //  cursor: Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR),
                                         actionPerformed: {
 
@@ -151,9 +161,6 @@ class SwingMainRecurse {
                                                 JOptionPane.showMessageDialog(null, "Output folder must be empty");
                                             } else {
 
-//                                                if (cbSummarise.isSelected()) {
-//                                                    JOptionPane.showMessageDialog(null, "summarise selected");
-                                                //}
 
                                                 //   edt().frame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))
 
@@ -161,7 +168,7 @@ class SwingMainRecurse {
                                                 doOutside {
                                                     final Date startRun = new Date()
 
-                                                        new TextToJSON().recurseMulti(sourceTextFolder, outFolderJSON, cbSummarise.isSelected())
+                                                        new TextToJSON().recurseMulti(sourceTextFolder, outFolderJSON, cbSummarise.isSelected(), cbRecurse.isSelected())
 
 
                                                     final Date endRun = new Date()
@@ -178,19 +185,8 @@ class SwingMainRecurse {
                             }
                         }
                         tr {
-                            td {
-                                label '<html>  <br>Multiple files will be merged to one JSON output file </html> '
-                            }
-                            td {
-                                label '<html>  <br>JSON output file created for each file found in the source folder </html> '
-                            }
-                        }
-                        tr {
-                            td {
-                                label(text: '**********************************************************', foreground: Color.BLUE)
-                            }
-                            td {
-                                label(text: '**********************************************************', foreground: Color.BLUE)
+                            td(colspan: 2, align: 'center') {
+                                label(text: '**********************************************************************************************************************************', foreground: Color.BLUE)
                             }
                         }
 

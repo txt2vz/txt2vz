@@ -18,8 +18,6 @@ class TextToJSON {
     static String outDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\json/
     static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest/
 
-  //  File textDirFile
-  //  File outDirJSONFile
 
     Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wordPairData
 
@@ -38,7 +36,7 @@ class TextToJSON {
     static void main(String[] args) {
 
         final Date startRun = new Date()
-        new TextToJSON().recurseMulti(new File(textDirPathString), new File (outDirPathString), true)
+        new TextToJSON().recurseMulti(new File(textDirPathString), new File (outDirPathString), true, true)
       //  new TextToJSON().summariseDir(new File(textDirPathString), new File (outDirPathString))
 
         final Date endRun = new Date()
@@ -46,8 +44,7 @@ class TextToJSON {
         println "Duration: $duration"
     }
 
-
-    void recurseMulti(File textFileRoot, File outPathJSON, boolean summarise = false) {
+    void recurseMulti(File textFileRoot, File outFileForJSON, boolean summarise = true, boolean recurse = true) {
 
         textFileRoot.eachFile { File f ->
 
@@ -55,24 +52,24 @@ class TextToJSON {
 
                if (summarise){
                    wordPairData = getWordPairDataFromText(f)
-                   outputJSONfiles(wordPairData.first, wordPairData.second, outPathJSON.toString(), f)
+                   outputJSONfiles(wordPairData.first, wordPairData.second, outFileForJSON.toString(), f)
                }
 
-                String outSubDirPath = outPathJSON.toString() + File.separator + f.name
+                if (recurse) {
+                    String outSubDirPath = outFileForJSON.toString() + File.separator + f.name
 
-                File subDir = new File(outSubDirPath)
-                if (!subDir.exists()) {
-                    subDir.mkdir()
-                    recurseMulti(f, subDir, summarise)
-                } else {
-                    println "File Already Exists"
+                    File subDir = new File(outSubDirPath)
+                    if (!subDir.exists()) {
+                        subDir.mkdir()
+                        recurseMulti(f, subDir, summarise, recurse)
+                    } else {
+                        println "File Already Exists"
+                    }
                 }
             }
             else if (f.isFile()){
                 wordPairData = getWordPairDataFromText(f)
-             //   Map<Tuple2<String, String>, Double> t2Cooc = wordPairData.first
-              //  Map<String, Map<String, Integer>> stemInfo = wordPairData.second
-                outputJSONfiles(wordPairData.first, wordPairData.second, outPathJSON.toString(), f)
+                outputJSONfiles(wordPairData.first, wordPairData.second, outFileForJSON.toString(), f)
             }
         }
     }
@@ -100,7 +97,7 @@ class TextToJSON {
     }
 
 
-    private void outputJSONfiles(Map<Tuple2<String, String>, Double> t2Cooc, Map<String, Map<String, Integer>> stemInfo, String outDir, File textFile) {
+    private void outputJSONfiles(Map<Tuple2<String, String>, Double> t2Cooc, Map<String, Map<String, Integer>> stemInfo, String outFolder, File sourceFile) {
 
         WordPairsToJSON wptj = new WordPairsToJSON()
 
@@ -111,12 +108,14 @@ class TextToJSON {
         println "Final:"
         println "jsonNet: $jsonNet  "
         println "jsonTree: $jsonTree  "
-        println "outDir: $outDir  "
+        println "outFolder: $outFolder  "
 
-      //  File outFileNet = new File(outDir + textFile.getName() + '_network.json')
-        File outFileTree = new File(outDir + File.separator + textFile.getName() + '_tree.json')
+        String folder = (sourceFile.isDirectory())? "_Folder_" : ""
 
-     //   outFileNet.write(jsonNet)
+        File outFileTree = new File(outFolder + File.separator + sourceFile.getName() + folder  + '_tree.json')
+        File outFileNet =  new File(outFolder + File.separator + sourceFile.getName() + folder  + '_network.json')
+
+        outFileNet.write(jsonNet)
         outFileTree.write(jsonTree)
     }
 
