@@ -20,18 +20,16 @@ class SwingMainRecurse {
         JCheckBox cbRecurse
         JCheckBox cbSummarise
 
-        def initialPath = System.getProperty("user.dir");
-        //  File outFolder //= new String()
-
+        String initialPath = System.getProperty("user.dir");
         ImageIcon loading = new ImageIcon(new URL("https://raw.githubusercontent.com/txt2vz/txt2vz/master/src/main/webapp/images/ajax-loader.gif"));
 
-        def processingLabel = new JLabel("processing... ", loading, JLabel.CENTER);
+        JLabel processingLabel = new JLabel("processing... ", loading, JLabel.CENTER);
         processingLabel.setVisible(false)
 
-        def swingBuilder = new SwingBuilder()
+        SwingBuilder swingBuilder = new SwingBuilder()
         swingBuilder.edt {  // edt method makes sure UI is build on Event Dispatch Thread.
             lookAndFeel 'nimbus'  // Simple change in look and feel.
-            frame(title: 'BOA: Generate JSON from text', size: [1000, 300],
+            frame(title: 'BOA: Generate JSON from text', size: [800, 300],
                     show: true, locationRelativeTo: null,
                     defaultCloseOperation: EXIT_ON_CLOSE) {
 
@@ -48,8 +46,8 @@ class SwingMainRecurse {
                         tr {
                             td {
 
-                                button(text: 'Select text file/folder:',
-                                        toolTipText: 'select the source text file(s)',
+                                button(text: 'Select folder containing source text files:',
+                                        toolTipText: 'source text files location',
                                         actionPerformed: {
 
                                             JFileChooser fc = new JFileChooser(initialPath);
@@ -81,7 +79,7 @@ class SwingMainRecurse {
                         tr {
                             td {
                                 button(text: 'Select folder to save JSON files:',
-                                        toolTipText: 'select folder to store the generated json file(s) ',
+                                        toolTipText: 'Select folder to store the generated json files ',
                                         actionPerformed: {
 
                                             JFileChooser fc = new JFileChooser(initialPath);
@@ -161,25 +159,19 @@ class SwingMainRecurse {
                                                 JOptionPane.showMessageDialog(null, "Output folder must be empty");
                                             } else {
 
-
                                                 //   edt().frame().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))
 
                                                 processingLabel.setVisible(true)
                                                 doOutside {
                                                     final Date startRun = new Date()
-
-                                                        new TextToJSON().recurseMulti(sourceTextFolder, outFolderJSON, cbSummarise.isSelected(), cbRecurse.isSelected())
-
-
+                                                    TextToJSON ttj = new TextToJSON()
+                                                    final int fileCount = ttj.recurseMulti(sourceTextFolder, outFolderJSON, cbSummarise.isSelected(), cbRecurse.isSelected())
                                                     final Date endRun = new Date()
                                                     TimeDuration duration = TimeCategory.minus(endRun, startRun)
                                                     println "Duration: $duration"
-
-                                                    JOptionPane.showMessageDialog(null, "<html>Complete: check output folder <br>Duration: $duration </html>");
                                                     processingLabel.setVisible(false)
-
+                                                    JOptionPane.showMessageDialog(null, "<html><b>Processing Complete</b><br>Check output folder: $outFolderJSON <br>Duration: $duration  <br>Text files processed: $fileCount</html>");
                                                 }
-
                                             }
                                         })
                             }

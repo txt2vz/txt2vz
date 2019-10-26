@@ -28,7 +28,7 @@ dependencies {
 //    gradleVersion = '4.1'
 //}
 
-mainClassName = 'boa.SwingMain'
+mainClassName = 'boa.SwingMainRecurse'
 
 jar {
     zip64 = true
@@ -45,7 +45,7 @@ jar {
     }
 
     manifest {
-        attributes 'Main-Class': 'boa.SwingMain'
+        attributes 'Main-Class': 'boa.SwingMainRecurse'
     }
 
     exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'

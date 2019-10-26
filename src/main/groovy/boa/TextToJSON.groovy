@@ -1,6 +1,5 @@
 package boa
 
-
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.time.TimeCategory
@@ -10,50 +9,42 @@ import processText.WordPairsToJSON
 
 class TextToJSON {
 
-    final Date startRun = new Date()
-    final float powerValue = 0.5f
-    final int maxLinks = 200
-    final int maxWords = 20
-    final int maxNetworkLinks = 40
-    static String outDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\json/
-    static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest/
+    final static float powerValue = 0.5f
+    final static int maxLinks = 200
+    final static int highFrequencyWordsSingleFile = 20
+    final static int highFrequencyWordsDir = 80
+    final static int maxNetworkLinks = 40
+    final static String outDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\json/
+     final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest/
+  //  final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest\coffee10/
 
 
     Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wordPairData
 
-//  /boaData\text\coffee10/
-    //  /boaData\text\secrecy10/
-    //         /boaData\text\secrecy\598\ev598doc11098.txt/
-    // /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\coffee14/
-    //         /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\sci.crypt/
-    //    /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\B/
-    //     /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\holocaust\G/
-    //  /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOAexamples\rawText\Japan11037.txt/
-    //  /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\secrecy10/
-    //      /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\BOAexamples\rawText\QuarterlyIntel8338.txt/
-
-
     static void main(String[] args) {
 
         final Date startRun = new Date()
-        new TextToJSON().recurseMulti(new File(textDirPathString), new File (outDirPathString), true, true)
-      //  new TextToJSON().summariseDir(new File(textDirPathString), new File (outDirPathString))
+        TextToJSON ttj = new TextToJSON()
+        int fc = ttj.recurseMulti(new File(textDirPathString), new File(outDirPathString), true, true)
+        //  new TextToJSON().recurseMulti(new File(textDirPathString), new File (outDirPathString), true, true)
+        //  new TextToJSON().summariseDir(new File(textDirPathString), new File (outDirPathString))
 
         final Date endRun = new Date()
         TimeDuration duration = TimeCategory.minus(endRun, startRun)
-        println "Duration: $duration"
+        println "Duration: $duration file count $fc"
     }
 
-    void recurseMulti(File textFileRoot, File outFileForJSON, boolean summarise = true, boolean recurse = true) {
+    int recurseMulti(File textFileRoot, File outFileForJSON, boolean summarise = true, boolean recurse = true) {
 
+        int fileCount = 0
         textFileRoot.eachFile { File f ->
 
             if (f.isDirectory()) {
 
-               if (summarise){
-                   wordPairData = getWordPairDataFromText(f)
-                   outputJSONfiles(wordPairData.first, wordPairData.second, outFileForJSON.toString(), f)
-               }
+                if (summarise) {
+                    wordPairData = getWordPairDataFromText(f)
+                    writeJSONfiles(wordPairData.first, wordPairData.second, outFileForJSON.toString(), f)
+                }
 
                 if (recurse) {
                     String outSubDirPath = outFileForJSON.toString() + File.separator + f.name
@@ -61,17 +52,18 @@ class TextToJSON {
                     File subDir = new File(outSubDirPath)
                     if (!subDir.exists()) {
                         subDir.mkdir()
-                        recurseMulti(f, subDir, summarise, recurse)
+                        fileCount += recurseMulti(f, subDir, summarise, recurse)
                     } else {
-                        println "File Already Exists"
+                        println "File Already Exists "
                     }
                 }
-            }
-            else if (f.isFile()){
+            } else if (f.isFile()) {
+                fileCount++
                 wordPairData = getWordPairDataFromText(f)
-                outputJSONfiles(wordPairData.first, wordPairData.second, outFileForJSON.toString(), f)
+                writeJSONfiles(wordPairData.first, wordPairData.second, outFileForJSON.toString(), f)
             }
         }
+        return fileCount
     }
 
     void generateSingle(boolean loadFromExistingJSONfile = false) {
@@ -93,11 +85,11 @@ class TextToJSON {
         Map<Tuple2<String, String>, Double> t2Cooc = wordPairData.first
         Map<String, Map<String, Integer>> stemInfo = wordPairData.second
 
-        outputJSONfiles(t2Cooc, stemInfo, outDirPathString, new File(textDirPathString))
+        writeJSONfiles(t2Cooc, stemInfo, outDirPathString, new File(textDirPathString))
     }
 
 
-    private void outputJSONfiles(Map<Tuple2<String, String>, Double> t2Cooc, Map<String, Map<String, Integer>> stemInfo, String outFolder, File sourceFile) {
+    private void writeJSONfiles(Map<Tuple2<String, String>, Double> t2Cooc, Map<String, Map<String, Integer>> stemInfo, String outFolderPath, File sourceFile) {
 
         WordPairsToJSON wptj = new WordPairsToJSON()
 
@@ -108,29 +100,27 @@ class TextToJSON {
         println "Final:"
         println "jsonNet: $jsonNet  "
         println "jsonTree: $jsonTree  "
-        println "outFolder: $outFolder  "
+        println "outFolderPath: $outFolderPath  "
 
-        String folder = (sourceFile.isDirectory())? "_Folder_" : ""
+        String folder = (sourceFile.isDirectory()) ? "_Folder_" : ""
 
-        File outFileTree = new File(outFolder + File.separator + sourceFile.getName() + folder  + '_tree.json')
-        File outFileNet =  new File(outFolder + File.separator + sourceFile.getName() + folder  + '_network.json')
+        File outFileTree = new File(outFolderPath + File.separator + sourceFile.getName() + folder + '_tree.json')
+        File outFileNet = new File(outFolderPath + File.separator + sourceFile.getName() + folder + '_network.json')
 
         outFileNet.write(jsonNet)
         outFileTree.write(jsonTree)
     }
 
-    private Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> getWordPairDataFromText(File textLocationFile) {
+    private Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> getWordPairDataFromText(File sourceTextFile) {
         WordPairsExtractor wpe
         Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData
 
-        if (textLocationFile.isDirectory()) {
-            println "DIR found"
-            wpe = new WordPairsExtractor(powerValue, 200, 20)
-            wpData = wpe.processAndMergeDirectory(textLocationFile)
-        } else if (textLocationFile.isFile()) {
-            println "File found"
-            wpe = new WordPairsExtractor(powerValue, 200, 80)
-            wpData = wpe.processText(textLocationFile)
+        if (sourceTextFile.isDirectory()) {
+            wpe = new WordPairsExtractor(powerValue, maxLinks, highFrequencyWordsDir)
+            wpData = wpe.processAndMergeDirectory(sourceTextFile)
+        } else if (sourceTextFile.isFile()) {
+            wpe = new WordPairsExtractor(powerValue, maxLinks, highFrequencyWordsSingleFile)
+            wpData = wpe.processText(sourceTextFile)
         }
         return wpData
     }
