@@ -10,7 +10,7 @@ import processText.WordPairsToJSON
 class TextToJSON {
 
     final static float powerValue = 0.5f
-    final static int maxLinks = 200
+    private int maxLinks = 200
     final static int highFrequencyWordsSingleFile = 20
     final static int highFrequencyWordsDir = 80
     final static int maxNetworkLinks = 40
@@ -34,7 +34,11 @@ class TextToJSON {
         println "Duration: $duration file count $fc"
     }
 
-    int recurseMulti(File textFileRoot, File outFileForJSON, boolean summarise = true, boolean recurse = true) {
+    int recurseMulti(File textFileRoot, File outFileForJSON, int maxL=0, boolean summarise = true, boolean recurse = true) {
+
+        if (maxL > 0){
+            maxLinks = maxL
+        }
 
         int fileCount = 0
         textFileRoot.eachFile { File f ->

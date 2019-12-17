@@ -20,6 +20,8 @@ class SwingMainRecurse {
         JCheckBox cbRecurse
         JCheckBox cbSummarise
 
+        JSlider numberOfLinks
+
         String initialPath = System.getProperty("user.dir");
         ImageIcon loading = new ImageIcon(new URL("https://raw.githubusercontent.com/txt2vz/txt2vz/master/src/main/webapp/images/ajax-loader.gif"));
 
@@ -29,7 +31,7 @@ class SwingMainRecurse {
         SwingBuilder swingBuilder = new SwingBuilder()
         swingBuilder.edt {  // edt method makes sure UI is build on Event Dispatch Thread.
             lookAndFeel 'nimbus'  // Simple change in look and feel.
-            frame(title: 'BOA: Generate JSON from text', size: [800, 300],
+            frame(title: 'BOA: Generate JSON from text', size: [800, 400],
                     show: true, locationRelativeTo: null,
                     defaultCloseOperation: EXIT_ON_CLOSE) {
 
@@ -111,7 +113,6 @@ class SwingMainRecurse {
 
                                 label '    '
                             }
-
                         }
 
                         tr {
@@ -134,6 +135,24 @@ class SwingMainRecurse {
                             td {
 
                                 label '<html>Create a JSON file for entire sub-folder</html> '
+                            }
+                        }
+                        tr {
+                            td(colspan: 2, align: 'center') {
+                                label(text: '**********************************************************************************************************************************', foreground: Color.BLUE)
+                            }
+                        }
+                        tr {
+                            td(colspan: 2, align: 'center') {
+
+                                numberOfLinks = slider(new JSlider(JSlider.HORIZONTAL, 0, 400, 200))
+                                numberOfLinks.setMinorTickSpacing(20)
+                                numberOfLinks.setMajorTickSpacing(40)
+                                numberOfLinks.setPaintTicks(true)
+                                numberOfLinks.setPaintLabels(true)
+                                numberOfLinks.setBorder(BorderFactory.createTitledBorder("Maximumn number of links to appear in visualisation:"));
+                                numberOfLinks.setPreferredSize(new Dimension(400, 80))
+                                numberOfLinks.setToolTipText('adjust to alter size/complexity of visualisation. Actual number of links will often be less, especially when using tree based visualisation due to tree pruning.')
                             }
                         }
                         tr {
@@ -165,7 +184,9 @@ class SwingMainRecurse {
                                                 doOutside {
                                                     final Date startRun = new Date()
                                                     TextToJSON ttj = new TextToJSON()
-                                                    final int fileCount = ttj.recurseMulti(sourceTextFolder, outFolderJSON, cbSummarise.isSelected(), cbRecurse.isSelected())
+                                                    int maxL = numberOfLinks.value
+                                                    println "maxL $maxL"
+                                                    final int fileCount = ttj.recurseMulti(sourceTextFolder, outFolderJSON, maxL, cbSummarise.isSelected(), cbRecurse.isSelected())
                                                     final Date endRun = new Date()
                                                     TimeDuration duration = TimeCategory.minus(endRun, startRun)
                                                     println "Duration: $duration"
@@ -187,5 +208,4 @@ class SwingMainRecurse {
             }
         }
     }
-
 }
