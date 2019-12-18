@@ -5,6 +5,7 @@ import groovy.time.TimeCategory
 import groovy.time.TimeDuration
 
 import javax.swing.*
+import javax.swing.border.TitledBorder
 import java.awt.*
 
 import static javax.swing.JFrame.EXIT_ON_CLOSE
@@ -41,7 +42,8 @@ class SwingMainRecurse {
                 textFilePathL = new JLabel(initialPath)
 
                 panel(constraints: BorderLayout.CENTER,
-                        border: compoundBorder([emptyBorder(10), titledBorder('Make selections:')])) {
+                 //       border: compoundBorder([emptyBorder(10), titledBorder('Make selections:')])) {
+                    border: compoundBorder([emptyBorder(10)])) {
                     tableLayout {
                         tr { td { label processingLabel } }
 
@@ -145,12 +147,25 @@ class SwingMainRecurse {
                         tr {
                             td(colspan: 2, align: 'center') {
 
+                                // Add positions label in the slider
+                                Hashtable sliderLabels = new Hashtable();
+                                sliderLabels.put(10, new JLabel("small"));
+
+                                sliderLabels.put(200, new JLabel("medium"));
+
+                                sliderLabels.put(390, new JLabel("large"));
+
+
                                 numberOfLinks = slider(new JSlider(JSlider.HORIZONTAL, 0, 400, 200))
-                                numberOfLinks.setMinorTickSpacing(20)
-                                numberOfLinks.setMajorTickSpacing(40)
-                                numberOfLinks.setPaintTicks(true)
+
+                              //  numberOfLinks.setMinorTickSpacing(20)
+                             //   numberOfLinks.setMajorTickSpacing(40)
+                            //    numberOfLinks.setPaintTicks(true)
+                             //   numberOfLinks.setPaintLabels(true)
+
+                                numberOfLinks.setLabelTable(sliderLabels)
                                 numberOfLinks.setPaintLabels(true)
-                                numberOfLinks.setBorder(BorderFactory.createTitledBorder("Maximumn number of links to appear in visualisation:"));
+                                numberOfLinks.setBorder(BorderFactory.createTitledBorder( "Set size/complexity of visualisation:"))
                                 numberOfLinks.setPreferredSize(new Dimension(400, 80))
                                 numberOfLinks.setToolTipText('adjust to alter size/complexity of visualisation. Actual number of links will often be less, especially when using tree based visualisation due to tree pruning.')
                             }
