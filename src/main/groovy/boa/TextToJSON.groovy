@@ -35,8 +35,9 @@ class TextToJSON {
     }
 
     int recurseMulti(File textFileRoot, File outFileForJSON, boolean summarise = true, boolean recurse = true, int maxL = 0) {
-       if (maxLinks >0)
-        maxLinks = maxL
+       if (maxL >0) {
+           maxLinks = maxL
+       }
 
        switch (maxL){
            case 0..150:
