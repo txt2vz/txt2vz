@@ -21,7 +21,7 @@ class SwingMainRecurse {
         JCheckBox cbRecurse
         JCheckBox cbSummarise
 
-        JSlider numberOfLinks
+        JSlider numberOfLinksSlider
 
         String initialPath = System.getProperty("user.dir");
         ImageIcon loading = new ImageIcon(new URL("https://raw.githubusercontent.com/txt2vz/txt2vz/master/src/main/webapp/images/ajax-loader.gif"));
@@ -148,26 +148,21 @@ class SwingMainRecurse {
                             td(colspan: 2, align: 'center') {
 
                                 // Add positions label in the slider
-                                Hashtable sliderLabels = new Hashtable();
-                                sliderLabels.put(10, new JLabel("small"));
+                                Hashtable sliderLabels = new Hashtable()
+                                sliderLabels.put(10, new JLabel("small"))
+                                sliderLabels.put(200, new JLabel("medium"))
+                                sliderLabels.put(390, new JLabel("large"))
 
-                                sliderLabels.put(200, new JLabel("medium"));
+                                numberOfLinksSlider = slider(new JSlider(JSlider.HORIZONTAL, 2, 400, 200))
 
-                                sliderLabels.put(390, new JLabel("large"));
+                                numberOfLinksSlider.setLabelTable(sliderLabels)
+                                numberOfLinksSlider.setPaintLabels(true)
+                                numberOfLinksSlider.setBorder (BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Set visualisation size/complexity", TitledBorder.CENTER, TitledBorder.TOP))
 
-
-                                numberOfLinks = slider(new JSlider(JSlider.HORIZONTAL, 0, 400, 200))
-
-                              //  numberOfLinks.setMinorTickSpacing(20)
-                             //   numberOfLinks.setMajorTickSpacing(40)
-                            //    numberOfLinks.setPaintTicks(true)
-                             //   numberOfLinks.setPaintLabels(true)
-
-                                numberOfLinks.setLabelTable(sliderLabels)
-                                numberOfLinks.setPaintLabels(true)
-                                numberOfLinks.setBorder(BorderFactory.createTitledBorder( "Set size/complexity of visualisation:"))
-                                numberOfLinks.setPreferredSize(new Dimension(400, 80))
-                                numberOfLinks.setToolTipText('adjust to alter size/complexity of visualisation. Actual number of links will often be less, especially when using tree based visualisation due to tree pruning.')
+                           //     numberOfLinksSlider.setBorder (BorderFactory.createTitledBorder(BorderFactory.createMatteBorder(2, 2,
+                             //           2, 2, Color.gray), "Set visualisation size/complexity", TitledBorder.TOP, TitledBorder.TOP))
+                                numberOfLinksSlider.setPreferredSize(new Dimension(400, 80))
+                                numberOfLinksSlider.setToolTipText('adjust to alter size/complexity of visualisation. Actual number of links will often be less, especially when using tree based visualisation due to tree pruning.')
                             }
                         }
                         tr {
@@ -199,9 +194,9 @@ class SwingMainRecurse {
                                                 doOutside {
                                                     final Date startRun = new Date()
                                                     TextToJSON ttj = new TextToJSON()
-                                                    int maxL = numberOfLinks.value
+                                                    final int maxL = numberOfLinksSlider.value
                                                     println "maxL $maxL"
-                                                    final int fileCount = ttj.recurseMulti(sourceTextFolder, outFolderJSON, maxL, cbSummarise.isSelected(), cbRecurse.isSelected())
+                                                    final int fileCount = ttj.recurseMulti(sourceTextFolder, outFolderJSON, cbSummarise.isSelected(), cbRecurse.isSelected(), maxL)
                                                     final Date endRun = new Date()
                                                     TimeDuration duration = TimeCategory.minus(endRun, startRun)
                                                     println "Duration: $duration"

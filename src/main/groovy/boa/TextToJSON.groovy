@@ -11,12 +11,12 @@ class TextToJSON {
 
     final static float powerValue = 0.5f
     private int maxLinks = 200
-    final static int highFrequencyWordsSingleFile = 20
-    final static int highFrequencyWordsDir = 80
-    final static int maxNetworkLinks = 40
+    private int highFrequencyWordsSingleFile = 20
+    private int highFrequencyWordsDir = 80
+    private int maxNetworkLinks = 40
     final static String outDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\json/
-     final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest/
-  //  final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest\coffee10/
+    final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest/
+    //  final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest\coffee10/
 
 
     Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wordPairData
@@ -25,7 +25,7 @@ class TextToJSON {
 
         final Date startRun = new Date()
         TextToJSON ttj = new TextToJSON()
-        int fc = ttj.recurseMulti(new File(textDirPathString), new File(outDirPathString), true, true)
+        int fc = ttj.recurseMulti(new File(textDirPathString),  new File(outDirPathString), true, true, 0)
         //  new TextToJSON().recurseMulti(new File(textDirPathString), new File (outDirPathString), true, true)
         //  new TextToJSON().summariseDir(new File(textDirPathString), new File (outDirPathString))
 
@@ -34,11 +34,51 @@ class TextToJSON {
         println "Duration: $duration file count $fc"
     }
 
-    int recurseMulti(File textFileRoot, File outFileForJSON, int maxL=0, boolean summarise = true, boolean recurse = true) {
+    int recurseMulti(File textFileRoot, File outFileForJSON, boolean summarise = true, boolean recurse = true, int maxL = 0) {
+       if (maxLinks >0)
+        maxLinks = maxL
 
-        if (maxL > 0){
-            maxLinks = maxL
-        }
+       switch (maxL){
+           case 0..150:
+               highFrequencyWordsSingleFile = 10
+               highFrequencyWordsDir = 40
+               maxNetworkLinks = 20
+               break
+
+           case 150..250:
+               highFrequencyWordsSingleFile = 20
+               highFrequencyWordsDir = 80
+               maxNetworkLinks = 40
+               break
+
+           case 250..450:
+               highFrequencyWordsSingleFile = 40
+               highFrequencyWordsDir = 160
+               maxNetworkLinks = 80
+               break
+
+           default:
+               highFrequencyWordsSingleFile = 20
+               highFrequencyWordsDir = 80
+               maxNetworkLinks = 40
+               break
+       }
+
+//        if (maxL > 0) {
+//            maxLinks = maxL
+//          //  maxNetworkLinks = maxL
+//
+//            if(maxL > 220){
+//                highFrequencyWordsSingleFile = 40
+//                highFrequencyWordsDir = 160
+//                maxNetworkLinks = 80
+//            } else
+//            {
+//                highFrequencyWordsSingleFile = 20
+//                highFrequencyWordsDir = 80
+//                maxNetworkLinks = 40
+//            }
+//        }
 
         int fileCount = 0
         textFileRoot.eachFile { File f ->
@@ -91,7 +131,6 @@ class TextToJSON {
 
         writeJSONfiles(t2Cooc, stemInfo, outDirPathString, new File(textDirPathString))
     }
-
 
     private void writeJSONfiles(Map<Tuple2<String, String>, Double> t2Cooc, Map<String, Map<String, Integer>> stemInfo, String outFolderPath, File sourceFile) {
 
