@@ -65,22 +65,6 @@ class TextToJSON {
                break
        }
 
-//        if (maxL > 0) {
-//            maxLinks = maxL
-//          //  maxNetworkLinks = maxL
-//
-//            if(maxL > 220){
-//                highFrequencyWordsSingleFile = 40
-//                highFrequencyWordsDir = 160
-//                maxNetworkLinks = 80
-//            } else
-//            {
-//                highFrequencyWordsSingleFile = 20
-//                highFrequencyWordsDir = 80
-//                maxNetworkLinks = 40
-//            }
-//        }
-
         int fileCount = 0
         textFileRoot.eachFile { File f ->
 

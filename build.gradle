@@ -33,7 +33,7 @@ mainClassName = 'boa.SwingMainRecurse'
 jar {
     zip64 = true
     //dependsOn 'test'
-    archiveName = "boa.jar"
+    archiveName = "boaV2.jar"
     from {
         configurations.runtime.collect {
             it.isDirectory() ? it : zipTree(it)

@@ -182,7 +182,7 @@ class SwingMainRecurse {
 
 
                                             if (sourceTextFolder == null || !sourceTextFolder.isDirectory()) {
-                                                JOptionPane.showMessageDialog(null, "Must select text folder for multi option.");
+                                                JOptionPane.showMessageDialog(null, "Must select text folder");
                                             } else if (outFolderJSON.listFiles()) {
                                                 //(outFolderJSON.exists() && outFolderJSON.isDirectory() && (outFolderJSON.listFiles() as List).isEmpty()) {
                                                 JOptionPane.showMessageDialog(null, "Output folder must be empty");
@@ -194,9 +194,9 @@ class SwingMainRecurse {
                                                 doOutside {
                                                     final Date startRun = new Date()
                                                     TextToJSON ttj = new TextToJSON()
-                                                    final int maxL = numberOfLinksSlider.value
-                                                    println "maxL $maxL"
-                                                    final int fileCount = ttj.recurseMulti(sourceTextFolder, outFolderJSON, cbSummarise.isSelected(), cbRecurse.isSelected(), maxL)
+                                                    final int maxLinks = numberOfLinksSlider.value
+                                                    println "maxLinks $maxLinks"
+                                                    final int fileCount = ttj.recurseMulti(sourceTextFolder, outFolderJSON, cbSummarise.isSelected(), cbRecurse.isSelected(), maxLinks)
                                                     final Date endRun = new Date()
                                                     TimeDuration duration = TimeCategory.minus(endRun, startRun)
                                                     println "Duration: $duration"
