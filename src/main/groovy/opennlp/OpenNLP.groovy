@@ -24,6 +24,7 @@ class OpenNLP {
 
         def nlp = new OpenNLP()
         nlp.person()
+        nlp.testTwoWordTokens()
 
         //  assertThat(tokens).contains(
         //         "Baeldung", "is", "a", "Spring", "Resource", ".");
@@ -48,5 +49,31 @@ class OpenNLP {
 
     }
 
+    void testTwoWordTokens(){
+        String s = 'the only way united nations michael jordan president obama ringo starr'
+        List<String> words = s.replaceAll(/\W/, ' ').toLowerCase().tokenize().findAll {
+            it.size() > 1 && it.charAt(0).isLetter() //&& it.charAt(1).isLetter()
+        }
+
+        println "words $words"
+
+        def words2 = words.join(',')
+        println " words2 $words2"
+
+        List <String> l = ['united,nations', 'ringo,starr']
+//def l2 = l.collect{String pair ->
+        l.each{String pair ->
+            def p2 = pair.replace(',', ' ')
+            words2= words2.replaceAll(pair, p2)
+            return words2
+        }
+
+        println "l $l"
+        println "words2 $words2"
+
+        def l7 = words2.split(',')
+        println "l7 $l7"
+
+    }
 }
 
