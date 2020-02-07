@@ -29,6 +29,7 @@ class OpenNLP {
         //  assertThat(tokens).contains(
         //         "Baeldung", "is", "a", "Spring", "Resource", ".");
         //https://www.baeldung.com/apache-open-nlp
+        //https://www.tutorialspoint.com/opennlp/opennlp_named_entity_recognition.htm
     }
 
     void person(){
@@ -46,6 +47,16 @@ class OpenNLP {
         List<Span> spans = Arrays.asList(nameFinderME.find(tokens));
 
         println "spans $spans"
+
+        Span f = spans.first()
+        println "f $f " + tokens[f.getStart()]
+
+        spans.each{sp->
+            println " sp $sp  " + tokens[sp.getStart()]
+            def ff = tokens[sp.getStart()..sp.getEnd()-1]
+            println "ff $ff"
+
+        }
 
     }
 
