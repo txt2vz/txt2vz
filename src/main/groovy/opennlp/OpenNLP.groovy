@@ -23,7 +23,7 @@ class OpenNLP {
         println "$tokens"
 
         def nlp = new OpenNLP()
-        nlp.person()
+      //  nlp.person()
         nlp.testTwoWordTokens()
 
         //  assertThat(tokens).contains(

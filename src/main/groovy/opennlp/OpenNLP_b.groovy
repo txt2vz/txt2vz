@@ -3,13 +3,12 @@ package opennlp
 import opennlp.tools.namefind.NameFinderME
 import opennlp.tools.namefind.TokenNameFinderModel
 import opennlp.tools.tokenize.SimpleTokenizer
-import opennlp.tools.tokenize.TokenizerME
-import opennlp.tools.tokenize.TokenizerModel
 import opennlp.tools.util.Span
 import processText.StopSet
 
 class OpenNLP_b {
     SimpleTokenizer tokenizer = SimpleTokenizer.INSTANCE;
+    File nerMapFile = new File('ner.txt')
 
     static void main(String[] args) {
 
@@ -86,38 +85,46 @@ class OpenNLP_b {
         println "neMapSmall size ${neMapSmall.size()}"
         println "neMapSmall $neMapSmall"
         def str = neMapSmall.inspect()
-        File nerMap  = new File('ner.txt')
-        nerMap.write(str)
+
+        nerMapFile.write(str)
 
     }
 
     void testTwoWordTokens() {
-        String s = 'the only way united nations michael opec jordan president obama ringo starr'
+        String s = 'the only way united nations michael opec jordan president obama ringo starr White Russians'
 //        List<String> words = s.replaceAll(/\W/, ' ').toLowerCase().tokenize().findAll {
 //            it.size() > 1 && it.charAt(0).isLetter() //&& it.charAt(1).isLetter()
 //        }
+       // File nerMap  = new File('ner.txt')
+        Map<String, Integer> nerMap = Eval.me(nerMapFile.text)
+        List<String> nerWordList = nerMap.keySet() as List <String>
 
+        println "nerMap $nerMap"
+        println "nerWordList $nerWordList"
         String[] words = tokenizer.tokenize(s)
         println "words $words"
 
-        def words2 = words.join(',')
-        println " words2 $words2"
+        def wordsWithComma = words.join(',')
+        println " wordsWithComma:  $wordsWithComma"
 
-        List<String> l = ['united,nations', 'ringo,starr']
+     //   List<String> l = ['united,nations', 'ringo,starr']
 //def l2 = l.collect{String pair ->
-        l.each { String pair ->
-            def p2 = pair.replace(',', ' ')
-            words2 = words2.replaceAll(pair, p2)
-            return words2
+      //  l.each { String pair ->
+        nerWordList.each { String ner ->
+
+            def nerWithComma = ner.replace(' ', ',')
+            println "ner $ner nerWithComma $nerWithComma"
+            wordsWithComma = wordsWithComma.replaceAll(nerWithComma, ner)
+          //  return wordsWithComma
         }
 
-        println "l $l"
-        println "words2 $words2"
+//        println "l $l"
+        println "wordsWithComma $wordsWithComma"
 
-       // def wordsReduced = words2.replaceAll()
+       // def wordsReduced = wordsWithComma.replaceAll()
 
-    //    List <String> l7 = words2.replaceAll(/\W/, ' ').tokenize(',')
-        List <String> l7 = words2.tokenize(',')
+    //    List <String> l7 = wordsWithComma.replaceAll(/\W/, ' ').tokenize(',')
+        List <String> l7 = wordsWithComma.tokenize(',')
         println "l7 $l7"
 
         def wordsNoStop = l7.minus(StopSet.stopSet)
