@@ -4,6 +4,15 @@ import spock.lang.Specification
 
 class WordPairsExtractorTest extends Specification
 {
+    def "nlp 1 "(){
+
+        when:
+        WordPairsExtractor wpe = new WordPairsExtractor()   //(0.5, 100, 200])
+        String s = 'once United Nations george OSS today'
+
+    }
+
+
     def "tuple2 freq test "() {
 
         def wrdMap = [:]

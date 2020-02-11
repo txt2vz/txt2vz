@@ -37,10 +37,11 @@ class OpenNLP {
         SimpleTokenizer tokenizer = SimpleTokenizer.INSTANCE;
         String[] tokens = tokenizer
                 .tokenize("John Lennon is 26 years old. His best friend's "
-                        + "name is Leonard. He has a sister named Penny Smith. George Harrison is a beatle");
+                        + "name is Leonard. He has a sister named Penny Smith. George Harrison united nations is OPEC a Mary Anne Hobbes beatle");
 
         InputStream inputStreamNameFinder = getClass()
-                .getResourceAsStream("/models/en-ner-person.bin");
+       //         .getResourceAsStream("/models/en-ner-person.bin");
+        .getResourceAsStream("/models/en-ner-organization.bin");
         TokenNameFinderModel model = new TokenNameFinderModel(
                 inputStreamNameFinder);
         NameFinderME nameFinderME = new NameFinderME(model);
@@ -55,13 +56,14 @@ class OpenNLP {
             println " sp $sp  " + tokens[sp.getStart()]
             def ff = tokens[sp.getStart()..sp.getEnd()-1]
             println "ff $ff"
+            println ff.join(' ')
 
         }
 
     }
 
     void testTwoWordTokens(){
-        String s = 'the only way united nations michael jordan president obama ringo starr'
+        String s = 'the only way united nations michael opec jordan president obama ringo starr'
         List<String> words = s.replaceAll(/\W/, ' ').toLowerCase().tokenize().findAll {
             it.size() > 1 && it.charAt(0).isLetter() //&& it.charAt(1).isLetter()
         }

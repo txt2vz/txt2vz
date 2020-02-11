@@ -12,6 +12,7 @@ class StopSet {
     ];
 
     final static List<String> stopSet = [
+            "dear",
             "ich", "der", "die", "das",
             "title", "a", "it", "of", "mrs", "mr", "miss",
             //"left", "right", "missing",  //holocaust files
