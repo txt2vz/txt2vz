@@ -10,6 +10,14 @@ class OpenNLP_b {
     SimpleTokenizer tokenizer = SimpleTokenizer.INSTANCE;
     File nerMapFile = new File('ner.txt')
 
+
+    File f =
+            //       new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\secrecy10\ev590doc10908.txt/)
+            //     new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\coffee10\0000402/)
+            //  new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\test.txt/)
+        //    new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\exp\ev592doc10962.txt/)
+    new File(/boaData\text\exp\ev592doc10962.txt/)
+
     static void main(String[] args) {
 
         def nlp = new OpenNLP_b()
@@ -23,11 +31,6 @@ class OpenNLP_b {
     void person() {
 
 
-        File f =
-         //       new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\secrecy10\ev590doc10908.txt/)
-           //     new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\coffee10\0000402/)
-     //  new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\test.txt/)
-        new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\exp\ev592doc10962.txt/)
 
         List<String> words = f.text.replaceAll("[^a-zA-Z ]", "").tokenize().findAll {
 
@@ -91,7 +94,9 @@ class OpenNLP_b {
     }
 
     void testTwoWordTokens() {
-        String s = 'the only way united nations michael opec jordan president obama ringo starr White Russians'
+
+        String s = f.text
+     //        String s = 'the Only way united nations michael opec jordan president obama ringo starr White Russians at Jesus College Cambridge for students'
 //        List<String> words = s.replaceAll(/\W/, ' ').toLowerCase().tokenize().findAll {
 //            it.size() > 1 && it.charAt(0).isLetter() //&& it.charAt(1).isLetter()
 //        }
@@ -104,7 +109,7 @@ class OpenNLP_b {
         String[] words = tokenizer.tokenize(s)
         println "words $words"
 
-        def wordsWithComma = words.join(',')
+        def wordsWithComma = words.join(',').toLowerCase()
         println " wordsWithComma:  $wordsWithComma"
 
      //   List<String> l = ['united,nations', 'ringo,starr']
@@ -112,8 +117,8 @@ class OpenNLP_b {
       //  l.each { String pair ->
         nerWordList.each { String ner ->
 
-            def nerWithComma = ner.replace(' ', ',')
-            println "ner $ner nerWithComma $nerWithComma"
+            def nerWithComma = ner.replace(' ', ',').toLowerCase()
+           // println "ner $ner nerWithComma $nerWithComma"
             wordsWithComma = wordsWithComma.replaceAll(nerWithComma, ner)
           //  return wordsWithComma
         }
@@ -127,7 +132,10 @@ class OpenNLP_b {
         List <String> l7 = wordsWithComma.tokenize(',')
         println "l7 $l7"
 
-        def wordsNoStop = l7.minus(StopSet.stopSet)
+        def wordsNoStop = l7.minus(StopSet.stopSet).findAll{w ->
+            w.size()>2  && w.charAt(0).isLetter()
+
+        }
         println "worsNoStop $wordsNoStop"
 
     }
