@@ -21,14 +21,14 @@ class OpenNLP_b {
     static void main(String[] args) {
 
         def nlp = new OpenNLP_b()
-     //   nlp.person()
+     //   nlp.opennlpNER()
            nlp.testTwoWordTokens()
 
         //https://www.baeldung.com/apache-open-nlp
         //https://www.tutorialspoint.com/opennlp/opennlp_named_entity_recognition.htm
     }
 
-    void person() {
+    void opennlpNER() {
 
 
 
@@ -65,7 +65,7 @@ class OpenNLP_b {
             List neList = tokens[sp.getStart()..sp.getEnd() - 1]
             println "FFogzn $neList "
 
-            if (neList.size() in [2,3,4] ) {
+            if (neList.size() in [3,4] ) {
 
                // println "neList $neList " + neList.join(' ') + " size " + neList.size()
                 String ne = neList.join(' ')
@@ -107,10 +107,10 @@ class OpenNLP_b {
         println "nerMap $nerMap"
         println "nerWordList $nerWordList"
         String[] words = tokenizer.tokenize(s)
-        println "words $words"
+       // println "words $words"
 
         def wordsWithComma = words.join(',').toLowerCase()
-        println " wordsWithComma:  $wordsWithComma"
+     //   println " wordsWithComma:  $wordsWithComma"
 
      //   List<String> l = ['united,nations', 'ringo,starr']
 //def l2 = l.collect{String pair ->
@@ -124,13 +124,13 @@ class OpenNLP_b {
         }
 
 //        println "l $l"
-        println "wordsWithComma $wordsWithComma"
+     //   println "wordsWithComma $wordsWithComma"
 
        // def wordsReduced = wordsWithComma.replaceAll()
 
     //    List <String> l7 = wordsWithComma.replaceAll(/\W/, ' ').tokenize(',')
         List <String> l7 = wordsWithComma.tokenize(',')
-        println "l7 $l7"
+      //  println "l7 $l7"
 
         def wordsNoStop = l7.minus(StopSet.stopSet).findAll{w ->
             w.size()>2  && w.charAt(0).isLetter()
