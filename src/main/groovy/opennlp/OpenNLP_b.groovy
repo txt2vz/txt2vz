@@ -10,67 +10,58 @@ class OpenNLP_b {
     SimpleTokenizer tokenizer = SimpleTokenizer.INSTANCE;
     File nerMapFile = new File('ner.txt')
 
-
-    File f =
-            //       new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\secrecy10\ev590doc10908.txt/)
-            //     new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\coffee10\0000402/)
-            //  new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\test.txt/)
-        //    new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\exp\ev592doc10962.txt/)
-    new File(/boaData\text\exp\ev592doc10962.txt/)
-
     static void main(String[] args) {
 
+        File f =
+                //       new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\secrecy10\ev590doc10908.txt/)
+                //     new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\coffee10\0000402/)
+                new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\test.txt/)
+        //    new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\exp\ev592doc10962.txt/)
+        // new File(/boaData\text\exp\ev592doc10962.txt/)
+
         def nlp = new OpenNLP_b()
-     //   nlp.opennlpNER()
-           nlp.testTwoWordTokens()
+        nlp.generateNER(f.text)
+        nlp.tokenizeWithNE(f.text)
 
         //https://www.baeldung.com/apache-open-nlp
         //https://www.tutorialspoint.com/opennlp/opennlp_named_entity_recognition.htm
     }
 
-    void opennlpNER() {
+
+    void generateNER(String s) {
 
 
+//        List<String> words = s.replaceAll("[^a-zA-Z ]", "").tokenize().findAll {
+//
+//            it.size() > 1 && it.charAt(0).isLetter()
+//            //&& !(it.toLowerCase() in StopSet.stopSet)  //&& it.charAt(1).isLetter()
+//        }
+//        println "words $words"
+//        println words.join(' ')
 
-        List<String> words = f.text.replaceAll("[^a-zA-Z ]", "").tokenize().findAll {
-
-            it.size() > 1 && it.charAt(0).isLetter() //&& !(it.toLowerCase() in StopSet.stopSet)  //&& it.charAt(1).isLetter()
-        }
-        println "words $words"
-        println words.join(' ')
-
-        String[] tokens = tokenizer.tokenize(f.text)
-
-      //  println "tokens $tokens"
-//                .tokenize("John Lennon is 26 years old. His best friend's "
-//                        + "name is Leonard. He has a sister named Penny Smith. George Harrison United Nations is OPEC a Mary Anne Hobbes beatle");
+        String[] tokens = tokenizer.tokenize(s)
 
         InputStream inputStreamNameFinder = getClass()
-     //     .getResourceAsStream("/models/en-ner-person.bin");
-     //   .getResourceAsStream("/models/en-ner-location.bin");
+        //     .getResourceAsStream("/models/en-ner-person.bin");
+        //   .getResourceAsStream("/models/en-ner-location.bin");
                 .getResourceAsStream("/models/en-ner-organization.bin");
         TokenNameFinderModel model = new TokenNameFinderModel(
                 inputStreamNameFinder);
         NameFinderME nameFinderME = new NameFinderME(model);
         List<Span> spans = Arrays.asList(nameFinderME.find(tokens));
 
-        println "spans $spans"
+      //  println "spans $spans"
 
-        //Span f = spans.first()
-        //println "f $f " + tokens[f.getStart()]
         Map neMap = [:]
 
         spans.each { sp ->
-            // println " sp $sp  " + tokens[sp.getStart()]
             List neList = tokens[sp.getStart()..sp.getEnd() - 1]
-            println "FFogzn $neList "
 
-            if (neList.size() in [3,4] ) {
+            if (neList.size() in [2, 3, 4]) {
 
-               // println "neList $neList " + neList.join(' ') + " size " + neList.size()
                 String ne = neList.join(' ')
-                println "ne $ne " +  " size " + neList.size()
-                println "neInspect " + neList.inspect()
+       //         println "ne $ne " + " size " + neList.size()
+         //       println "neInspect " + neList.inspect()
 
                 if (ne.charAt(0).isLetter()) {
                     final int n0 = neMap.get(ne) ?: 0
@@ -79,64 +70,44 @@ class OpenNLP_b {
             }
         }
 
-        println "spans $spans"
+   //     println "spans $spans"
         println "neMap $neMap"
 
-       def neMapSmall=  neMap.findAll{k, v ->
-            v>1
+        def neMapSmall = neMap.findAll { k, v ->
+            v > 1
         }
         println "neMapSmall size ${neMapSmall.size()}"
         println "neMapSmall $neMapSmall"
         def str = neMapSmall.inspect()
 
         nerMapFile.write(str)
-
     }
 
-    void testTwoWordTokens() {
+    List<String> tokenizeWithNE(String s) {
 
-        String s = f.text
-     //        String s = 'the Only way united nations michael opec jordan president obama ringo starr White Russians at Jesus College Cambridge for students'
-//        List<String> words = s.replaceAll(/\W/, ' ').toLowerCase().tokenize().findAll {
-//            it.size() > 1 && it.charAt(0).isLetter() //&& it.charAt(1).isLetter()
-//        }
-       // File nerMap  = new File('ner.txt')
         Map<String, Integer> nerMap = Eval.me(nerMapFile.text)
-        List<String> nerWordList = nerMap.keySet() as List <String>
+        List<String> nerWordList = nerMap.keySet() as List<String>
 
         println "nerMap $nerMap"
         println "nerWordList $nerWordList"
         String[] words = tokenizer.tokenize(s)
-       // println "words $words"
 
-        def wordsWithComma = words.join(',').toLowerCase()
-     //   println " wordsWithComma:  $wordsWithComma"
+        println "first 40 words ${words.take(40)}"
 
-     //   List<String> l = ['united,nations', 'ringo,starr']
-//def l2 = l.collect{String pair ->
-      //  l.each { String pair ->
+        String wordsAsStringWithComma = words.join(',').toLowerCase()
+       // println "wordswithComma $wordsAsStringWithComma"
+
         nerWordList.each { String ner ->
 
             def nerWithComma = ner.replace(' ', ',').toLowerCase()
-           // println "ner $ner nerWithComma $nerWithComma"
-            wordsWithComma = wordsWithComma.replaceAll(nerWithComma, ner)
-          //  return wordsWithComma
+            wordsAsStringWithComma = wordsAsStringWithComma.replaceAll(nerWithComma, ner)
         }
 
-//        println "l $l"
-     //   println "wordsWithComma $wordsWithComma"
-
-       // def wordsReduced = wordsWithComma.replaceAll()
-
-    //    List <String> l7 = wordsWithComma.replaceAll(/\W/, ' ').tokenize(',')
-        List <String> l7 = wordsWithComma.tokenize(',')
-      //  println "l7 $l7"
-
-        def wordsNoStop = l7.minus(StopSet.stopSet).findAll{w ->
-            w.size()>2  && w.charAt(0).isLetter()
-
+        List<String> wordsNoStop = wordsAsStringWithComma.tokenize(',').minus(StopSet.stopSet).findAll { w ->
+            w.size() > 2 && w.charAt(0).isLetter()
         }
         println "worsNoStop $wordsNoStop"
+        return wordsNoStop
 
     }
 }

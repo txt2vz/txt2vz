@@ -15,7 +15,10 @@ class TextToJSON {
     private int highFrequencyWordsDir = 80
     private int maxNetworkLinks = 40
     final static String outDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\json/
-    final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest/
+   //final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest/
+
+
+    final static String textDirPathString = /C:\Users\aceslh\lngit\txt2vz\boaData\text\single/
     //  final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest\coffee10/
 
 
@@ -25,7 +28,7 @@ class TextToJSON {
 
         final Date startRun = new Date()
         TextToJSON ttj = new TextToJSON()
-        int fc = ttj.recurseMulti(new File(textDirPathString),  new File(outDirPathString), true, true, 0)
+        int fc = ttj.recurseMulti(new File(textDirPathString),  new File(outDirPathString), false, false, 252)
         //  new TextToJSON().recurseMulti(new File(textDirPathString), new File (outDirPathString), true, true)
         //  new TextToJSON().summariseDir(new File(textDirPathString), new File (outDirPathString))
 

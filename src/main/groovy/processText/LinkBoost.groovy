@@ -29,6 +29,15 @@ class LinkBoost {
         Map<Tuple2<String, String>, Double> t2bFreq = t2cocOrig.collectEntries { k, v ->
 
             Tuple2<String, String> t2b = checkStringTuple(k)
+            int NEboost = 1
+
+            if (t2b.first.charAt(0).isUpperCase()) {
+                NEboost = NEboost + 7
+            }
+
+            if (t2b.second.charAt(0).isUpperCase()) {
+                NEboost = NEboost + 7
+            }
 
             final int frst = (Integer) wordFrequencyCountMap[t2b.first]
             final int scnd = (Integer) wordFrequencyCountMap[t2b.second]
@@ -37,7 +46,7 @@ class LinkBoost {
             final int minCount = Math.min(frst, scnd)
             assert total > 0 && minCount > 0
 
-            final double returnVal = (boostWordStemmed in [t2b.first, t2b.second]) ? Double.MAX_VALUE : v * total * minCount
+            final double returnVal = (boostWordStemmed in [t2b.first, t2b.second]) ? Double.MAX_VALUE : v * total * minCount * NEboost
 
             [(k): returnVal]
 

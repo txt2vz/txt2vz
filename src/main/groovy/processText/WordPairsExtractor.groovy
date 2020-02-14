@@ -1,24 +1,15 @@
 package processText
 
-import opennlp.tools.namefind.NameFinderME
-import opennlp.tools.namefind.TokenNameFinderModel
-import opennlp.tools.tokenize.SimpleTokenizer
-import opennlp.tools.tokenize.TokenizerME
-import opennlp.tools.tokenize.TokenizerModel
-import opennlp.tools.util.Span
-
+import opennlp.OpenNLP_b
 import groovy.io.FileType
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
-import groovy.transform.TypeCheckingMode
-
 
 @CompileStatic
 class WordPairsExtractor {
 
     private int highFreqWords = 80
     private int maxWordPairs = 200
-    private float powerValue = 0.5
+    private float powerValue = 0.999
 
     private PorterStemmer stemmer = new PorterStemmer()
 
@@ -83,28 +74,18 @@ class WordPairsExtractor {
     }
 
     private void analyseDocument(String s, boolean useNER = false) {
+        List<String> words
+        useNER = true
 
         if (useNER) {
+            OpenNLP_b onlpb = new OpenNLP_b()
+            onlpb.generateNER(s)
+            words = onlpb.tokenizeWithNE(s)
+        } else {
 
-            List<String> words = s.replaceAll("[^a-zA-Z ]", "").tokenize().findAll {
-
-                it.size() > 1 && it.charAt(0).isLetter() && !(it.toLowerCase() in StopSet.stopSet)  //&& it.charAt(1).isLetter()
+            words = s.replaceAll(/\W/, ' ').toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
+                it.size() > 1 && it.charAt(0).isLetter() //&& it.charAt(1).isLetter()
             }
-            SimpleTokenizer tokenizer = SimpleTokenizer.INSTANCE
-            String[] tokens = tokenizer.tokenize(words.join(' '))
-            InputStream inputStreamNameFinder = getClass()
-            //  .getResourceAsStream("/models/en-ner-person.bin");
-                    .getResourceAsStream("/models/en-ner-organization.bin");
-            TokenNameFinderModel model = new TokenNameFinderModel(
-                    inputStreamNameFinder);
-            NameFinderME nameFinderME = new NameFinderME(model);
-            List<Span> spans = Arrays.asList(nameFinderME.find(tokens));
-
-        }
-
-
-        List<String> words = s.replaceAll(/\W/, ' ').toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
-            it.size() > 1 && it.charAt(0).isLetter() //&& it.charAt(1).isLetter()
         }
 
         println "Words size: " + words.size() + " Unique words: " + words.unique(false).size()
@@ -132,7 +113,8 @@ class WordPairsExtractor {
         for (int wordPosition = 0; wordPosition < words.size(); wordPosition++) {
 
             String word = words[wordPosition]
-            String stemmedWord = stemmer.stem(word)
+
+            String stemmedWord = (word.charAt(0).isUpperCase()) ? word : stemmer.stem(word)
             stemmedWordPositionsMap[stemmedWord] = stemmedWordPositionsMap.get(stemmedWord, []) << wordPosition
 
             Map<String, Integer> wordForms = stemInfo.get((stemmedWord), [(word): 0])
