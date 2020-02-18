@@ -9,12 +9,13 @@ import processText.WordPairsToJSON
 
 class TextToJSON {
 
-    final static float powerValue = 0.5f
+    float powerValue = 0.5f
     private int maxLinks = 200
     private int highFrequencyWordsSingleFile = 20
     private int highFrequencyWordsDir = 80
     private int maxNetworkLinks = 40
     final static String outDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\json/
+    boolean useNER = true
    //final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest/
 
 
@@ -27,8 +28,8 @@ class TextToJSON {
     static void main(String[] args) {
 
         final Date startRun = new Date()
-        TextToJSON ttj = new TextToJSON()
-        int fc = ttj.recurseMulti(new File(textDirPathString),  new File(outDirPathString), false, false, 252)
+        TextToJSON ttj = new TextToJSON(270, true)
+        int fc = ttj.recurseMulti(new File(textDirPathString),  new File(outDirPathString), false, false)
         //  new TextToJSON().recurseMulti(new File(textDirPathString), new File (outDirPathString), true, true)
         //  new TextToJSON().summariseDir(new File(textDirPathString), new File (outDirPathString))
 
@@ -37,36 +38,40 @@ class TextToJSON {
         println "Duration: $duration file count $fc"
     }
 
-    int recurseMulti(File textFileRoot, File outFileForJSON, boolean summarise = true, boolean recurse = true, int maxL = 0) {
-       if (maxL >0) {
-           maxLinks = maxL
-       }
+    TextToJSON(int maxL, boolean useNER) {
+      this.useNER = useNER
 
-       switch (maxL){
-           case 0..150:
-               highFrequencyWordsSingleFile = 10
-               highFrequencyWordsDir = 40
-               maxNetworkLinks = 20
-               break
+        switch (maxL){
+            case 0..150:
+                highFrequencyWordsSingleFile = 10
+                highFrequencyWordsDir = 40
+                maxNetworkLinks = 20
+                break
 
-           case 150..250:
-               highFrequencyWordsSingleFile = 20
-               highFrequencyWordsDir = 80
-               maxNetworkLinks = 40
-               break
+            case 150..250:
+                highFrequencyWordsSingleFile = 20
+                highFrequencyWordsDir = 80
+                maxNetworkLinks = 40
+                break
 
-           case 250..450:
-               highFrequencyWordsSingleFile = 40
-               highFrequencyWordsDir = 160
-               maxNetworkLinks = 80
-               break
+            case 250..450:
+                //     highFrequencyWordsSingleFile = 40
+                //    highFrequencyWordsDir = 160
+                //  maxNetworkLinks = 80
+                highFrequencyWordsSingleFile = 70
+                highFrequencyWordsDir = 140
+                maxNetworkLinks = 120
+                break
 
-           default:
-               highFrequencyWordsSingleFile = 20
-               highFrequencyWordsDir = 80
-               maxNetworkLinks = 40
-               break
-       }
+            default:
+                highFrequencyWordsSingleFile = 20
+                highFrequencyWordsDir = 80
+                maxNetworkLinks = 40
+                break
+        }
+    }
+    int recurseMulti(File textFileRoot, File outFileForJSON, boolean summarise = true, boolean recurse = true) {
+
 
         int fileCount = 0
         textFileRoot.eachFile { File f ->
@@ -74,7 +79,7 @@ class TextToJSON {
             if (f.isDirectory()) {
 
                 if (summarise) {
-                    wordPairData = getWordPairDataFromText(f)
+                    wordPairData = getWordPairDataFromText(f, useNER)
                     writeJSONfiles(wordPairData.first, wordPairData.second, outFileForJSON.toString(), f)
                 }
 
@@ -147,10 +152,10 @@ class TextToJSON {
         Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wpData
 
         if (sourceTextFile.isDirectory()) {
-            wpe = new WordPairsExtractor(powerValue, maxLinks, highFrequencyWordsDir)
+            wpe = new WordPairsExtractor(powerValue, maxLinks, highFrequencyWordsDir, useNER)
             wpData = wpe.processAndMergeDirectory(sourceTextFile)
         } else if (sourceTextFile.isFile()) {
-            wpe = new WordPairsExtractor(powerValue, maxLinks, highFrequencyWordsSingleFile)
+            wpe = new WordPairsExtractor(powerValue, maxLinks, highFrequencyWordsSingleFile, useNER)
             wpData = wpe.processText(sourceTextFile)
         }
         return wpData

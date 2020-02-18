@@ -1,6 +1,6 @@
 package processText
 
-import opennlp.OpenNLP_b
+import opennlp.NER
 import groovy.io.FileType
 import groovy.transform.CompileStatic
 
@@ -10,16 +10,18 @@ class WordPairsExtractor {
     private int highFreqWords = 80
     private int maxWordPairs = 200
     private float powerValue = 0.999
+    boolean useNER = true;
 
     private PorterStemmer stemmer = new PorterStemmer()
 
     private Map<String, Map<String, Integer>> stemInfo = [:]
     private Map<Tuple2<String, String>, Double> tuple2CoocMap = [:]
 
-    WordPairsExtractor(float powerIn, int maxL, int hfqWords) {
+    WordPairsExtractor(float powerIn, int maxL, int hfqWords, boolean useNER) {
         this.powerValue = powerIn
         this.maxWordPairs = maxL
         this.highFreqWords = hfqWords
+        this.useNER = useNER
     }
 
     WordPairsExtractor() {
@@ -29,7 +31,7 @@ class WordPairsExtractor {
 
         println "file is $f size : " + f.size()
 
-        analyseDocument(f.text)
+        analyseTextString(f.text)
 
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
         Map<Tuple2<String, String>, Double> t2CoocLinkBoost = LinkBoost.linkBoost(t2Cooc).asImmutable()
@@ -38,7 +40,7 @@ class WordPairsExtractor {
     }
 
     Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> processText(String s, String boostWord = '~') {
-        analyseDocument(s)
+        analyseTextString(s)
 
         Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
 
@@ -57,7 +59,7 @@ class WordPairsExtractor {
         int fileCount = 0
         f.eachFileRecurse(FileType.FILES) { file ->
             println "Analysiing file $fileCount: " + file.getAbsoluteFile()
-            analyseDocument(file.text)
+            analyseTextString(file.text)
             fileCount++
         }
         println "Total fileCount: $fileCount"
@@ -73,13 +75,13 @@ class WordPairsExtractor {
         return new Tuple2(t2Cooc, stemInfo)
     }
 
-    private void analyseDocument(String s, boolean useNER = false) {
+    private void analyseTextString(String s) {
         List<String> words
-        useNER = true
+      //  useNER = true
 
         if (useNER) {
-            OpenNLP_b onlpb = new OpenNLP_b()
-            onlpb.generateNER(s)
+            NER onlpb = new NER()
+            onlpb.generateNER(s, NER.NERModel.ORGANIZATION.path)   //NER.organizationModel)
             words = onlpb.tokenizeWithNE(s)
         } else {
 
@@ -138,8 +140,10 @@ class WordPairsExtractor {
                 String stemmedWord0 = stemmedWords[i]
                 String stemmedWord1 = stemmedWords[j]
                 Tuple2<String, String> wordPair = new Tuple2(stemmedWord0, stemmedWord1)
+                final int multiplier0 = (stemmedWord0.charAt(0).isUpperCase()) ? 28 : 1
+                final int multiplier1 = (stemmedWord1.charAt(0).isUpperCase()) ? 28 : 1
 
-                final double coocDocValue = getCooc(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[])
+                final double coocDocValue = getCooc(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[]) * (multiplier0 * multiplier1)
 
                 if (coocDocValue > 0) {
                     double coocTotalValue = tuple2CoocMap[(wordPair)] ?: 0
@@ -152,7 +156,7 @@ class WordPairsExtractor {
     }
 
     private double getCooc(int[] w0Positions, int[] w1Positions) {
-        final int MAX_DISTANCE = 10;
+        final int MAX_DISTANCE = 30;
         double coocValue = 0
 
         for (int w0pos : w0Positions) {

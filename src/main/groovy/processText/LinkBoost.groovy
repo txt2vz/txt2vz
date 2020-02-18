@@ -32,11 +32,11 @@ class LinkBoost {
             int NEboost = 1
 
             if (t2b.first.charAt(0).isUpperCase()) {
-                NEboost = NEboost + 7
+                NEboost = NEboost + 2
             }
 
             if (t2b.second.charAt(0).isUpperCase()) {
-                NEboost = NEboost + 7
+                NEboost = NEboost + 2
             }
 
             final int frst = (Integer) wordFrequencyCountMap[t2b.first]

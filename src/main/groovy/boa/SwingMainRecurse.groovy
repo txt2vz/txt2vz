@@ -20,6 +20,7 @@ class SwingMainRecurse {
         File sourceTextFolder
         JCheckBox cbRecurse
         JCheckBox cbSummarise
+        JCheckBox cbNER
 
         JSlider numberOfLinksSlider
 
@@ -32,7 +33,7 @@ class SwingMainRecurse {
         SwingBuilder swingBuilder = new SwingBuilder()
         swingBuilder.edt {  // edt method makes sure UI is build on Event Dispatch Thread.
             lookAndFeel 'nimbus'  // Simple change in look and feel.
-            frame(title: 'BOA: Generate JSON from text', size: [800, 400],
+            frame(title: 'BOA: Generate JSON from text', size: [1000, 400],
                     show: true, locationRelativeTo: null,
                     defaultCloseOperation: EXIT_ON_CLOSE) {
 
@@ -122,10 +123,17 @@ class SwingMainRecurse {
 
                                 cbRecurse = checkBox(id: "cb1", text: "Recurse")
                                 cbRecurse.setSelected(true)
+
+
                             }
                             td {
                                 cbSummarise = checkBox(id: "cb2", text: "Summarise")
                                 cbSummarise.setSelected(true)
+
+                            }
+                            td {
+                                  cbNER = checkBox(id: "ner", text: "NER")
+                                  cbNER.setSelected(true)
 
                             }
                         }
@@ -138,10 +146,14 @@ class SwingMainRecurse {
 
                                 label '<html>Create a JSON file for entire sub-folder</html> '
                             }
+                            td {
+
+                                label '<html>Use Named Entity Recognition (slower)</html> '
+                            }
                         }
                         tr {
-                            td(colspan: 2, align: 'center') {
-                                label(text: '**********************************************************************************************************************************', foreground: Color.BLUE)
+                            td(colspan: 3, align: 'center') {
+                                label(text: '**************************************************************************************************************************************************************', foreground: Color.BLUE)
                             }
                         }
                         tr {
@@ -166,8 +178,8 @@ class SwingMainRecurse {
                             }
                         }
                         tr {
-                            td(colspan: 2, align: 'center') {
-                                label(text: '**********************************************************************************************************************************', foreground: Color.BLUE)
+                            td(colspan: 3, align: 'center') {
+                                label(text: '**************************************************************************************************************************************************************', foreground: Color.BLUE)
                             }
                         }
 
@@ -193,10 +205,11 @@ class SwingMainRecurse {
                                                 processingLabel.setVisible(true)
                                                 doOutside {
                                                     final Date startRun = new Date()
-                                                    TextToJSON ttj = new TextToJSON()
+
                                                     final int maxLinks = numberOfLinksSlider.value
+                                                    TextToJSON ttj = new TextToJSON(maxLinks, cbNER.isSelected())
                                                     println "maxLinks $maxLinks"
-                                                    final int fileCount = ttj.recurseMulti(sourceTextFolder, outFolderJSON, cbSummarise.isSelected(), cbRecurse.isSelected(), maxLinks)
+                                                    final int fileCount = ttj.recurseMulti(sourceTextFolder, outFolderJSON, cbSummarise.isSelected(), cbRecurse.isSelected())
                                                     final Date endRun = new Date()
                                                     TimeDuration duration = TimeCategory.minus(endRun, startRun)
                                                     println "Duration: $duration"
@@ -208,11 +221,10 @@ class SwingMainRecurse {
                             }
                         }
                         tr {
-                            td(colspan: 2, align: 'center') {
-                                label(text: '**********************************************************************************************************************************', foreground: Color.BLUE)
+                            td(colspan: 3, align: 'center') {
+                                label(text: '**************************************************************************************************************************************************************', foreground: Color.BLUE)
                             }
                         }
-
                     }
                 }
             }
