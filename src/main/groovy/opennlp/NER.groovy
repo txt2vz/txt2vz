@@ -9,9 +9,9 @@ import processText.StopSet
 class NER {
 
     enum NERModel {
+        LOCATION('/models/en-ner-location.bin'),
         PERSON('/models/en-ner-person.bin'),
-        ORGANIZATION('/models/en-ner-organization.bin'),
-        LOCATION('/models/en-ner-location.bin')
+        ORGANIZATION('/models/en-ner-organization.bin')
 
         String path
         NERModel(String p){
@@ -21,29 +21,42 @@ class NER {
 
     SimpleTokenizer tokenizer = SimpleTokenizer.INSTANCE;
     File nerMapFile = new File('ner.txt')
-    Map<String, Integer> neMap = [:]
+
 
     static void main(String[] args) {
 
-        File f =
+        File f =  new File(/D:\boa\test.txt/)
                 //       new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\secrecy10\ev590doc10908.txt/)
                 //     new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\coffee10\0000402/)
-                     new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\test.txt/)
+            //         new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\test.txt/)
                 //    new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\exp\ev592doc10962.txt/)
              //    new File(/boaData\text\exp\ev592doc10962.txt/)
            //     new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\single\ev599doc11102.txt/)
-
-        NERModel nm = NERModel.ORGANIZATION
         NER ner = new NER()
-        ner.generateNER(f.text, nm.path)
+        ner.generateNERforAllModels(f.text)
+
+
         ner.tokenizeWithNE(f.text)
 
         //https://www.baeldung.com/apache-open-nlp
         //https://www.tutorialspoint.com/opennlp/opennlp_named_entity_recognition.htm
     }
 
+    void generateNERforAllModels(String fileText){
+        Map neAll = [:]
+        NERModel.each { model ->
+            //NERModel nm = NERModel.ORGANIZATION
 
-    void generateNER(String documentText, String modelPath) {
+            neAll << generateNERforModel(fileText, model.path)
+            println "model $model"
+            println "neAll $neAll"
+        }
+           nerMapFile.write(neAll.inspect())
+    }
+
+
+    Map<String, Integer> generateNERforModel(String documentText, String modelPath) {
+        Map<String, Integer> neMap = [:]
 
         String[] tokens = tokenizer.tokenize(documentText)
 
@@ -68,13 +81,14 @@ class NER {
                     it.substring(0, 1).toUpperCase() + it.substring(1).toLowerCase()
                 }
             }
+
          //   println "neCase $neCase"
 
             if (neCase.size() < 5) {
 
                 String ne = neCase.join(' ')
 
-                if (ne.charAt(0).isLetter()) {
+                if (ne.charAt(0).isLetter() && ne.size() > 0) {
 
                     final int n0 = neMap.get(ne) ?: 0
                     neMap.put(ne, n0 + 1)
@@ -91,7 +105,8 @@ class NER {
         println "neMapSmall $neMapSmall"
         String str = neMapSmall.inspect()
 
-        nerMapFile.write(str)
+     //   nerMapFile.write(str)
+        return neMap
     }
 
     List<String> tokenizeWithNE(String s) {

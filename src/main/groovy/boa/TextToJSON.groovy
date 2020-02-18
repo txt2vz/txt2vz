@@ -19,7 +19,9 @@ class TextToJSON {
    //final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest/
 
 
-    final static String textDirPathString = /C:\Users\aceslh\lngit\txt2vz\boaData\text\single/
+    final static String textDirPathString =
+            /D:\boa\TestData\test/
+          //  ///C:\Users\aceslh\lngit\txt2vz\boaData\text\single/
     //  final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest\coffee10/
 
 

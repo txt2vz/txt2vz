@@ -80,9 +80,10 @@ class WordPairsExtractor {
       //  useNER = true
 
         if (useNER) {
-            NER onlpb = new NER()
-            onlpb.generateNER(s, NER.NERModel.ORGANIZATION.path)   //NER.organizationModel)
-            words = onlpb.tokenizeWithNE(s)
+            NER ner = new NER()
+          //  onlpb.generateNERforModel(s, NER.NERModel.ORGANIZATION.path)   //NER.organizationModel)
+            ner.generateNERforAllModels(s)
+            words = ner.tokenizeWithNE(s)
         } else {
 
             words = s.replaceAll(/\W/, ' ').toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
