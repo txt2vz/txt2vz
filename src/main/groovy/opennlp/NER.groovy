@@ -89,15 +89,17 @@ class NER {
 
             println "neCase $neCase"
 
-            if (neCase.size() < 5 &&  ! neCase.isEmpty()) {
+            if (neCase.size() < 5 && !neCase.isEmpty()) {
 
                 String ne = neCase.join(' ')
 
-                if (ne.charAt(0).isLetter() && ne.size() > 1) {
+                assert ne.charAt(0).isLetter()
+                assert ne.size() > 1
+                //  if (ne.charAt(0).isLetter() && ne.size() > 1) {
 
-                    final int n0 = neMap.get(ne) ?: 0
-                    neMap.put(ne, n0 + 1)
-                }
+                final int n0 = neMap.get(ne) ?: 0
+                neMap.put(ne, n0 + 1)
+                //}
             }
         }
 
@@ -123,18 +125,24 @@ class NER {
         println "nerWordList $nerWordList"
         String[] documentTokens = tokenizer.tokenize(s)
 
-        println "first 40 documentTokens ${documentTokens.take(40)}"
+        def doc2 = documentTokens.findResults {tok->
+            tok.charAt(0).isLetter() && tok.size() > 1 ? tok.toLowerCase() : null
+        }
 
-        String documentAsCommaSeparatedString = documentTokens.join(',').toLowerCase()
+        println "first 40 documentTokens ${doc2.take(40)}"
+
+        String documentAsCommaSeparatedString = ',' + doc2.join(',').toLowerCase()
         //  documentAsCommaSeparatedString = documentAsCommaSeparatedString.substring(0, documentAsCommaSeparatedString.length()-1)
         println "docuemtnAsCommaSeparatedString: $documentAsCommaSeparatedString"
 
         nerWordList.each { String ner ->
             def nerWithComma = ner.replace(' ', ',').toLowerCase()
 
-            documentAsCommaSeparatedString = documentAsCommaSeparatedString.replaceAll(nerWithComma + ',', ner + ',')
-            documentAsCommaSeparatedString = documentAsCommaSeparatedString.endsWith(',') ? documentAsCommaSeparatedString.substring(0, documentAsCommaSeparatedString.length() - 1) : documentAsCommaSeparatedString
+            documentAsCommaSeparatedString = documentAsCommaSeparatedString.replaceAll(',' + nerWithComma + ',', ',' + ner + ',')
         }
+
+        documentAsCommaSeparatedString = documentAsCommaSeparatedString.endsWith(',') ? documentAsCommaSeparatedString.substring(0, documentAsCommaSeparatedString.length() - 1) : documentAsCommaSeparatedString
+        documentAsCommaSeparatedString =  documentAsCommaSeparatedString.substring(1)
 
         List<String> wordsNoStop = documentAsCommaSeparatedString.tokenize(',').findAll { w ->
             w.size() > 2 && w.charAt(0).isLetter() && !StopSet.stopSet.contains(w.toLowerCase())
@@ -146,12 +154,11 @@ class NER {
     boolean isAllUpper(String str) {
         boolean isUpper = true
         for (char c : str) {
-            if (!c.isUpperCase()) {
+            if (!c.isUpperCase() && c.isLetter()) {
                 isUpper = false
             }
-            return isUpper
         }
+        return isUpper
     }
-
 }
 

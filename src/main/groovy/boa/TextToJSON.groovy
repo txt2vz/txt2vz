@@ -21,8 +21,9 @@ class TextToJSON {
 
     final static String textDirPathString =
        //     /D:\boa\TestData\test/
-            /C:\Users\aceslh\lngit\txt2vz\boaData\text\single/
+     //       /C:\Users\aceslh\lngit\txt2vz\boaData\text\single/
     //  final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest\coffee10/
+    /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\exp/
 
 
     Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wordPairData
