@@ -141,8 +141,10 @@ class WordPairsExtractor {
                 String stemmedWord0 = stemmedWords[i]
                 String stemmedWord1 = stemmedWords[j]
                 Tuple2<String, String> wordPair = new Tuple2(stemmedWord0, stemmedWord1)
-                final int multiplier0 = (stemmedWord0.charAt(0).isUpperCase()) ? 28 : 1
-                final int multiplier1 = (stemmedWord1.charAt(0).isUpperCase()) ? 28 : 1
+
+                //boos NEs
+                final int multiplier0 = (stemmedWord0.charAt(0).isUpperCase()) ? 2 : 1
+                final int multiplier1 = (stemmedWord1.charAt(0).isUpperCase()) ? 2 : 1
 
                 final double coocDocValue = getCooc(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[]) * (multiplier0 * multiplier1)
 

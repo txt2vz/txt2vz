@@ -1,5 +1,6 @@
 package opennlp
 
+import groovyjarjarantlr.StringUtils
 import opennlp.tools.namefind.NameFinderME
 import opennlp.tools.namefind.TokenNameFinderModel
 import opennlp.tools.tokenize.SimpleTokenizer
@@ -14,7 +15,8 @@ class NER {
         ORGANIZATION('/models/en-ner-organization.bin')
 
         String path
-        NERModel(String p){
+
+        NERModel(String p) {
             path = p
         }
     }
@@ -25,13 +27,13 @@ class NER {
 
     static void main(String[] args) {
 
-        File f =  new File(/D:\boa\test.txt/)
+        File f = // new File(/D:\boa\test.txt/)
                 //       new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\secrecy10\ev590doc10908.txt/)
                 //     new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\coffee10\0000402/)
-            //         new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\test.txt/)
-                //    new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\exp\ev592doc10962.txt/)
-             //    new File(/boaData\text\exp\ev592doc10962.txt/)
-           //     new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\single\ev599doc11102.txt/)
+                new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\test.txt/)
+        //    new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\exp\ev592doc10962.txt/)
+        //    new File(/boaData\text\exp\ev592doc10962.txt/)
+        //     new File(/C:\Users\aceslh\lngit\txt2vz\boaData\text\single\ev599doc11102.txt/)
         NER ner = new NER()
         ner.generateNERforAllModels(f.text)
 
@@ -42,7 +44,7 @@ class NER {
         //https://www.tutorialspoint.com/opennlp/opennlp_named_entity_recognition.htm
     }
 
-    void generateNERforAllModels(String fileText){
+    void generateNERforAllModels(String fileText) {
         Map neAll = [:]
         NERModel.each { model ->
             //NERModel nm = NERModel.ORGANIZATION
@@ -51,7 +53,7 @@ class NER {
             println "model $model"
             println "neAll $neAll"
         }
-           nerMapFile.write(neAll.inspect())
+        nerMapFile.write(neAll.inspect())
     }
 
 
@@ -61,34 +63,37 @@ class NER {
         String[] tokens = tokenizer.tokenize(documentText)
 
         InputStream inputStreamNameFinder = getClass().getResourceAsStream(modelPath)
-           //  .getResourceAsStream("/models/en-ner-person.bin");
+        //  .getResourceAsStream("/models/en-ner-person.bin");
         //   .getResourceAsStream("/models/en-ner-location.bin");
-          //      .getResourceAsStream("/models/en-ner-organization.bin");
+        //      .getResourceAsStream("/models/en-ner-organization.bin");
         TokenNameFinderModel model = new TokenNameFinderModel(inputStreamNameFinder);
         NameFinderME nameFinderME = new NameFinderME(model);
         List<Span> spans = Arrays.asList(nameFinderME.find(tokens))
 
-
         spans.each { sp ->
             List neList = tokens[sp.getStart()..sp.getEnd() - 1]
 
-            List neCase = neList.collect {
+            List neList1 = neList.findAll {
+                it.charAt(0).isLetter() && it.length() > 1
+            }
+
+            List neCase = neList1.collect {
 
                 if (isAllUpper(it)) {
                     it
-                } else
-                {
+                } else {
                     it.substring(0, 1).toUpperCase() + it.substring(1).toLowerCase()
                 }
             }
 
-         //   println "neCase $neCase"
 
-            if (neCase.size() < 5) {
+            println "neCase $neCase"
+
+            if (neCase.size() < 5 &&  ! neCase.isEmpty()) {
 
                 String ne = neCase.join(' ')
 
-                if (ne.charAt(0).isLetter() && ne.size() > 0) {
+                if (ne.charAt(0).isLetter() && ne.size() > 1) {
 
                     final int n0 = neMap.get(ne) ?: 0
                     neMap.put(ne, n0 + 1)
@@ -96,7 +101,7 @@ class NER {
             }
         }
 
-        println "neMap $neMap"
+        println " neMap  $neMap "
 
         Map<String, Integer> neMapSmall = neMap.findAll { k, v ->
             v > 2
@@ -105,7 +110,7 @@ class NER {
         println "neMapSmall $neMapSmall"
         String str = neMapSmall.inspect()
 
-     //   nerMapFile.write(str)
+        //   nerMapFile.write(str)
         return neMap
     }
 
@@ -116,21 +121,22 @@ class NER {
 
         println "nerMap $nerMap"
         println "nerWordList $nerWordList"
-        String[] words = tokenizer.tokenize(s)
+        String[] documentTokens = tokenizer.tokenize(s)
 
-        println "first 40 words ${words.take(40)}"
+        println "first 40 documentTokens ${documentTokens.take(40)}"
 
-        String wordsAsString = words.join(',').toLowerCase()
-      //  wordsAsString = wordsAsString.substring(0, wordsAsString.length()-1)
-        println "wordsasString $wordsAsString"
+        String documentAsCommaSeparatedString = documentTokens.join(',').toLowerCase()
+        //  documentAsCommaSeparatedString = documentAsCommaSeparatedString.substring(0, documentAsCommaSeparatedString.length()-1)
+        println "docuemtnAsCommaSeparatedString: $documentAsCommaSeparatedString"
 
         nerWordList.each { String ner ->
             def nerWithComma = ner.replace(' ', ',').toLowerCase()
 
-            wordsAsString = wordsAsString.replaceAll(nerWithComma +',', ner + ',')
+            documentAsCommaSeparatedString = documentAsCommaSeparatedString.replaceAll(nerWithComma + ',', ner + ',')
+            documentAsCommaSeparatedString = documentAsCommaSeparatedString.endsWith(',') ? documentAsCommaSeparatedString.substring(0, documentAsCommaSeparatedString.length() - 1) : documentAsCommaSeparatedString
         }
 
-        List<String> wordsNoStop = wordsAsString.tokenize(',').findAll { w ->
+        List<String> wordsNoStop = documentAsCommaSeparatedString.tokenize(',').findAll { w ->
             w.size() > 2 && w.charAt(0).isLetter() && !StopSet.stopSet.contains(w.toLowerCase())
         }
         println "worsNoStop $wordsNoStop"
@@ -146,5 +152,6 @@ class NER {
             return isUpper
         }
     }
+
 }
 

@@ -20,8 +20,8 @@ class TextToJSON {
 
 
     final static String textDirPathString =
-            /D:\boa\TestData\test/
-          //  ///C:\Users\aceslh\lngit\txt2vz\boaData\text\single/
+       //     /D:\boa\TestData\test/
+            /C:\Users\aceslh\lngit\txt2vz\boaData\text\single/
     //  final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest\coffee10/
 
 
@@ -72,8 +72,8 @@ class TextToJSON {
                 break
         }
     }
-    int recurseMulti(File textFileRoot, File outFileForJSON, boolean summarise = true, boolean recurse = true) {
 
+    int recurseMulti(File textFileRoot, File outFileForJSON, boolean summarise = true, boolean recurse = true) {
 
         int fileCount = 0
         textFileRoot.eachFile { File f ->
@@ -105,27 +105,27 @@ class TextToJSON {
         return fileCount
     }
 
-    void generateSingle(boolean loadFromExistingJSONfile = false) {
-
-        File wpTreeData = new File(outDirPathString + 'wpTreeData.json')
-
-        if (loadFromExistingJSONfile) {
-            def jsonSlurper = new JsonSlurper()
-            wordPairData = jsonSlurper.parse(wpTreeData)
-
-        } else {
-            wordPairData = getWordPairDataFromText(new File(textDirPathString))
-            def json = JsonOutput.toJson(wordPairData)
-
-            //store the file containing steminfo and cooc data
-            wpTreeData.write(json)
-        }
-
-        Map<Tuple2<String, String>, Double> t2Cooc = wordPairData.first
-        Map<String, Map<String, Integer>> stemInfo = wordPairData.second
-
-        writeJSONfiles(t2Cooc, stemInfo, outDirPathString, new File(textDirPathString))
-    }
+//    void generateSingle(boolean loadFromExistingJSONfile = false) {
+//
+//        File wpTreeData = new File(outDirPathString + 'wpTreeData.json')
+//
+//        if (loadFromExistingJSONfile) {
+//            def jsonSlurper = new JsonSlurper()
+//            wordPairData = jsonSlurper.parse(wpTreeData)
+//
+//        } else {
+//            wordPairData = getWordPairDataFromText(new File(textDirPathString))
+//            def json = JsonOutput.toJson(wordPairData)
+//
+//            //store the file containing steminfo and cooc data
+//            wpTreeData.write(json)
+//        }
+//
+//        Map<Tuple2<String, String>, Double> t2Cooc = wordPairData.first
+//        Map<String, Map<String, Integer>> stemInfo = wordPairData.second
+//
+//        writeJSONfiles(t2Cooc, stemInfo, outDirPathString, new File(textDirPathString))
+//    }
 
     private void writeJSONfiles(Map<Tuple2<String, String>, Double> t2Cooc, Map<String, Map<String, Integer>> stemInfo, String outFolderPath, File sourceFile) {
 
