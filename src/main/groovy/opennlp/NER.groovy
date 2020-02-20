@@ -52,17 +52,17 @@ class NER {
         for (NERModel model : NERModel.values()) {
             //NERModel nm = NERModel.ORGANIZATION
 
-            neAll << generateNERforModel(fileText, model.path)
-            println "Model $model neAll (take 20): ${neAll.take(20)}"
+            neAll << generateNERforModel(fileText, model)
+            println "neAll Map (take 20): ${neAll.take(20)}"
         }
         nerMapFile.write(neAll.inspect())
     }
 
-    Map<String, Integer> generateNERforModel(String documentText, String modelPath) {
+    Map<String, Integer> generateNERforModel(String documentText, NERModel modelEnum) {//String modelPath) {
         Map<String, Integer> neMap = [:]
 
         String[] tokens = tokenizer.tokenize(documentText)
-        InputStream inputStreamNameFinder = getClass().getResourceAsStream(modelPath)
+        InputStream inputStreamNameFinder = getClass().getResourceAsStream(modelEnum.path)
         TokenNameFinderModel model = new TokenNameFinderModel(inputStreamNameFinder);
         NameFinderME nameFinderME = new NameFinderME(model);
         List<Span> spans = Arrays.asList(nameFinderME.find(tokens))
@@ -93,7 +93,7 @@ class NER {
             }
         }
 
-        println "neMap:  $neMap "
+        println "model $modelEnum  neMap:  $neMap "
 
         Map<String, Integer> neMapSmall = neMap.findAll { k, v ->
             v > 1
@@ -114,13 +114,8 @@ class NER {
             tok.charAt(0).isLetter() && tok.size() > 1 ? tok.toLowerCase() : null
         } as List<String>
 
-       // println "first 40 documentTokens ${filteredTokensLowerCase.take(40)}"
-
         String documentAsCommaSeparatedString = ',' + filteredTokensLowerCase.join(',')
 
-     //   println "documentAsCommaSeparatedString: $documentAsCommaSeparatedString"
-
-        //  nerWordList.each { String ner ->
         for (String ner : nerWordList) {
             String nerWithCommaLowerCase = ner.replace(' ', ',').toLowerCase()
 
@@ -133,10 +128,8 @@ class NER {
         documentAsCommaSeparatedString = documentAsCommaSeparatedString.substring(1)
 
         List<String> wordsNoStop = documentAsCommaSeparatedString.tokenize(',').findAll { w ->
-            //w.size() > 2 && w.charAt(0).isLetter() &&
             !StopSet.stopSet.contains(w.toLowerCase())
         }
-       // println "worsNoStop $wordsNoStop"
         return wordsNoStop.asImmutable()
     }
 

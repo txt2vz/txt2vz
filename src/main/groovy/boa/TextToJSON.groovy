@@ -17,16 +17,16 @@ class TextToJSON {
     private int maxNetworkLinks = 40
     final static String outDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\json/
     boolean useNER = true
-   //final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest/
+    //final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest/
 
 
     final static String textDirPathString =
-       //     /D:\boa\TestData\test/
+            //     /D:\boa\TestData\test/
             /C:\Users\aceslh\lngit\txt2vz\boaData\text\single/
 
-  //  /C:\Users\aceslh\lngit\txt2vz\boaData\text\exp/
+    //  /C:\Users\aceslh\lngit\txt2vz\boaData\text\exp/
     //  final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest\coffee10/
-   // /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\exp/
+    // /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\exp/
 
 
     Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wordPairData
@@ -35,7 +35,7 @@ class TextToJSON {
 
         final Date startRun = new Date()
         TextToJSON ttj = new TextToJSON(270, true)
-        int fc = ttj.processTextDirectory(new File(textDirPathString),  new File(outDirPathString), true, true)
+        int fc = ttj.getJSONfromSourceText(new File(textDirPathString), new File(outDirPathString), true, true)
         //  new TextToJSON().recurseMulti(new File(textDirPathString), new File (outDirPathString), true, true)
         //  new TextToJSON().summariseDir(new File(textDirPathString), new File (outDirPathString))
 
@@ -45,9 +45,9 @@ class TextToJSON {
     }
 
     TextToJSON(int maxL, boolean useNER) {
-      this.useNER = useNER
+        this.useNER = useNER
 
-        switch (maxL){
+        switch (maxL) {
             case 0..150:
                 highFrequencyWordsSingleFile = 10
                 highFrequencyWordsDir = 40
@@ -61,12 +61,9 @@ class TextToJSON {
                 break
 
             case 250..450:
-                //     highFrequencyWordsSingleFile = 40
-                //    highFrequencyWordsDir = 160
-                //  maxNetworkLinks = 80
-                highFrequencyWordsSingleFile = 70
-                highFrequencyWordsDir = 140
-                maxNetworkLinks = 120
+                highFrequencyWordsSingleFile = 40
+                highFrequencyWordsDir = 160
+                maxNetworkLinks = 80
                 break
 
             default:
@@ -77,7 +74,7 @@ class TextToJSON {
         }
     }
 
-    int processTextDirectory(File file, File outputDirectoryForJSON, boolean summarise = true, boolean recurse = true) {
+    int getJSONfromSourceText(File file, File outputDirectoryForJSON, boolean summarise = true, boolean recurse = true) {
 
         int fileCount = 0
         WordPairsExtractor wpe
@@ -100,7 +97,7 @@ class TextToJSON {
                     File subDir = new File(outSubDirPath)
                     if (!subDir.exists()) {
                         subDir.mkdir()
-                        fileCount += processTextDirectory(f, subDir, summarise, recurse)
+                        fileCount += getJSONfromSourceText(f, subDir, summarise, recurse)
                     } else {
                         println "File Already Exists "
                     }

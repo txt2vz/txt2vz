@@ -1,1 +1,1 @@
-['United Kingdom':3, 'Britain':2, 'Pan':3, 'European Union':2, 'IMF':2]
+[:]

@@ -23,8 +23,8 @@ class LinkBoost {
         println "wordFrequencyCountMap: $wordFrequencyCountMap"
         println ""
 
-        final double maxCooc = t2cocOrig.max {it.value}.value
-        println "maxCooc: $maxCooc"
+     //   final double maxCooc = t2cocOrig.max {it.value}.value
+       // println "maxCooc: $maxCooc"
 
         Map<Tuple2<String, String>, Double> t2bFreq = t2cocOrig.collectEntries { k, v ->
 

@@ -21,19 +21,19 @@ class SwingMainRecurse {
         JCheckBox cbRecurse
         JCheckBox cbSummarise
         JCheckBox cbNER
-
         JSlider numberOfLinksSlider
 
         String initialPath = System.getProperty("user.dir");
         ImageIcon loading = new ImageIcon(new URL("https://raw.githubusercontent.com/txt2vz/txt2vz/master/src/main/webapp/images/ajax-loader.gif"));
 
         JLabel processingLabel = new JLabel("processing... ", loading, JLabel.CENTER);
+        processingLabel.setForeground(Color.red)
         processingLabel.setVisible(false)
 
         SwingBuilder swingBuilder = new SwingBuilder()
         swingBuilder.edt {  // edt method makes sure UI is build on Event Dispatch Thread.
             lookAndFeel 'nimbus'  // Simple change in look and feel.
-            frame(title: 'BOA: Generate JSON from text', size: [1000, 400],
+            frame(title: 'BOA: Generate JSON required for visualisation from text files', size: [1000, 400],
                     show: true, locationRelativeTo: null,
                     defaultCloseOperation: EXIT_ON_CLOSE) {
 
@@ -209,7 +209,7 @@ class SwingMainRecurse {
                                                     final int maxLinks = numberOfLinksSlider.value
                                                     TextToJSON ttj = new TextToJSON(maxLinks, cbNER.isSelected())
                                                     println "maxLinks $maxLinks"
-                                                    final int fileCount = ttj.processTextDirectory(sourceTextFolder, outFolderJSON, cbSummarise.isSelected(), cbRecurse.isSelected())
+                                                    final int fileCount = ttj.getJSONfromSourceText(sourceTextFolder, outFolderJSON, cbSummarise.isSelected(), cbRecurse.isSelected())
                                                     final Date endRun = new Date()
                                                     TimeDuration duration = TimeCategory.minus(endRun, startRun)
                                                     println "Duration: $duration"
