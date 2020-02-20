@@ -3,7 +3,6 @@ package boa
 import groovy.swing.SwingBuilder
 import groovy.time.TimeCategory
 import groovy.time.TimeDuration
-import javafx.scene.layout.BackgroundFill
 
 import javax.swing.*
 import javax.swing.border.TitledBorder
@@ -210,7 +209,7 @@ class SwingMainRecurse {
                                                     final int maxLinks = numberOfLinksSlider.value
                                                     TextToJSON ttj = new TextToJSON(maxLinks, cbNER.isSelected())
                                                     println "maxLinks $maxLinks"
-                                                    final int fileCount = ttj.recurseMulti(sourceTextFolder, outFolderJSON, cbSummarise.isSelected(), cbRecurse.isSelected())
+                                                    final int fileCount = ttj.processTextDirectory(sourceTextFolder, outFolderJSON, cbSummarise.isSelected(), cbRecurse.isSelected())
                                                     final Date endRun = new Date()
                                                     TimeDuration duration = TimeCategory.minus(endRun, startRun)
                                                     println "Duration: $duration"

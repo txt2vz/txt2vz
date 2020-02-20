@@ -27,18 +27,6 @@ class WordPairsExtractor {
     WordPairsExtractor() {
     }
 
-    Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> processText(File f) {
-
-        println "file is $f size : " + f.size()
-
-        analyseTextString(f.text)
-
-        Map<Tuple2<String, String>, Double> t2Cooc = tuple2CoocMap.sort { -it.value }.take(maxWordPairs).asImmutable()
-        Map<Tuple2<String, String>, Double> t2CoocLinkBoost = LinkBoost.linkBoost(t2Cooc).asImmutable()
-
-        return new Tuple2(t2CoocLinkBoost, stemInfo)
-    }
-
     Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> processText(String s, String boostWord = '~') {
         analyseTextString(s)
 
@@ -142,10 +130,10 @@ class WordPairsExtractor {
                 Tuple2<String, String> wordPair = new Tuple2(stemmedWord0, stemmedWord1)
 
                 //boos NEs
-                final int boostNE0 = (stemmedWord0.charAt(0).isUpperCase()) ? 4 : 1
-                final int boostNE1 = (stemmedWord1.charAt(0).isUpperCase()) ? 4 : 1
+               // final int boostNE0 = (stemmedWord0.charAt(0).isUpperCase()) ? 4 : 1
+               // final int boostNE1 = (stemmedWord1.charAt(0).isUpperCase()) ? 4 : 1
 
-                final double coocDocValue = getCooc(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[]) * (boostNE0 * boostNE1)
+                final double coocDocValue = getCooc(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[]) //* (boostNE0 * boostNE1)
 
                 if (coocDocValue > 0) {
                     double coocTotalValue = tuple2CoocMap[(wordPair)] ?: 0
