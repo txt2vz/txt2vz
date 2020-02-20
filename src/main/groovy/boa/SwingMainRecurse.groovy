@@ -3,6 +3,7 @@ package boa
 import groovy.swing.SwingBuilder
 import groovy.time.TimeCategory
 import groovy.time.TimeDuration
+import javafx.scene.layout.BackgroundFill
 
 import javax.swing.*
 import javax.swing.border.TitledBorder
@@ -45,7 +46,7 @@ class SwingMainRecurse {
                 panel(constraints: BorderLayout.CENTER,
                  //       border: compoundBorder([emptyBorder(10), titledBorder('Make selections:')])) {
                     border: compoundBorder([emptyBorder(10)])) {
-                    tableLayout {
+                    tableLayout {//(background: Color.CYAN) {
                         tr { td { label processingLabel } }
 
                         tr {
@@ -74,7 +75,7 @@ class SwingMainRecurse {
                                         })
                             }
 
-                            td {
+                            td(colspan: 2, align: 'left')  {
 
                                 textFilePathL.setText(' ' + initialPath.toString())
                                 label textFilePathL
@@ -103,7 +104,7 @@ class SwingMainRecurse {
                                             }
                                         })
                             }
-                            td {
+                            td(colspan: 2, align: 'left') {
 
                                 outFilePathL.setText(' ' + initialPath.toString())
                                 label outFilePathL
@@ -157,7 +158,7 @@ class SwingMainRecurse {
                             }
                         }
                         tr {
-                            td(colspan: 2, align: 'center') {
+                            td(colspan: 3, align: 'center') {
 
                                 // Add positions label in the slider
                                 Hashtable sliderLabels = new Hashtable()
@@ -185,7 +186,7 @@ class SwingMainRecurse {
 
                         tr {
 
-                            td(colspan: 2, align: 'center') {
+                            td(colspan: 3, align: 'center') {
 
                                 button(text: 'Generate JSON files', background: Color.ORANGE,
                                         toolTipText: 'Use text files in source folder to generate JSON files ready for visualisation',

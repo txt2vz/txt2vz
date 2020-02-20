@@ -1,6 +1,7 @@
 package opennlp
 
 import groovyjarjarantlr.StringUtils
+import jdk.nashorn.internal.ir.annotations.Immutable
 import opennlp.tools.namefind.NameFinderME
 import opennlp.tools.namefind.TokenNameFinderModel
 import opennlp.tools.tokenize.SimpleTokenizer
@@ -37,7 +38,6 @@ class NER {
         NER ner = new NER()
         ner.generateNERforAllModels(f.text)
 
-
         ner.tokenizeWithNE(f.text)
 
         //https://www.baeldung.com/apache-open-nlp
@@ -56,28 +56,21 @@ class NER {
         nerMapFile.write(neAll.inspect())
     }
 
-
     Map<String, Integer> generateNERforModel(String documentText, String modelPath) {
         Map<String, Integer> neMap = [:]
 
         String[] tokens = tokenizer.tokenize(documentText)
-
         InputStream inputStreamNameFinder = getClass().getResourceAsStream(modelPath)
-        //  .getResourceAsStream("/models/en-ner-person.bin");
-        //   .getResourceAsStream("/models/en-ner-location.bin");
-        //      .getResourceAsStream("/models/en-ner-organization.bin");
         TokenNameFinderModel model = new TokenNameFinderModel(inputStreamNameFinder);
         NameFinderME nameFinderME = new NameFinderME(model);
         List<Span> spans = Arrays.asList(nameFinderME.find(tokens))
 
         spans.each { sp ->
-            List neList = tokens[sp.getStart()..sp.getEnd() - 1]
-
-            List neList1 = neList.findAll {
+            List neList = tokens[sp.getStart()..sp.getEnd() - 1].findAll {
                 it.charAt(0).isLetter() && it.length() > 1
             }
 
-            List neCase = neList1.collect {
+            List neCase = neList.collect {
 
                 if (isAllUpper(it)) {
                     it
@@ -86,34 +79,30 @@ class NER {
                 }
             }
 
-
-            println "neCase $neCase"
-
             if (neCase.size() < 5 && !neCase.isEmpty()) {
 
                 String ne = neCase.join(' ')
 
                 assert ne.charAt(0).isLetter()
                 assert ne.size() > 1
-                //  if (ne.charAt(0).isLetter() && ne.size() > 1) {
 
                 final int n0 = neMap.get(ne) ?: 0
                 neMap.put(ne, n0 + 1)
-                //}
             }
         }
 
         println " neMap  $neMap "
 
-        Map<String, Integer> neMapSmall = neMap.findAll { k, v ->
-            v > 2
+       Map<String, Integer> neMapSmall = neMap.findAll { k, v ->
+            v > 1
         }
-        println "neMapSmall size ${neMapSmall.size()}"
-        println "neMapSmall $neMapSmall"
-        String str = neMapSmall.inspect()
+        return neMapSmall
+      //  println "neMapSmall size ${neMapSmall.size()}"
+      //  println "neMapSmall $neMapSmall"
 
-        //   nerMapFile.write(str)
-        return neMap
+//        return neMap.findAll { k, v ->
+//            v > 2
+//        } as Immutable
     }
 
     List<String> tokenizeWithNE(String s) {
@@ -125,27 +114,30 @@ class NER {
         println "nerWordList $nerWordList"
         String[] documentTokens = tokenizer.tokenize(s)
 
-        def doc2 = documentTokens.findResults {tok->
+        List <String> filteredTokensLowerCase = documentTokens.findResults {tok->
             tok.charAt(0).isLetter() && tok.size() > 1 ? tok.toLowerCase() : null
         }
 
-        println "first 40 documentTokens ${doc2.take(40)}"
+        println "first 40 documentTokens ${filteredTokensLowerCase.take(40)}"
 
-        String documentAsCommaSeparatedString = ',' + doc2.join(',').toLowerCase()
-        //  documentAsCommaSeparatedString = documentAsCommaSeparatedString.substring(0, documentAsCommaSeparatedString.length()-1)
-        println "docuemtnAsCommaSeparatedString: $documentAsCommaSeparatedString"
+        String documentAsCommaSeparatedString = ',' + filteredTokensLowerCase.join(',')
+
+        println "documentAsCommaSeparatedString: $documentAsCommaSeparatedString"
 
         nerWordList.each { String ner ->
-            def nerWithComma = ner.replace(' ', ',').toLowerCase()
+            String nerWithCommaLowerCase = ner.replace(' ', ',').toLowerCase()
 
-            documentAsCommaSeparatedString = documentAsCommaSeparatedString.replaceAll(',' + nerWithComma + ',', ',' + ner + ',')
+            //check full match by locating comma at start and end
+            documentAsCommaSeparatedString = documentAsCommaSeparatedString.replaceAll(',' + nerWithCommaLowerCase + ',', ',' + ner + ',')
         }
 
+        //remove extra comma from start and end
         documentAsCommaSeparatedString = documentAsCommaSeparatedString.endsWith(',') ? documentAsCommaSeparatedString.substring(0, documentAsCommaSeparatedString.length() - 1) : documentAsCommaSeparatedString
         documentAsCommaSeparatedString =  documentAsCommaSeparatedString.substring(1)
 
         List<String> wordsNoStop = documentAsCommaSeparatedString.tokenize(',').findAll { w ->
-            w.size() > 2 && w.charAt(0).isLetter() && !StopSet.stopSet.contains(w.toLowerCase())
+            //w.size() > 2 && w.charAt(0).isLetter() &&
+                    !StopSet.stopSet.contains(w.toLowerCase())
         }
         println "worsNoStop $wordsNoStop"
         return wordsNoStop

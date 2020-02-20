@@ -69,7 +69,6 @@ class WordPairsExtractor {
         String stemmedBoostWord = stemmer.stem(boostWord)
         t2Cooc = LinkBoost.linkBoost(t2Cooc, stemmedBoostWord).asImmutable()
 
-
         println "t2cooc: $t2Cooc"
 
         return new Tuple2(t2Cooc, stemInfo)
@@ -143,10 +142,10 @@ class WordPairsExtractor {
                 Tuple2<String, String> wordPair = new Tuple2(stemmedWord0, stemmedWord1)
 
                 //boos NEs
-                final int multiplier0 = (stemmedWord0.charAt(0).isUpperCase()) ? 2 : 1
-                final int multiplier1 = (stemmedWord1.charAt(0).isUpperCase()) ? 2 : 1
+                final int boostNE0 = (stemmedWord0.charAt(0).isUpperCase()) ? 4 : 1
+                final int boostNE1 = (stemmedWord1.charAt(0).isUpperCase()) ? 4 : 1
 
-                final double coocDocValue = getCooc(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[]) * (multiplier0 * multiplier1)
+                final double coocDocValue = getCooc(stemmedWordPositionsMap[(stemmedWord0)] as int[], stemmedWordPositionsMap[(stemmedWord1)] as int[]) * (boostNE0 * boostNE1)
 
                 if (coocDocValue > 0) {
                     double coocTotalValue = tuple2CoocMap[(wordPair)] ?: 0
@@ -159,7 +158,7 @@ class WordPairsExtractor {
     }
 
     private double getCooc(int[] w0Positions, int[] w1Positions) {
-        final int MAX_DISTANCE = 30;
+        final int MAX_DISTANCE = 14;
         double coocValue = 0
 
         for (int w0pos : w0Positions) {

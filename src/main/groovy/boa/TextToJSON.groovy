@@ -9,8 +9,8 @@ import processText.WordPairsToJSON
 
 class TextToJSON {
 
-    float powerValue = 0.5f
-    private int maxLinks = 200
+    float powerValue = 0.9f
+    private int maxLinks = 100
     private int highFrequencyWordsSingleFile = 20
     private int highFrequencyWordsDir = 80
     private int maxNetworkLinks = 40
@@ -21,9 +21,9 @@ class TextToJSON {
 
     final static String textDirPathString =
        //     /D:\boa\TestData\test/
-     //       /C:\Users\aceslh\lngit\txt2vz\boaData\text\single/
+            /C:\Users\aceslh\lngit\txt2vz\boaData\text\single/
     //  final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest\coffee10/
-    /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\exp/
+   // /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\exp/
 
 
     Tuple2<Map<Tuple2<String, String>, Double>, Map<String, Map<String, Integer>>> wordPairData
@@ -31,7 +31,7 @@ class TextToJSON {
     static void main(String[] args) {
 
         final Date startRun = new Date()
-        TextToJSON ttj = new TextToJSON(270, true)
+        TextToJSON ttj = new TextToJSON(170, true)
         int fc = ttj.recurseMulti(new File(textDirPathString),  new File(outDirPathString), false, false)
         //  new TextToJSON().recurseMulti(new File(textDirPathString), new File (outDirPathString), true, true)
         //  new TextToJSON().summariseDir(new File(textDirPathString), new File (outDirPathString))
