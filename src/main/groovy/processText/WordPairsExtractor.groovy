@@ -104,7 +104,8 @@ class WordPairsExtractor {
 
             String word = words[wordPosition]
 
-            String stemmedWord = (word.charAt(0).isUpperCase()) ? word : stemmer.stem(word)
+          //  String stemmedWord = (word.charAt(0).isUpperCase()) ? word : stemmer.stem(word)
+            String stemmedWord = stemmer.stem(word)
             stemmedWordPositionsMap[stemmedWord] = stemmedWordPositionsMap.get(stemmedWord, []) << wordPosition
 
             Map<String, Integer> wordForms = stemInfo.get((stemmedWord), [(word): 0])
