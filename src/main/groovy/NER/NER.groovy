@@ -1,8 +1,6 @@
-package opennlp
+package NER
 
 import groovy.transform.CompileStatic
-import groovyjarjarantlr.StringUtils
-import jdk.nashorn.internal.ir.annotations.Immutable
 import opennlp.tools.namefind.NameFinderME
 import opennlp.tools.namefind.TokenNameFinderModel
 import opennlp.tools.tokenize.SimpleTokenizer
@@ -103,34 +101,36 @@ class NER {
 
     List<String> tokenizeWithNE(String s) {
 
-        Map<String, Integer> nerMap = Eval.me(nerMapFile.text) as Map<String, Integer>
-        List<String> nerWordList = nerMap.keySet() as List<String>
+        Map<String, Integer> neMap = Eval.me(nerMapFile.text) as Map<String, Integer>
+      //  List<String> neList = neMap.sort {it.value}.keySet() as List<String>
+        List<String> neList = neMap.sort {a, b -> b.value <=> a.value}.keySet() as List<String>
+     //   List<String> neList = neMap.keySet() as List<String>
 
-        println "nerMap $nerMap"
-        println "nerWordList $nerWordList"
-        String[] documentTokens = tokenizer.tokenize(s)
+        println "neMap $neMap"
+        println "neList $neList"
 
-        List<String> filteredTokensLowerCase = documentTokens.findResults { tok ->
-            tok.charAt(0).isLetter() && tok.size() > 1 ? tok.toLowerCase() : null
-        } as List<String>
+          List<String> filteredTokensLowerCase = tokenizer.tokenize(s).findResults { tok ->
+              tok.charAt(0).isLetterOrDigit() ? tok.toLowerCase() : null
+          } as List<String>
 
         String documentAsCommaSeparatedString = ',' + filteredTokensLowerCase.join(',')
 
-        for (String ner : nerWordList) {
-            String nerWithCommaLowerCase = ner.replace(' ', ',').toLowerCase()
+        for (String ne : neList) {
+            String neWithCommasLowerCase = ',' + ne.replace(' ', ',').toLowerCase() + ','
+            String neWithCommas = ',' + ne + ','
 
-            //check full match by locating comma at start and end
-            documentAsCommaSeparatedString = documentAsCommaSeparatedString.replaceAll(',' + nerWithCommaLowerCase + ',', ',' + ner + ',')
+            documentAsCommaSeparatedString = documentAsCommaSeparatedString.replaceAll( neWithCommasLowerCase , neWithCommas)
         }
 
         //remove extra comma from start and end
         documentAsCommaSeparatedString = documentAsCommaSeparatedString.endsWith(',') ? documentAsCommaSeparatedString.substring(0, documentAsCommaSeparatedString.length() - 1) : documentAsCommaSeparatedString
         documentAsCommaSeparatedString = documentAsCommaSeparatedString.substring(1)
 
-        List<String> wordsNoStop = documentAsCommaSeparatedString.tokenize(',').findAll { w ->
-            !StopSet.stopSet.contains(w.toLowerCase())
+        List<String> documentAsTokenListNoStopWords = documentAsCommaSeparatedString.tokenize(',').findAll { w ->
+            !StopSet.stopSet.contains(w.toLowerCase()) && w.size() > 1
         }
-        return wordsNoStop.asImmutable()
+       // println "wordsNoStrop $documentAsTokenListNoStopWords"
+        return documentAsTokenListNoStopWords.asImmutable()
     }
 
     boolean isAllUpper(String str) {

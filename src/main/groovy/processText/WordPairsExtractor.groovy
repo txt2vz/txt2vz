@@ -1,6 +1,6 @@
 package processText
 
-import opennlp.NER
+import NER.NER
 import groovy.io.FileType
 import groovy.transform.CompileStatic
 
@@ -69,6 +69,7 @@ class WordPairsExtractor {
         if (useNER) {
             NER ner = new NER()
           //  onlpb.generateNERforModel(s, NER.NERModel.ORGANIZATION.path)   //NER.organizationModel)
+
             ner.generateNERforAllModels(s)
             words = ner.tokenizeWithNE(s)
         } else {
@@ -147,7 +148,7 @@ class WordPairsExtractor {
     }
 
     private double getCooc(int[] w0Positions, int[] w1Positions) {
-        final int MAX_DISTANCE = 14;
+        final int MAX_DISTANCE = 10;
         double coocValue = 0
 
         for (int w0pos : w0Positions) {

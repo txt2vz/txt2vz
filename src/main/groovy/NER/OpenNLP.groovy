@@ -1,4 +1,4 @@
-package opennlp
+package NER
 
 import opennlp.tools.namefind.NameFinderME
 import opennlp.tools.namefind.TokenNameFinderModel
