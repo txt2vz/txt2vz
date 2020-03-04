@@ -25,7 +25,6 @@ class NER {
     SimpleTokenizer tokenizer = SimpleTokenizer.INSTANCE;
     File nerMapFile = new File('ner.txt')
 
-
     static void main(String[] args) {
 
         File f = // new File(/D:\boa\test.txt/)
@@ -102,9 +101,7 @@ class NER {
     List<String> tokenizeWithNE(String s) {
 
         Map<String, Integer> neMap = Eval.me(nerMapFile.text) as Map<String, Integer>
-      //  List<String> neList = neMap.sort {it.value}.keySet() as List<String>
         List<String> neList = neMap.sort {a, b -> b.value <=> a.value}.keySet() as List<String>
-     //   List<String> neList = neMap.keySet() as List<String>
 
         println "neMap $neMap"
         println "neList $neList"
@@ -129,7 +126,7 @@ class NER {
         List<String> documentAsTokenListNoStopWords = documentAsCommaSeparatedString.tokenize(',').findAll { w ->
             !StopSet.stopSet.contains(w.toLowerCase()) && w.size() > 1
         }
-       // println "wordsNoStrop $documentAsTokenListNoStopWords"
+
         return documentAsTokenListNoStopWords.asImmutable()
     }
 

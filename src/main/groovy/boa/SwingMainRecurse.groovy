@@ -26,7 +26,7 @@ class SwingMainRecurse {
         String initialPath = System.getProperty("user.dir");
         ImageIcon loading = new ImageIcon(new URL("https://raw.githubusercontent.com/txt2vz/txt2vz/master/src/main/webapp/images/ajax-loader.gif"));
 
-        JLabel processingLabel = new JLabel("processing... ", loading, JLabel.CENTER);
+        JLabel processingLabel = new JLabel('<html><i>processing... <i></html>', loading, JLabel.CENTER);
         processingLabel.setForeground(Color.red)
         processingLabel.setVisible(false)
 
@@ -56,8 +56,8 @@ class SwingMainRecurse {
                                         actionPerformed: {
 
                                             JFileChooser fc = new JFileChooser(initialPath);
-                                            fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-                                            fc.setApproveButtonText('Select File or Folder')
+                                            fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                                            fc.setApproveButtonText('Select Folder')
                                             int result = fc.showOpenDialog(null);
 
                                             switch (result) {

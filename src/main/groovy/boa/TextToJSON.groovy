@@ -36,9 +36,6 @@ class TextToJSON {
         final Date startRun = new Date()
         TextToJSON ttj = new TextToJSON(270, true)
         int fc = ttj.getJSONfromSourceText(new File(textDirPathString), new File(outDirPathString), true, true)
-        //  new TextToJSON().recurseMulti(new File(textDirPathString), new File (outDirPathString), true, true)
-        //  new TextToJSON().summariseDir(new File(textDirPathString), new File (outDirPathString))
-
         final Date endRun = new Date()
         TimeDuration duration = TimeCategory.minus(endRun, startRun)
         println "Duration: $duration file count $fc"

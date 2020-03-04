@@ -64,18 +64,15 @@ class WordPairsExtractor {
 
     private void analyseTextString(String s) {
         List<String> words
-      //  useNER = true
 
         if (useNER) {
             NER ner = new NER()
-          //  onlpb.generateNERforModel(s, NER.NERModel.ORGANIZATION.path)   //NER.organizationModel)
-
             ner.generateNERforAllModels(s)
             words = ner.tokenizeWithNE(s)
         } else {
 
             words = s.replaceAll(/\W/, ' ').toLowerCase().tokenize().minus(StopSet.stopSet).findAll {
-                it.size() > 1 && it.charAt(0).isLetter() //&& it.charAt(1).isLetter()
+                it.size() > 1 && it.charAt(0).isLetter()
             }
         }
 
