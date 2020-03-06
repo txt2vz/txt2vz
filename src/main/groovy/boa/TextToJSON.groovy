@@ -15,14 +15,18 @@ class TextToJSON {
     private int highFrequencyWordsSingleFile = 20
     private int highFrequencyWordsDir = 80
     private int maxNetworkLinks = 40
-    final static String outDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\json/
+    final static String outDirPathString =
+            /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\d/
+    // /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\json/
+
     boolean useNER = true
     //final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest/
 
 
     final static String textDirPathString =
-            //     /D:\boa\TestData\test/
-            /C:\Users\aceslh\lngit\txt2vz\boaData\text\single/
+            /C:\Users\aceslh\OneDrive - Sheffield Hallam University\BritishOnlineArchive\TestData\multi/
+    //     /D:\boa\TestData\test/
+    //  /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\single/
 
     //  /C:\Users\aceslh\lngit\txt2vz\boaData\text\exp/
     //  final static String textDirPathString = /C:\Users\aceslh\IdeaProjects\txt2vz\boaData\text\recurseTest\coffee10/

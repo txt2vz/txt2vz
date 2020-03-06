@@ -1,1 +1,1 @@
-['Germany':10, 'Berlin':7, 'Prince Bismarck':5, 'Europe':4, 'England':10, 'Russia':11, 'San Stefano':4, 'Great':2, 'Turkey':2, 'France':2, 'Herbert Bismarck':2, 'Herr Von Holstein':2, 'Count Herbert':2, 'William':4, 'Alexander III':3, 'Frederick III':2, 'The':2, 'Congress':7, 'Foreign Office':11]
+['Indonesia':4]
