@@ -1,31 +1,29 @@
+#boaMain{
+    color: steelblue;
+    font-size: 18px;
+    font-weight: bold;
+    padding-right: 20px;
+}
+
+#hint {
+    color: #a94dff;
+    font-size: 11px;
+    font-style: italic;
+    font-weight: bold;
+    padding-left: 20px;
+}
 
 #choose {
-    color: fuchsia;
+    color: darkcyan;
     font-weight: bold;
-}
-
-#custom-button {
-    padding: 10px;
-    color: white;
-    background-color: #009578;
-    border: 1px solid #000;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#custom-button:hover {
-    background-color: #00b28f;
+    padding-left: 30px;
+    padding-right: 10px;
 }
 
 #custom-text {
     margin-left: 10px;
     font-family: sans-serif;
     color: #aaa;
-}
-
-html {
-
-    margin: auto;
 }
 
 line.link {
@@ -37,10 +35,6 @@ line.link {
 output {
     font-size: 90%;
 
-}
-
-.well {
-    background-color: #f0f0f0;
 }
 
 #vis {
@@ -84,14 +78,6 @@ output {
 .message {
     white-space: nowrap;
     color: blue;
-}
-
-#hint {
-    color: #a94dff;
-    font-size: 11px;
-    font-style: italic;
-    font-weight: bold;
-    font-style: italic;
 }
 
 .partition rect {

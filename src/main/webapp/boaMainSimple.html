@@ -2,47 +2,23 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel='icon' href='favicon.ico' type='image/x-icon'/>
-    <link rel="stylesheet"
-          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/t2v.css">
-
+    <link rel="stylesheet" href="css/t2vSimple.css">
 </head>
 <title>boa</title>
 
 <body>
-<div class="container  col-md-12">
 
-    <button type="button" class="btn btn-info" data-toggle="collapse"
-            data-target="#control2">Show/Hide controls/selections
-    </button>
-    <div id="control2" class="collapse in well">
+<span id="boaMain">BOA Visualiser </span> Select type : <select id="networkType">
+    <option value="radial">Radial</option>
+    <option value="partition">Partition</option>
+    <option value="forceNetwork">Network</option>
+</select>
 
-        <div class="row">
+<span id="choose"> Select a valid JSON file: </span> <input type="file" id = "file" onchange="processJSONfile()" style="width: 340px" >
+<span id="hint"> Mouse wheel to zoom.  Hold click and move mouse to move tree </span>
+<div id="vis"></div>
 
-            <div class="col-md-3">
-                <br>
-                Select Visualisation Type: <select id="networkType">
-                <option value="radial">Radial</option>
-                <option value="partition">Partition</option>
-                <option value="forceNetwork">Network</option>
-            </select> <br/> <br/>
-
-             <span id="hint">
-                 Mouse wheel to zoom. <br/> Hold click and move mouse to move tree
-              </span>
-            </div>
-            <div>
-                <span id = "choose">Select a valid JSON file: </span> <input type="file" onchange="processJSONfile()">
-            </div>
-        </div>
-    </div>
-    <div class="row col-md-12">
-        <div class="main"></div>
-        <div id="vis"></div>
-    </div>
-</div>
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script src="js/drawForceTree.js"></script>
 <script src="js/drawDendrogram.js"></script>
@@ -58,16 +34,17 @@
 <script src="https://d3js.org/d3-hierarchy.v1.min.js"></script>
 
 <script>
-    var dynamic_recentre = false;
     frontPage();
+    var dynamic_recentre = false;
 
-    function processJSONfile(upload) {
+    function processJSONfile() {
 
         var file = document.querySelector('input[type=file]').files[0];
         var reader = new FileReader()
+        reader.readAsText(file);
 
-        var jsonFile = 'application/json';
-        if (file.type.match(jsonFile)) {
+        var jsonFileType = 'application/json';
+        if (file.type.match(jsonFileType)) {
 
             reader.onload = function (event) {
 
@@ -97,7 +74,6 @@
                 }
             }
         }
-        reader.readAsText(file);
     }
 </script>
 
