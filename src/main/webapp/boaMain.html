@@ -20,27 +20,19 @@
         <div class="row">
 
             <div class="col-md-3">
-
-                <br> Select Type: <select id="networkType">
+                <br>
+                Select Visualisation Type: <select id="networkType">
                 <option value="radial">Radial</option>
-
                 <option value="partition">Partition</option>
                 <option value="forceNetwork">Network</option>
             </select> <br/> <br/>
 
-
-                <div id="hint">
-                    Mouse wheel to zoom. <br/> Hold click and move mouse to move
-                    tree
-                </div>
+             <span id="hint">
+                 Mouse wheel to zoom. <br/> Hold click and move mouse to move tree
+              </span>
             </div>
             <div>
-                <p> Select a valid JSON file:</p>
-
-                <input type="file" id="real-file" hidden="hidden" style="display:none;" onclick="this.value=null;"/>
-                <button type="button" id="custom-button">CHOOSE A FILE</button>
-                <span id="custom-text">No file chosen, yet.</span>
-
+                <span id = "choose">Select a valid JSON file: </span> <input type="file" onchange="processJSONfile()">
             </div>
         </div>
     </div>
@@ -50,23 +42,7 @@
     </div>
 </div>
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-<script
-        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-
-<script>
-
-    var om = 'xx';
-
-
-    function recentreNode ( o){
-
-        console.log("o is " + o);
-
-
-    }
-
-</script>
-
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script src="js/drawForceTree.js"></script>
 <script src="js/drawDendrogram.js"></script>
@@ -77,59 +53,51 @@
 <script src="js/frontPage2.js"></script>
 <script src="js/artai.js"></script>
 <script src="js/partitionD.js"></script>
-
 <script src="js/d3.chart.min.js"></script>
 <script src="js/d3.chart.layout.hierarchy.js"></script>
 <script src="https://d3js.org/d3-hierarchy.v1.min.js"></script>
 
-
 <script>
     frontPage();
 
-    var realFileBtn = document.getElementById("real-file");
-    var customBtn = document.getElementById("custom-button");
-    var fileNameElement = document.getElementById("custom-text");
+    function processJSONfile(upload) {
 
-    customBtn.addEventListener("click", function () {
-        realFileBtn.click();
-    });
+        var file = document.querySelector('input[type=file]').files[0];
+        var reader = new FileReader()
 
+        var jsonFile = 'application/json';
+        if (file.type.match(jsonFile)) {
 
-    realFileBtn.addEventListener("change", function () {
+            reader.onload = function (event) {
 
-        if (realFileBtn.value) {
-            fileNameElement.innerHTML = realFileBtn.value.match(
-                /[\/\\]([\w\d\s\.\-\(\)]+)$/
-            )[1];
-            reload(realFileBtn.value)
-        } else {
-            fileNameElement.innerHTML = "No file chosen.";
+                var j = JSON.parse(event.target.result);
+                var visType = $("#networkType").val();
+
+                switch (visType) {
+                    case 'forceTree':
+                        drawForceTree(j);
+                        break;
+
+                    case 'radial':
+                        radial(j);
+                        break;
+
+                    case 'forceNetwork':
+                        drawForceNetwork(j);
+                        break;
+
+                    case 'partition':
+                        drawPartition(j)
+                        break;
+
+                    case 'dendro':
+                        drawDendrogram(j)
+                        break;
+                }
+            }
         }
-    });
-
-    var fileInput = $('#real-file');
-    var dynamic_recentre = false;
-
-    function reload(upload) {
-
-        var input;
-        console.log("in reload upload " + upload);
-        if (!window.FileReader) {
-            alert('Your browser is not supported')
-        }
-        input = fileInput.get(0);
-
-        // Create a reader object
-        var reader = new FileReader();
-        if (input.files.length) {
-            var textFile = input.files[0];
-            reader.readAsText(textFile);
-            console.log("text is " + textFile);
-
-            $(reader).on('load', draw);
-        }
+        reader.readAsText(file);
     }
-
 </script>
 
 <script>
@@ -152,51 +120,33 @@
 
         promise0.then(function (value) {
 
-            //console.log("in then value is " + value);
-
             var linearScale = d3.scale.linear()
                 .domain(value)
-                //   .range([2, 8]);
                 .range([2, 7]);
-
-      //      console.log("lins scale 2 " + linearScale(2));
 
             d3.select("svg").remove();
             var tree = d3.select("#vis").append("svg")
 
-                .chart("tree.radial")
-
-                //.diameter(500)
+                .chart("tree.radial")   //.diameter(500)
                 .radius(//4)
                     function (d) {
-                        //     var x = 5;
                         var nodeSize = linearScale(d.cooc);
-                       // console.log("node size " + nodeSize + " cooc " + d.cooc);
+                        // console.log("node size " + nodeSize + " cooc " + d.cooc);
                         return nodeSize;
-
                     })
 
-                .levelGap(100).zoomable([0.1, 3]).collapsible(7);
-            //.duration(200)
-            //.sortable("_ASC_")
-
+                .levelGap(100).zoomable([0.1, 3]).collapsible(7);     //.duration(200)   //.sortable("_ASC_")
             tree.draw(json);
         });
-
     }
 
-
-
     function drawPartition(json) {
-
-        //var json3 = JSON.parse(json2);
 
         d3.select("svg").remove();
 
         var partition = d3.select("#vis").append("svg")
 
             .chart("partition.rectangle")
-
             .value("cooc")
             .zoomable([0.5, 5])
             .collapsible()
@@ -206,46 +156,13 @@
         partition.draw(json);
     }
 
-    function draw(jsonData) {
-        // console.log(" in draw " + jsonData);
-
-        var p = jsonData.target.result;
-
-        var j = JSON.parse(p);
-        var visType = $("#networkType").val();
-
-        switch (visType) {
-            case 'forceTree':
-                drawForceTree(j);
-                break;
-
-            case 'radial':
-                radial(j);
-                // drawRadial(j);
-                break;
-
-            case 'forceNetwork':
-                drawForceNetwork(j);
-                break;
-
-            case 'partition':
-                drawPartition(j)
-                break;
-
-            case 'dendro':
-                drawDendrogram(j)
-                break;
-        }
-    }
-
     $(document).ready(function () {
         $("#hint").show();
 
         $("select#networkType")
             .on('change', function () {
-                reload(realFileBtn.value)
 
-                if (($("#networkType").val() == "forceTree")) {
+                if (($("#networkType").val() == "forceNetwork")) {
                     $("#hint").hide();
                 } else {
                     $("#hint").show();

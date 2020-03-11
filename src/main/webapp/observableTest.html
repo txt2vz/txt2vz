@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div id="observablehq-f1d0dddc"></div>
+<script type="module">
+    import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+    import define from "https://api.observablehq.com/@observablehq/downloading-and-embedding-notebooks.js?v=3";
+    const inspect = Inspector.into("#observablehq-f1d0dddc");
+    (new Runtime).module(define, name => (name === "graphic") && inspect());
+</script>
+
+</body>
+</html>

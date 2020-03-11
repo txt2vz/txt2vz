@@ -89,6 +89,11 @@ output {
     font-style: italic;
 }
 
+#choose {
+    color:fuchsia ;
+    font-weight: bold;
+}
+
 .partition rect {
     cursor: pointer;
     fill: steelblue;
